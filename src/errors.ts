@@ -51,6 +51,10 @@ export interface GenericErrorResponse<V extends ErrorVisitor> extends ErrorRespo
     field_errors: undefined
 }
 
+export interface ForbiddenErrorResponse<V extends ErrorVisitor> extends GenericErrorResponse<V> {
+    error_code: ErrorCode.Forbidden
+}
+
 export interface UnauthorizedResponse<V extends ErrorVisitor> extends GenericErrorResponse<V> {
     error_code: ErrorCode.Unauthorized
 }
