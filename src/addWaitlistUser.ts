@@ -4,6 +4,8 @@ import {
     EmailNotConfirmedResponse,
     ErrorVisitor,
     ForbiddenErrorResponse,
+    GenericErrorResponse,
+    ErrorResponse,
 } from './errors'
 import { makeRequest } from './request'
 
@@ -26,6 +28,7 @@ export type AddWaitlistUserErrorResponse =
     | EmailNotConfirmedResponse<AddWaitlistUserErrorVisitor>
     | UnauthorizedResponse<AddWaitlistUserErrorVisitor>
     | ForbiddenErrorResponse<AddWaitlistUserErrorVisitor>
+    | EmailDomainNotAllowedError
 
 export type AddWaitlistUserSuccessResponse = {
     ok: true
@@ -40,6 +43,12 @@ interface AddWaitlistUserErrorVisitor extends ErrorVisitor {
     forbidden?: (error: ForbiddenErrorResponse<AddWaitlistUserErrorVisitor>) => void
     emailNotConfirmed?: (error: EmailNotConfirmedResponse<AddWaitlistUserErrorVisitor>) => void
     unexpectedOrUnhandled?: () => void
+    emailDomainNotAllowed?: (error: EmailDomainNotAllowedError) => void
+}
+
+type EmailDomainNotAllowedError = ErrorResponse<AddWaitlistUserErrorVisitor> & {
+    error_code: 'bad_request'
+    user_facing_error: 'You cannot sign up with a personal email address.'
 }
 
 /////////////////
