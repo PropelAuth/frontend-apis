@@ -16,8 +16,6 @@ export type AddWaitlistUserRequestBody = {
     first_name?: string
     last_name?: string
     username?: string
-    send_confirmation_email: boolean
-    set_email_as_confirmed: boolean
 }
 
 /////////////////
