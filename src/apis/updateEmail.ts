@@ -31,7 +31,7 @@ export interface UpdateEmailBadRequestResponse<V extends ErrorVisitor> extends E
 }
 
 // TODO: probably want a more specific error code
-interface UpdateEmailCannotChangeResponse<V extends ErrorVisitor> extends GenericErrorResponse<V> {
+export interface UpdateEmailCannotChangeResponse<V extends ErrorVisitor> extends GenericErrorResponse<V> {
     error_code: ErrorCode.Forbidden
     user_facing_error: string
 }
@@ -66,7 +66,7 @@ export type UpdateEmailSuccessResponse = {
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-interface UpdateEmailErrorVisitor extends ErrorVisitor {
+export interface UpdateEmailErrorVisitor extends ErrorVisitor {
     badRequest: (error: UpdateEmailBadRequestResponse<UpdateEmailErrorVisitor>) => void
     cannotChangeEmail: (error: UpdateEmailCannotChangeResponse<UpdateEmailErrorVisitor>) => void
     rateLimit: (error: UpdateEmailRateLimitResponse<UpdateEmailErrorVisitor>) => void

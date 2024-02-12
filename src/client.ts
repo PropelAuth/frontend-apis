@@ -6,6 +6,8 @@ export type ApiOptions = {
     authUrl: string
 }
 
+export type PropelAuthApi = ReturnType<typeof getApis>
+
 export const getApis = ({ authUrl: unvalidatedAuthUrl }: ApiOptions) => {
     const authUrl = validateAuthUrl(unvalidatedAuthUrl)
     return {
