@@ -1,13 +1,14 @@
+import { getVisitorOrUndefined } from '../helpers/error_utils'
 import {
+    EmailNotConfirmedResponse,
     ErrorCode,
     ErrorResponse,
+    ErrorVisitor,
     GenericErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
-    EmailNotConfirmedResponse,
-    ErrorVisitor,
-} from './errors'
-import { makeRequest } from './request'
+} from '../helpers/errors'
+import { makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Request
@@ -80,16 +81,35 @@ interface UpdateEmailErrorVisitor extends ErrorVisitor {
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const updateEmail = async (request: UpdateEmailRequest) => {
+export const updateEmail = (authUrl: string) => async (request: UpdateEmailRequest) => {
     return makeRequest<UpdateEmailSuccessResponse, UpdateEmailErrorResponse, UpdateEmailErrorVisitor>({
+        authUrl,
         path: '/update_email',
         method: 'POST',
         body: request,
+        errorToHandler: (error, visitor) => {
+            switch (error.error_code) {
+                case ErrorCode.InvalidRequestFields:
+                    return getVisitorOrUndefined(visitor.badRequest, error)
+                case ErrorCode.Forbidden:
+                    return getVisitorOrUndefined(visitor.cannotChangeEmail, error)
+                case ErrorCode.ConfirmationEmailAlreadySentRecently:
+                    return getVisitorOrUndefined(visitor.rateLimit, error)
+                case ErrorCode.EmailSendFailure:
+                    return getVisitorOrUndefined(visitor.emailSendFailure, error)
+                case ErrorCode.Unauthorized:
+                    return getVisitorOrUndefined(visitor.unauthorized, error)
+                case ErrorCode.EmailNotConfirmed:
+                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
+                case ErrorCode.UnexpectedError:
+                    return visitor.unexpectedOrUnhandled
+            }
+        },
     })
 }
 
 async function testVisitorErrors() {
-    const response = await updateEmail({ email: 'test@propelauth.com' })
+    const response = await updateEmail('https://auth.example.com')({ email: 'test@propelauth.com' })
     if (response.ok) {
         console.log('Success!')
         return
