@@ -30,7 +30,6 @@ export interface UpdateEmailBadRequestResponse<V extends ErrorVisitor> extends E
     }
 }
 
-// TODO: probably want a more specific error code
 export interface UpdateEmailCannotChangeResponse<V extends ErrorVisitor> extends GenericErrorResponse<V> {
     error_code: ErrorCode.Forbidden
     user_facing_error: string
@@ -41,12 +40,6 @@ export interface UpdateEmailRateLimitResponse<V extends ErrorVisitor> extends Ge
     user_facing_error: string
 }
 
-// TODO: This should probably not be exposed to the customer
-export interface UpdateEmailEmailSendFailureResponse<V extends ErrorVisitor> extends GenericErrorResponse<V> {
-    error_code: ErrorCode.EmailSendFailure
-    user_facing_error: string
-}
-
 /////////////////
 ///////////////// Success and Error Responses
 /////////////////
@@ -54,7 +47,6 @@ export type UpdateEmailErrorResponse =
     | UpdateEmailBadRequestResponse<UpdateEmailErrorVisitor>
     | UpdateEmailCannotChangeResponse<UpdateEmailErrorVisitor>
     | UpdateEmailRateLimitResponse<UpdateEmailErrorVisitor>
-    | UpdateEmailEmailSendFailureResponse<UpdateEmailErrorVisitor>
     | UnauthorizedResponse<UpdateEmailErrorVisitor>
     | UnexpectedErrorResponse<UpdateEmailErrorVisitor>
     | EmailNotConfirmedResponse<UpdateEmailErrorVisitor>
@@ -74,7 +66,6 @@ export interface UpdateEmailErrorVisitor extends ErrorVisitor {
     // These are generic error responses that can occur on any request
     unauthorized?: (error: UnauthorizedResponse<UpdateEmailErrorVisitor>) => void
     emailNotConfirmed?: (error: EmailNotConfirmedResponse<UpdateEmailErrorVisitor>) => void
-    emailSendFailure?: (error: UpdateEmailEmailSendFailureResponse<UpdateEmailErrorVisitor>) => void
     unexpectedOrUnhandled?: () => void
 }
 
@@ -95,8 +86,6 @@ export const updateEmail = (authUrl: string) => async (request: UpdateEmailReque
                     return getVisitorOrUndefined(visitor.cannotChangeEmail, error)
                 case ErrorCode.ConfirmationEmailAlreadySentRecently:
                     return getVisitorOrUndefined(visitor.rateLimit, error)
-                case ErrorCode.EmailSendFailure:
-                    return getVisitorOrUndefined(visitor.emailSendFailure, error)
                 case ErrorCode.Unauthorized:
                     return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.EmailNotConfirmed:
