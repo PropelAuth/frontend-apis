@@ -1,21 +1,35 @@
-import { ErrorResponse, ErrorVisitor } from './errors'
+import { ErrorResponse } from './errors'
 
 const BASE_PATH = '/api/fe/v3'
 
-export type RequestArgs<E extends ErrorResponse<V>, V extends ErrorVisitor> = {
+export type RequestArgs<R extends Response<V>, V extends Visitor> = {
+    parseResponseAsJson?: boolean
     authUrl: string
     path: string
     method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
     body?: unknown
-    errorToHandler: (error: E, visitor: V) => (() => void) | undefined
+    responseToHandler: (result: R, visitor: V) => (() => void) | undefined
 }
 
-export type SuccessfulResponse = {
+export type Visitor = {
+    success?: () => void
+    unexpectedOrUnhandled?: () => void
+}
+
+export interface Response<V extends Visitor> {
+    // Whether the request was successful or not
+    ok: boolean
+
+    // A handler for both success and error responses
+    handle: (visitor: V) => void
+}
+
+export interface SuccessfulResponse<V extends Visitor> extends Response<V> {
     ok: true
 }
 
-export const makeRequest = async <S extends SuccessfulResponse, E extends ErrorResponse<V>, V extends ErrorVisitor>(
-    args: RequestArgs<E, V>
+export const makeRequest = async <S extends SuccessfulResponse<V>, E extends ErrorResponse<V>, V extends Visitor>(
+    args: RequestArgs<S | E, V>
 ): Promise<S | E> => {
     const response = await fetch(`${args.authUrl}${BASE_PATH}${args.path}`, {
         method: args.method,
@@ -28,15 +42,34 @@ export const makeRequest = async <S extends SuccessfulResponse, E extends ErrorR
     })
 
     if (response.ok) {
-        return response.json() as Promise<S>
+        if (args.parseResponseAsJson === false) {
+            return {
+                ok: true,
+                handle: (visitor: V) => {
+                    if (visitor.success) {
+                        visitor.success()
+                    }
+                },
+            } as S
+        }
+        const res = (await response.json()) as S
+        return {
+            ...res,
+            ok: true,
+            handle: (visitor: V) => {
+                if (visitor.success) {
+                    visitor.success()
+                }
+            },
+        }
     } else {
         const error = (await response.json()) as E
         return {
             ...error,
 
             ok: false,
-            handleError: (visitor: V) => {
-                const handler = args.errorToHandler(error, visitor)
+            handle: (visitor: V) => {
+                const handler = args.responseToHandler(error, visitor)
                 if (handler) {
                     handler()
                 } else if (visitor.unexpectedOrUnhandled) {

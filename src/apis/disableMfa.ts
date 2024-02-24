@@ -2,17 +2,16 @@ import { getVisitorOrUndefined } from '../helpers/error_utils'
 import {
     EmailNotConfirmedResponse,
     ErrorCode,
-    ErrorVisitor,
     GenericErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../helpers/errors'
-import { makeRequest } from '../helpers/request'
+import { SuccessfulResponse, Visitor, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface MfaAlreadyDisabledResponse<V extends ErrorVisitor> extends GenericErrorResponse<V> {
+export interface MfaAlreadyDisabledResponse<V extends Visitor> extends GenericErrorResponse<V> {
     error_code: ErrorCode.ActionAlreadyComplete
     user_facing_error: string
 }
@@ -21,24 +20,23 @@ export interface MfaAlreadyDisabledResponse<V extends ErrorVisitor> extends Gene
 ///////////////// Success and Error Responses
 /////////////////
 export type MfaDisableErrorResponse =
-    | MfaAlreadyDisabledResponse<MfaDisableErrorVisitor>
-    | UnauthorizedResponse<MfaDisableErrorVisitor>
-    | UnexpectedErrorResponse<MfaDisableErrorVisitor>
-    | EmailNotConfirmedResponse<MfaDisableErrorVisitor>
+    | MfaAlreadyDisabledResponse<MfaDisableVisitor>
+    | UnauthorizedResponse<MfaDisableVisitor>
+    | UnexpectedErrorResponse<MfaDisableVisitor>
+    | EmailNotConfirmedResponse<MfaDisableVisitor>
 
-export type MfaDisableSuccessResponse = {
-    ok: true
-}
+export type MfaDisableSuccessfulResponse = SuccessfulResponse<MfaDisableVisitor>
 
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-export interface MfaDisableErrorVisitor extends ErrorVisitor {
-    alreadyDisabled: (error: MfaAlreadyDisabledResponse<MfaDisableErrorVisitor>) => void
+export interface MfaDisableVisitor extends Visitor {
+    success?: () => void
+    alreadyDisabled: (error: MfaAlreadyDisabledResponse<MfaDisableVisitor>) => void
 
     // These are generic error responses that can occur on any request
-    unauthorized?: (error: UnauthorizedResponse<MfaDisableErrorVisitor>) => void
-    emailNotConfirmed?: (error: EmailNotConfirmedResponse<MfaDisableErrorVisitor>) => void
+    unauthorized?: (error: UnauthorizedResponse<MfaDisableVisitor>) => void
+    emailNotConfirmed?: (error: EmailNotConfirmedResponse<MfaDisableVisitor>) => void
     unexpectedOrUnhandled?: () => void
 }
 
@@ -46,20 +44,24 @@ export interface MfaDisableErrorVisitor extends ErrorVisitor {
 ///////////////// The actual Request
 /////////////////
 export const disableMfa = (authUrl: string) => async () => {
-    return makeRequest<MfaDisableSuccessResponse, MfaDisableErrorResponse, MfaDisableErrorVisitor>({
+    return makeRequest<MfaDisableSuccessfulResponse, MfaDisableErrorResponse, MfaDisableVisitor>({
         authUrl,
         path: '/mfa_disable',
         method: 'POST',
-        errorToHandler: (error, visitor) => {
-            switch (error.error_code) {
-                case ErrorCode.ActionAlreadyComplete:
-                    return getVisitorOrUndefined(visitor.alreadyDisabled, error)
-                case ErrorCode.Unauthorized:
-                    return getVisitorOrUndefined(visitor.unauthorized, error)
-                case ErrorCode.EmailNotConfirmed:
-                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
-                case ErrorCode.UnexpectedError:
-                    return visitor.unexpectedOrUnhandled
+        responseToHandler: (response, visitor) => {
+            if (response.ok) {
+                return visitor.success
+            } else {
+                switch (response.error_code) {
+                    case ErrorCode.ActionAlreadyComplete:
+                        return getVisitorOrUndefined(visitor.alreadyDisabled, response)
+                    case ErrorCode.Unauthorized:
+                        return getVisitorOrUndefined(visitor.unauthorized, response)
+                    case ErrorCode.EmailNotConfirmed:
+                        return getVisitorOrUndefined(visitor.emailNotConfirmed, response)
+                    case ErrorCode.UnexpectedError:
+                        return visitor.unexpectedOrUnhandled
+                }
             }
         },
     })

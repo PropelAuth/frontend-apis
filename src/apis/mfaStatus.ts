@@ -1,25 +1,17 @@
 import { getVisitorOrUndefined } from '../helpers/error_utils'
-import {
-    EmailNotConfirmedResponse,
-    ErrorCode,
-    ErrorVisitor,
-    UnauthorizedResponse,
-    UnexpectedErrorResponse,
-} from '../helpers/errors'
-import { makeRequest } from '../helpers/request'
+import { EmailNotConfirmedResponse, ErrorCode, UnauthorizedResponse, UnexpectedErrorResponse } from '../helpers/errors'
+import { Visitor, SuccessfulResponse, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Success Responses
 /////////////////
-export interface MfaEnabledResponse {
-    ok: true
+export interface MfaEnabledResponse extends SuccessfulResponse<MfaStatusVisitor> {
     type: 'Enabled'
     mfa_enabled: boolean
     backup_codes: string[]
 }
 
-export interface MfaDisabledResponse {
-    ok: true
+export interface MfaDisabledResponse extends SuccessfulResponse<MfaStatusVisitor> {
     type: 'Disabled'
     mfa_enabled: boolean
     new_secret: string
@@ -32,17 +24,18 @@ export type MfaStatusResponse = MfaEnabledResponse | MfaDisabledResponse
 ///////////////// Errors specific to this request
 /////////////////
 export type MfaStatusErrorResponse =
-    | UnauthorizedResponse<MfaStatusErrorVisitor>
-    | UnexpectedErrorResponse<MfaStatusErrorVisitor>
-    | EmailNotConfirmedResponse<MfaStatusErrorVisitor>
+    | UnauthorizedResponse<MfaStatusVisitor>
+    | UnexpectedErrorResponse<MfaStatusVisitor>
+    | EmailNotConfirmedResponse<MfaStatusVisitor>
 
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-export interface MfaStatusErrorVisitor extends ErrorVisitor {
+export interface MfaStatusVisitor extends Visitor {
+    success?: () => void
     // These are generic error responses that can occur on any request
-    unauthorized?: (error: UnauthorizedResponse<MfaStatusErrorVisitor>) => void
-    emailNotConfirmed?: (error: EmailNotConfirmedResponse<MfaStatusErrorVisitor>) => void
+    unauthorized?: (error: UnauthorizedResponse<MfaStatusVisitor>) => void
+    emailNotConfirmed?: (error: EmailNotConfirmedResponse<MfaStatusVisitor>) => void
     unexpectedOrUnhandled?: () => void
 }
 
@@ -50,18 +43,22 @@ export interface MfaStatusErrorVisitor extends ErrorVisitor {
 ///////////////// The actual Request
 /////////////////
 export const fetchMfaStatusWithNewSecret = (authUrl: string) => async () => {
-    return makeRequest<MfaStatusResponse, MfaStatusErrorResponse, MfaStatusErrorVisitor>({
+    return makeRequest<MfaStatusResponse, MfaStatusErrorResponse, MfaStatusVisitor>({
         authUrl,
         path: '/security_status',
         method: 'POST',
-        errorToHandler: (error, visitor) => {
-            switch (error.error_code) {
-                case ErrorCode.Unauthorized:
-                    return getVisitorOrUndefined(visitor.unauthorized, error)
-                case ErrorCode.EmailNotConfirmed:
-                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
-                case ErrorCode.UnexpectedError:
-                    return visitor.unexpectedOrUnhandled
+        responseToHandler: (response, visitor) => {
+            if (response.ok) {
+                return visitor.success
+            } else {
+                switch (response.error_code) {
+                    case ErrorCode.Unauthorized:
+                        return getVisitorOrUndefined(visitor.unauthorized, response)
+                    case ErrorCode.EmailNotConfirmed:
+                        return getVisitorOrUndefined(visitor.emailNotConfirmed, response)
+                    case ErrorCode.UnexpectedError:
+                        return visitor.unexpectedOrUnhandled
+                }
             }
         },
     })

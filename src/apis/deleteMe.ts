@@ -1,17 +1,11 @@
 import { getVisitorOrUndefined } from '../helpers/error_utils'
-import {
-    ErrorCode,
-    ErrorVisitor,
-    GenericErrorResponse,
-    UnauthorizedResponse,
-    UnexpectedErrorResponse,
-} from '../helpers/errors'
-import { makeRequest } from '../helpers/request'
+import { ErrorCode, GenericErrorResponse, UnauthorizedResponse, UnexpectedErrorResponse } from '../helpers/errors'
+import { SuccessfulResponse, Visitor, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface DeletionIsDisabledError<V extends ErrorVisitor> extends GenericErrorResponse<V> {
+export interface DeletionIsDisabledError<V extends Visitor> extends GenericErrorResponse<V> {
     error_code: ErrorCode.ActionDisabled
     user_facing_error: string
 }
@@ -20,39 +14,43 @@ export interface DeletionIsDisabledError<V extends ErrorVisitor> extends Generic
 ///////////////// Success and Error Responses
 /////////////////
 export type DeleteMeErrorResponse =
-    | DeletionIsDisabledError<DeleteMeErrorVisitor>
-    | UnauthorizedResponse<DeleteMeErrorVisitor>
-    | UnexpectedErrorResponse<DeleteMeErrorVisitor>
+    | DeletionIsDisabledError<DeleteMeVisitor>
+    | UnauthorizedResponse<DeleteMeVisitor>
+    | UnexpectedErrorResponse<DeleteMeVisitor>
 
-export type DeleteMeSuccessfulResponse = {
-    ok: true
-}
+export type DeleteMeSuccessfulResponse = SuccessfulResponse<DeleteMeVisitor>
 
 /////////////////
-///////////////// Error Visitor
+///////////////// Visitor
 /////////////////
-export interface DeleteMeErrorVisitor extends ErrorVisitor {
-    unauthorized?: (error: UnauthorizedResponse<DeleteMeErrorVisitor>) => void
-    deletionIsDisabled?: (error: DeletionIsDisabledError<DeleteMeErrorVisitor>) => void
+export interface DeleteMeVisitor extends Visitor {
+    success?: () => void
+    unauthorized?: (error: UnauthorizedResponse<DeleteMeVisitor>) => void
+    deletionIsDisabled?: (error: DeletionIsDisabledError<DeleteMeVisitor>) => void
     unexpectedOrUnhandled?: () => void
 }
 
 /////////////////
-///////////////// The actual Request
+///////////////// The actual request
 /////////////////
 export const deleteMe = (authUrl: string) => async () => {
-    return makeRequest<DeleteMeSuccessfulResponse, DeleteMeErrorResponse, DeleteMeErrorVisitor>({
+    return makeRequest<DeleteMeSuccessfulResponse, DeleteMeErrorResponse, DeleteMeVisitor>({
+        parseResponseAsJson: false,
         authUrl,
         path: '/delete_me',
         method: 'DELETE',
-        errorToHandler: (error, visitor) => {
-            switch (error.error_code) {
-                case ErrorCode.ActionDisabled:
-                    return getVisitorOrUndefined(visitor.deletionIsDisabled, error)
-                case ErrorCode.Unauthorized:
-                    return getVisitorOrUndefined(visitor.unauthorized, error)
-                case ErrorCode.UnexpectedError:
-                    return visitor.unexpectedOrUnhandled
+        responseToHandler: (response, visitor) => {
+            if (response.ok) {
+                return visitor.success
+            } else {
+                switch (response.error_code) {
+                    case ErrorCode.ActionDisabled:
+                        return getVisitorOrUndefined(visitor.deletionIsDisabled, response)
+                    case ErrorCode.Unauthorized:
+                        return getVisitorOrUndefined(visitor.unauthorized, response)
+                    case ErrorCode.UnexpectedError:
+                        return visitor.unexpectedOrUnhandled
+                }
             }
         },
     })
@@ -61,13 +59,12 @@ export const deleteMe = (authUrl: string) => async () => {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function test() {
     const response = await deleteMe('https://auth.example.com')()
-    if (response.ok) {
-        console.log('Success!')
-        return
-    }
 
     // One way to handle errors
-    response.handleError({
+    response.handle({
+        success: () => {
+            console.log('Success!')
+        },
         unauthorized: (error) => {
             console.log('Unauthorized')
             console.log(error.user_facing_error)
@@ -83,6 +80,11 @@ async function test() {
 
     // Another way to handle errors, with the caveat that you might not know
     // which error codes are appropriate
+    if (response.ok) {
+        console.log('Success!')
+        return
+    }
+
     switch (response.error_code) {
         case ErrorCode.ActionDisabled:
             console.log('Deletion is disabled')

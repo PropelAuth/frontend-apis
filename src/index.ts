@@ -4,31 +4,29 @@ export { ErrorCode } from './helpers/errors'
 export type {
     EmailNotConfirmedResponse,
     ErrorResponse,
-    ErrorVisitor,
     GenericErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from './helpers/errors'
-export type { SuccessfulResponse } from './helpers/request'
+export type { SuccessfulResponse, Visitor } from './helpers/request'
 export type {
     DeletionIsDisabledError,
     DeleteMeErrorResponse,
-    DeleteMeErrorVisitor,
+    DeleteMeVisitor,
     DeleteMeSuccessfulResponse,
 } from './apis/deleteMe'
-export type {
-    UpdateEmailRequest,
-    UpdateEmailBadRequestResponse,
-    UpdateEmailCannotChangeResponse,
-    UpdateEmailEmailSendFailureResponse,
-    UpdateEmailErrorResponse,
-    UpdateEmailErrorVisitor,
-    UpdateEmailRateLimitResponse,
-} from './apis/updateEmail'
-export type {
-    UpdateUserRequest,
-    UpdateUserBadRequestResponse,
-    UpdateUserErrorResponse,
-    UpdateUserErrorVisitor,
-    UpdateUserSuccessfulResponse,
-} from './apis/updateUser'
+// export type {
+//     UpdateEmailRequest,
+//     UpdateEmailBadRequestResponse,
+//     UpdateEmailCannotChangeResponse,
+//     UpdateEmailErrorResponse,
+//     UpdateEmailErrorVisitor,
+//     UpdateEmailRateLimitResponse,
+// } from './apis/updateEmail'
+// export type {
+//     UpdateUserRequest,
+//     UpdateUserBadRequestResponse,
+//     UpdateUserErrorResponse,
+//     UpdateUserErrorVisitor,
+//     UpdateUserSuccessfulResponse,
+// } from './apis/updateUser'

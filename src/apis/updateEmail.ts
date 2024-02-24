@@ -3,12 +3,11 @@ import {
     EmailNotConfirmedResponse,
     ErrorCode,
     ErrorResponse,
-    ErrorVisitor,
     GenericErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../helpers/errors'
-import { makeRequest } from '../helpers/request'
+import { Visitor, SuccessfulResponse, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Request
@@ -20,7 +19,7 @@ export type UpdateEmailRequest = {
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface UpdateEmailBadRequestResponse<V extends ErrorVisitor> extends ErrorResponse<V> {
+export interface UpdateEmailBadRequestResponse<V extends Visitor> extends ErrorResponse<V> {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
         email: string
@@ -30,12 +29,12 @@ export interface UpdateEmailBadRequestResponse<V extends ErrorVisitor> extends E
     }
 }
 
-export interface UpdateEmailCannotChangeResponse<V extends ErrorVisitor> extends GenericErrorResponse<V> {
+export interface UpdateEmailCannotChangeResponse<V extends Visitor> extends GenericErrorResponse<V> {
     error_code: ErrorCode.Forbidden
     user_facing_error: string
 }
 
-export interface UpdateEmailRateLimitResponse<V extends ErrorVisitor> extends GenericErrorResponse<V> {
+export interface UpdateEmailRateLimitResponse<V extends Visitor> extends GenericErrorResponse<V> {
     error_code: ErrorCode.ConfirmationEmailAlreadySentRecently
     user_facing_error: string
 }
@@ -44,28 +43,27 @@ export interface UpdateEmailRateLimitResponse<V extends ErrorVisitor> extends Ge
 ///////////////// Success and Error Responses
 /////////////////
 export type UpdateEmailErrorResponse =
-    | UpdateEmailBadRequestResponse<UpdateEmailErrorVisitor>
-    | UpdateEmailCannotChangeResponse<UpdateEmailErrorVisitor>
-    | UpdateEmailRateLimitResponse<UpdateEmailErrorVisitor>
-    | UnauthorizedResponse<UpdateEmailErrorVisitor>
-    | UnexpectedErrorResponse<UpdateEmailErrorVisitor>
-    | EmailNotConfirmedResponse<UpdateEmailErrorVisitor>
+    | UpdateEmailBadRequestResponse<UpdateEmailVisitor>
+    | UpdateEmailCannotChangeResponse<UpdateEmailVisitor>
+    | UpdateEmailRateLimitResponse<UpdateEmailVisitor>
+    | UnauthorizedResponse<UpdateEmailVisitor>
+    | UnexpectedErrorResponse<UpdateEmailVisitor>
+    | EmailNotConfirmedResponse<UpdateEmailVisitor>
 
-export type UpdateEmailSuccessResponse = {
-    ok: true
-}
+export type UpdateEmailSuccessResponse = SuccessfulResponse<UpdateEmailVisitor>
 
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-export interface UpdateEmailErrorVisitor extends ErrorVisitor {
-    badRequest: (error: UpdateEmailBadRequestResponse<UpdateEmailErrorVisitor>) => void
-    cannotChangeEmail: (error: UpdateEmailCannotChangeResponse<UpdateEmailErrorVisitor>) => void
-    rateLimit: (error: UpdateEmailRateLimitResponse<UpdateEmailErrorVisitor>) => void
+export interface UpdateEmailVisitor extends Visitor {
+    success?: () => void
+    badRequest: (error: UpdateEmailBadRequestResponse<UpdateEmailVisitor>) => void
+    cannotChangeEmail: (error: UpdateEmailCannotChangeResponse<UpdateEmailVisitor>) => void
+    rateLimit: (error: UpdateEmailRateLimitResponse<UpdateEmailVisitor>) => void
 
     // These are generic error responses that can occur on any request
-    unauthorized?: (error: UnauthorizedResponse<UpdateEmailErrorVisitor>) => void
-    emailNotConfirmed?: (error: EmailNotConfirmedResponse<UpdateEmailErrorVisitor>) => void
+    unauthorized?: (error: UnauthorizedResponse<UpdateEmailVisitor>) => void
+    emailNotConfirmed?: (error: EmailNotConfirmedResponse<UpdateEmailVisitor>) => void
     unexpectedOrUnhandled?: () => void
 }
 
@@ -73,25 +71,28 @@ export interface UpdateEmailErrorVisitor extends ErrorVisitor {
 ///////////////// The actual Request
 /////////////////
 export const updateEmail = (authUrl: string) => async (request: UpdateEmailRequest) => {
-    return makeRequest<UpdateEmailSuccessResponse, UpdateEmailErrorResponse, UpdateEmailErrorVisitor>({
+    return makeRequest<UpdateEmailSuccessResponse, UpdateEmailErrorResponse, UpdateEmailVisitor>({
         authUrl,
         path: '/update_email',
         method: 'POST',
         body: request,
-        errorToHandler: (error, visitor) => {
-            switch (error.error_code) {
-                case ErrorCode.InvalidRequestFields:
-                    return getVisitorOrUndefined(visitor.badRequest, error)
-                case ErrorCode.Forbidden:
-                    return getVisitorOrUndefined(visitor.cannotChangeEmail, error)
-                case ErrorCode.ConfirmationEmailAlreadySentRecently:
-                    return getVisitorOrUndefined(visitor.rateLimit, error)
-                case ErrorCode.Unauthorized:
-                    return getVisitorOrUndefined(visitor.unauthorized, error)
-                case ErrorCode.EmailNotConfirmed:
-                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
-                case ErrorCode.UnexpectedError:
-                    return visitor.unexpectedOrUnhandled
+        responseToHandler: (response, visitor) => {
+            if (response.ok) {
+            } else {
+                switch (response.error_code) {
+                    case ErrorCode.InvalidRequestFields:
+                        return getVisitorOrUndefined(visitor.badRequest, response)
+                    case ErrorCode.Forbidden:
+                        return getVisitorOrUndefined(visitor.cannotChangeEmail, response)
+                    case ErrorCode.ConfirmationEmailAlreadySentRecently:
+                        return getVisitorOrUndefined(visitor.rateLimit, response)
+                    case ErrorCode.Unauthorized:
+                        return getVisitorOrUndefined(visitor.unauthorized, response)
+                    case ErrorCode.EmailNotConfirmed:
+                        return getVisitorOrUndefined(visitor.emailNotConfirmed, response)
+                    case ErrorCode.UnexpectedError:
+                        return visitor.unexpectedOrUnhandled
+                }
             }
         },
     })
@@ -100,25 +101,24 @@ export const updateEmail = (authUrl: string) => async (request: UpdateEmailReque
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function testVisitorErrors() {
     const response = await updateEmail('https://auth.example.com')({ email: 'test@propelauth.com' })
-    if (response.ok) {
-        console.log('Success!')
-        return
-    }
 
     // One way to handle errors
-    response.handleError({
-        badRequest: (error) => {
+    response.handle({
+        success: () => {
+            console.log('Success!')
+        },
+        badRequest: (response) => {
             console.log('Bad Request')
-            console.log(error.user_facing_errors)
-            console.log(error.field_errors)
+            console.log(response.user_facing_errors)
+            console.log(response.field_errors)
         },
-        cannotChangeEmail: (error) => {
+        cannotChangeEmail: (response) => {
             console.log('Cannot change email')
-            console.log(error.user_facing_error)
+            console.log(response.user_facing_error)
         },
-        rateLimit: (error) => {
+        rateLimit: (response) => {
             console.log('Rate limit')
-            console.log(error.user_facing_error)
+            console.log(response.user_facing_error)
         },
         unexpectedOrUnhandled: () => {
             console.log('Unexpected or unhandled error')
@@ -127,6 +127,11 @@ async function testVisitorErrors() {
 
     // Another way to handle errors, with the caveat that you might not know
     // which error codes are appropriate
+    if (response.ok) {
+        console.log('Success!')
+        return
+    }
+
     switch (response.error_code) {
         case ErrorCode.InvalidRequestFields:
             console.log('Bad Request')
