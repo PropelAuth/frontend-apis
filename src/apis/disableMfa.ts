@@ -31,13 +31,11 @@ export type MfaDisableSuccessfulResponse = SuccessfulResponse<MfaDisableVisitor>
 ///////////////// Error Visitor
 /////////////////
 export interface MfaDisableVisitor extends Visitor {
-    success?: () => void
-    alreadyDisabled: (error: MfaAlreadyDisabledResponse<MfaDisableVisitor>) => void
+    alreadyDisabled: (error: MfaAlreadyDisabledResponse<MfaDisableVisitor>) => Promise<void> | void
 
     // These are generic error responses that can occur on any request
-    unauthorized?: (error: UnauthorizedResponse<MfaDisableVisitor>) => void
-    emailNotConfirmed?: (error: EmailNotConfirmedResponse<MfaDisableVisitor>) => void
-    unexpectedOrUnhandled?: () => void
+    unauthorized?: (error: UnauthorizedResponse<MfaDisableVisitor>) => Promise<void> | void
+    emailNotConfirmed?: (error: EmailNotConfirmedResponse<MfaDisableVisitor>) => Promise<void> | void
 }
 
 /////////////////

@@ -24,10 +24,8 @@ export type DeleteMeSuccessfulResponse = SuccessfulResponse<DeleteMeVisitor>
 ///////////////// Visitor
 /////////////////
 export interface DeleteMeVisitor extends Visitor {
-    success?: () => void
-    unauthorized?: (error: UnauthorizedResponse<DeleteMeVisitor>) => void
-    deletionIsDisabled?: (error: DeletionIsDisabledError<DeleteMeVisitor>) => void
-    unexpectedOrUnhandled?: () => void
+    unauthorized?: (error: UnauthorizedResponse<DeleteMeVisitor>) => Promise<void> | void
+    deletionIsDisabled?: (error: DeletionIsDisabledError<DeleteMeVisitor>) => Promise<void> | void
 }
 
 /////////////////
@@ -35,7 +33,7 @@ export interface DeleteMeVisitor extends Visitor {
 /////////////////
 export const deleteMe = (authUrl: string) => async () => {
     return makeRequest<DeleteMeSuccessfulResponse, DeleteMeErrorResponse, DeleteMeVisitor>({
-        parseResponseAsJson: false,
+        hasJsonResponse: false,
         authUrl,
         path: '/delete_me',
         method: 'DELETE',
@@ -61,8 +59,9 @@ async function test() {
     const response = await deleteMe('https://auth.example.com')()
 
     // One way to handle errors
-    response.handle({
-        success: () => {
+    await response.handle({
+        success: async () => {
+            await new Promise((resolve) => setTimeout(resolve, 1000))
             console.log('Success!')
         },
         unauthorized: (error) => {

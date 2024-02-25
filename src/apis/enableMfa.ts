@@ -56,14 +56,13 @@ export type MfaEnableSuccessResponse = SuccessfulResponse<MfaEnableVisitor>
 ///////////////// Error Visitor
 /////////////////
 export interface MfaEnableVisitor extends Visitor {
-    badRequest: (error: MfaEnableBadRequestResponse<MfaEnableVisitor>) => void
-    alreadyEnabled: (error: MfaAlreadyEnabledResponse<MfaEnableVisitor>) => void
-    incorrectCode: (error: MfaIncorrectCodeResponse<MfaEnableVisitor>) => void
+    badRequest: (error: MfaEnableBadRequestResponse<MfaEnableVisitor>) => Promise<void> | void
+    alreadyEnabled: (error: MfaAlreadyEnabledResponse<MfaEnableVisitor>) => Promise<void> | void
+    incorrectCode: (error: MfaIncorrectCodeResponse<MfaEnableVisitor>) => Promise<void> | void
 
     // These are generic error responses that can occur on any request
-    unauthorized?: (error: UnauthorizedResponse<MfaEnableVisitor>) => void
-    emailNotConfirmed?: (error: EmailNotConfirmedResponse<MfaEnableVisitor>) => void
-    unexpectedOrUnhandled?: () => void
+    unauthorized?: (error: UnauthorizedResponse<MfaEnableVisitor>) => Promise<void> | void
+    emailNotConfirmed?: (error: EmailNotConfirmedResponse<MfaEnableVisitor>) => Promise<void> | void
 }
 
 /////////////////

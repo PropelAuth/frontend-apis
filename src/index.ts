@@ -15,18 +15,18 @@ export type {
     DeleteMeVisitor,
     DeleteMeSuccessfulResponse,
 } from './apis/deleteMe'
-// export type {
-//     UpdateEmailRequest,
-//     UpdateEmailBadRequestResponse,
-//     UpdateEmailCannotChangeResponse,
-//     UpdateEmailErrorResponse,
-//     UpdateEmailErrorVisitor,
-//     UpdateEmailRateLimitResponse,
-// } from './apis/updateEmail'
-// export type {
-//     UpdateUserRequest,
-//     UpdateUserBadRequestResponse,
-//     UpdateUserErrorResponse,
-//     UpdateUserErrorVisitor,
-//     UpdateUserSuccessfulResponse,
-// } from './apis/updateUser'
+export type {
+    UpdateEmailRequest,
+    UpdateEmailBadRequestResponse,
+    UpdateEmailCannotChangeResponse,
+    UpdateEmailErrorResponse,
+    UpdateEmailVisitor,
+    UpdateEmailRateLimitResponse,
+} from './apis/updateEmail'
+export type {
+    UpdateUserRequest,
+    UpdateUserBadRequestResponse,
+    UpdateUserErrorResponse,
+    UpdateUserVisitor,
+    UpdateUserSuccessfulResponse,
+} from './apis/updateUser'

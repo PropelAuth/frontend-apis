@@ -32,11 +32,9 @@ export type MfaStatusErrorResponse =
 ///////////////// Error Visitor
 /////////////////
 export interface MfaStatusVisitor extends Visitor {
-    success?: () => void
     // These are generic error responses that can occur on any request
-    unauthorized?: (error: UnauthorizedResponse<MfaStatusVisitor>) => void
-    emailNotConfirmed?: (error: EmailNotConfirmedResponse<MfaStatusVisitor>) => void
-    unexpectedOrUnhandled?: () => void
+    unauthorized?: (error: UnauthorizedResponse<MfaStatusVisitor>) => Promise<void> | void
+    emailNotConfirmed?: (error: EmailNotConfirmedResponse<MfaStatusVisitor>) => Promise<void> | void
 }
 
 /////////////////

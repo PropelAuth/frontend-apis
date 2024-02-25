@@ -56,15 +56,13 @@ export type UpdateEmailSuccessResponse = SuccessfulResponse<UpdateEmailVisitor>
 ///////////////// Error Visitor
 /////////////////
 export interface UpdateEmailVisitor extends Visitor {
-    success?: () => void
-    badRequest: (error: UpdateEmailBadRequestResponse<UpdateEmailVisitor>) => void
-    cannotChangeEmail: (error: UpdateEmailCannotChangeResponse<UpdateEmailVisitor>) => void
-    rateLimit: (error: UpdateEmailRateLimitResponse<UpdateEmailVisitor>) => void
+    badRequest: (error: UpdateEmailBadRequestResponse<UpdateEmailVisitor>) => Promise<void> | void
+    cannotChangeEmail: (error: UpdateEmailCannotChangeResponse<UpdateEmailVisitor>) => Promise<void> | void
+    rateLimit: (error: UpdateEmailRateLimitResponse<UpdateEmailVisitor>) => Promise<void> | void
 
     // These are generic error responses that can occur on any request
-    unauthorized?: (error: UnauthorizedResponse<UpdateEmailVisitor>) => void
-    emailNotConfirmed?: (error: EmailNotConfirmedResponse<UpdateEmailVisitor>) => void
-    unexpectedOrUnhandled?: () => void
+    unauthorized?: (error: UnauthorizedResponse<UpdateEmailVisitor>) => Promise<void> | void
+    emailNotConfirmed?: (error: EmailNotConfirmedResponse<UpdateEmailVisitor>) => Promise<void> | void
 }
 
 /////////////////
@@ -78,6 +76,7 @@ export const updateEmail = (authUrl: string) => async (request: UpdateEmailReque
         body: request,
         responseToHandler: (response, visitor) => {
             if (response.ok) {
+                return visitor.success
             } else {
                 switch (response.error_code) {
                     case ErrorCode.InvalidRequestFields:
