@@ -17,10 +17,7 @@ export enum ErrorCode {
     ActionAlreadyComplete = 'action_already_complete',
 }
 
-export interface ErrorResponse<V extends Visitor> extends Response<V> {
-    // Whether the request was successful or not
-    ok: false
-
+export interface ApiErrorResponse {
     // An error code that can be used to determine the type of error
     error_code: ErrorCode
 
@@ -39,19 +36,19 @@ export interface ErrorResponse<V extends Visitor> extends Response<V> {
     field_errors?: { [field: string]: string }
 }
 
-export interface GenericErrorResponse<V extends Visitor> extends ErrorResponse<V> {
+export interface GenericErrorResponse extends ApiErrorResponse {
     user_facing_errors: undefined
     field_errors: undefined
 }
 
-export interface UnauthorizedResponse<V extends Visitor> extends GenericErrorResponse<V> {
+export interface UnauthorizedResponse extends GenericErrorResponse {
     error_code: ErrorCode.Unauthorized
 }
 
-export interface UnexpectedErrorResponse<V extends Visitor> extends GenericErrorResponse<V> {
+export interface UnexpectedErrorResponse extends GenericErrorResponse {
     error_code: ErrorCode.UnexpectedError
 }
 
-export interface EmailNotConfirmedResponse<V extends Visitor> extends GenericErrorResponse<V> {
+export interface EmailNotConfirmedResponse extends GenericErrorResponse {
     error_code: ErrorCode.EmailNotConfirmed
 }

@@ -2,12 +2,12 @@ import { getVisitorOrUndefined } from '../helpers/error_utils'
 import {
     EmailNotConfirmedResponse,
     ErrorCode,
-    ErrorResponse,
+    ApiErrorResponse,
     GenericErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../helpers/errors'
-import { SuccessfulResponse, Visitor, makeRequest } from '../helpers/request'
+import { SuccessfulResponse, ErrorResponse, Visitor, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Request
@@ -19,7 +19,7 @@ export type MfaEnableRequest = {
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface MfaEnableBadRequestResponse<V extends Visitor> extends ErrorResponse<V> {
+export interface MfaEnableBadRequestResponse extends ApiErrorResponse {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
         code: string
@@ -29,12 +29,12 @@ export interface MfaEnableBadRequestResponse<V extends Visitor> extends ErrorRes
     }
 }
 
-export interface MfaAlreadyEnabledResponse<V extends Visitor> extends GenericErrorResponse<V> {
+export interface MfaAlreadyEnabledResponse extends GenericErrorResponse {
     error_code: ErrorCode.ActionAlreadyComplete
     user_facing_error: string
 }
 
-export interface MfaIncorrectCodeResponse<V extends Visitor> extends GenericErrorResponse<V> {
+export interface MfaIncorrectCodeResponse extends GenericErrorResponse {
     error_code: ErrorCode.Forbidden
     user_facing_error: string
 }
@@ -43,55 +43,58 @@ export interface MfaIncorrectCodeResponse<V extends Visitor> extends GenericErro
 ///////////////// Success and Error Responses
 /////////////////
 export type MfaEnableErrorResponse =
-    | MfaEnableBadRequestResponse<MfaEnableVisitor>
-    | MfaAlreadyEnabledResponse<MfaEnableVisitor>
-    | MfaIncorrectCodeResponse<MfaEnableVisitor>
-    | UnauthorizedResponse<MfaEnableVisitor>
-    | UnexpectedErrorResponse<MfaEnableVisitor>
-    | EmailNotConfirmedResponse<MfaEnableVisitor>
-
-export type MfaEnableSuccessResponse = SuccessfulResponse<MfaEnableVisitor>
+    | MfaEnableBadRequestResponse
+    | MfaAlreadyEnabledResponse
+    | MfaIncorrectCodeResponse
+    | UnauthorizedResponse
+    | UnexpectedErrorResponse
+    | EmailNotConfirmedResponse
 
 /////////////////
 ///////////////// Error Visitor
 /////////////////
 export interface MfaEnableVisitor extends Visitor {
-    badRequest: (error: MfaEnableBadRequestResponse<MfaEnableVisitor>) => Promise<void> | void
-    alreadyEnabled: (error: MfaAlreadyEnabledResponse<MfaEnableVisitor>) => Promise<void> | void
-    incorrectCode: (error: MfaIncorrectCodeResponse<MfaEnableVisitor>) => Promise<void> | void
+    success: () => Promise<void> | void
+    badRequest: (error: MfaEnableBadRequestResponse) => Promise<void> | void
+    alreadyEnabled: (error: MfaAlreadyEnabledResponse) => Promise<void> | void
+    incorrectCode: (error: MfaIncorrectCodeResponse) => Promise<void> | void
 
     // These are generic error responses that can occur on any request
-    unauthorized?: (error: UnauthorizedResponse<MfaEnableVisitor>) => Promise<void> | void
-    emailNotConfirmed?: (error: EmailNotConfirmedResponse<MfaEnableVisitor>) => Promise<void> | void
+    unauthorized?: (error: UnauthorizedResponse) => Promise<void> | void
+    emailNotConfirmed?: (error: EmailNotConfirmedResponse) => Promise<void> | void
 }
 
 /////////////////
 ///////////////// The actual Request
 /////////////////
 export const enableMfa = (authUrl: string) => async (request: MfaEnableRequest) => {
-    return makeRequest<MfaEnableSuccessResponse, MfaEnableErrorResponse, MfaEnableVisitor>({
+    return makeRequest<
+        SuccessfulResponse<MfaEnableVisitor>,
+        MfaEnableErrorResponse,
+        ErrorResponse<MfaEnableVisitor, MfaEnableErrorResponse>,
+        MfaEnableVisitor
+    >({
         authUrl,
         path: '/mfa_enable',
         method: 'POST',
         body: request,
-        responseToHandler: (response, visitor) => {
-            if (response.ok) {
-                return visitor.success
-            } else {
-                switch (response.error_code) {
-                    case ErrorCode.InvalidRequestFields:
-                        return getVisitorOrUndefined(visitor.badRequest, response)
-                    case ErrorCode.ActionAlreadyComplete:
-                        return getVisitorOrUndefined(visitor.alreadyEnabled, response)
-                    case ErrorCode.Forbidden:
-                        return getVisitorOrUndefined(visitor.incorrectCode, response)
-                    case ErrorCode.Unauthorized:
-                        return getVisitorOrUndefined(visitor.unauthorized, response)
-                    case ErrorCode.EmailNotConfirmed:
-                        return getVisitorOrUndefined(visitor.emailNotConfirmed, response)
-                    case ErrorCode.UnexpectedError:
-                        return visitor.unexpectedOrUnhandled
-                }
+        responseToSuccessHandler: (visitor) => {
+            return async () => await visitor.success()
+        },
+        responseToErrorHandler: (error, visitor) => {
+            switch (error.error_code) {
+                case ErrorCode.InvalidRequestFields:
+                    return getVisitorOrUndefined(visitor.badRequest, error)
+                case ErrorCode.ActionAlreadyComplete:
+                    return getVisitorOrUndefined(visitor.alreadyEnabled, error)
+                case ErrorCode.Forbidden:
+                    return getVisitorOrUndefined(visitor.incorrectCode, error)
+                case ErrorCode.Unauthorized:
+                    return getVisitorOrUndefined(visitor.unauthorized, error)
+                case ErrorCode.EmailNotConfirmed:
+                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
+                case ErrorCode.UnexpectedError:
+                    return visitor.unexpectedOrUnhandled
             }
         },
     })

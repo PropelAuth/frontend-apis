@@ -6,12 +6,12 @@ import {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../helpers/errors'
-import { SuccessfulResponse, Visitor, makeRequest } from '../helpers/request'
+import { SuccessfulResponse, ErrorResponse, Visitor, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface MfaAlreadyDisabledResponse<V extends Visitor> extends GenericErrorResponse<V> {
+export interface MfaAlreadyDisabledResponse extends GenericErrorResponse {
     error_code: ErrorCode.ActionAlreadyComplete
     user_facing_error: string
 }
@@ -20,46 +20,49 @@ export interface MfaAlreadyDisabledResponse<V extends Visitor> extends GenericEr
 ///////////////// Success and Error Responses
 /////////////////
 export type MfaDisableErrorResponse =
-    | MfaAlreadyDisabledResponse<MfaDisableVisitor>
-    | UnauthorizedResponse<MfaDisableVisitor>
-    | UnexpectedErrorResponse<MfaDisableVisitor>
-    | EmailNotConfirmedResponse<MfaDisableVisitor>
-
-export type MfaDisableSuccessfulResponse = SuccessfulResponse<MfaDisableVisitor>
+    | MfaAlreadyDisabledResponse
+    | UnauthorizedResponse
+    | UnexpectedErrorResponse
+    | EmailNotConfirmedResponse
 
 /////////////////
 ///////////////// Error Visitor
 /////////////////
 export interface MfaDisableVisitor extends Visitor {
-    alreadyDisabled: (error: MfaAlreadyDisabledResponse<MfaDisableVisitor>) => Promise<void> | void
+    success: () => Promise<void> | void
+    alreadyDisabled: (error: MfaAlreadyDisabledResponse) => Promise<void> | void
 
     // These are generic error responses that can occur on any request
-    unauthorized?: (error: UnauthorizedResponse<MfaDisableVisitor>) => Promise<void> | void
-    emailNotConfirmed?: (error: EmailNotConfirmedResponse<MfaDisableVisitor>) => Promise<void> | void
+    unauthorized?: (error: UnauthorizedResponse) => Promise<void> | void
+    emailNotConfirmed?: (error: EmailNotConfirmedResponse) => Promise<void> | void
 }
 
 /////////////////
 ///////////////// The actual Request
 /////////////////
 export const disableMfa = (authUrl: string) => async () => {
-    return makeRequest<MfaDisableSuccessfulResponse, MfaDisableErrorResponse, MfaDisableVisitor>({
+    return makeRequest<
+        SuccessfulResponse<MfaDisableVisitor>,
+        MfaDisableErrorResponse,
+        ErrorResponse<MfaDisableVisitor, MfaDisableErrorResponse>,
+        MfaDisableVisitor
+    >({
         authUrl,
         path: '/mfa_disable',
         method: 'POST',
-        responseToHandler: (response, visitor) => {
-            if (response.ok) {
-                return visitor.success
-            } else {
-                switch (response.error_code) {
-                    case ErrorCode.ActionAlreadyComplete:
-                        return getVisitorOrUndefined(visitor.alreadyDisabled, response)
-                    case ErrorCode.Unauthorized:
-                        return getVisitorOrUndefined(visitor.unauthorized, response)
-                    case ErrorCode.EmailNotConfirmed:
-                        return getVisitorOrUndefined(visitor.emailNotConfirmed, response)
-                    case ErrorCode.UnexpectedError:
-                        return visitor.unexpectedOrUnhandled
-                }
+        responseToSuccessHandler: (visitor) => {
+            return async () => await visitor.success()
+        },
+        responseToErrorHandler: (error, visitor) => {
+            switch (error.error_code) {
+                case ErrorCode.ActionAlreadyComplete:
+                    return getVisitorOrUndefined(visitor.alreadyDisabled, error)
+                case ErrorCode.Unauthorized:
+                    return getVisitorOrUndefined(visitor.unauthorized, error)
+                case ErrorCode.EmailNotConfirmed:
+                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
+                case ErrorCode.UnexpectedError:
+                    return visitor.unexpectedOrUnhandled
             }
         },
     })
