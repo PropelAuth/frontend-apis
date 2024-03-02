@@ -1,150 +1,111 @@
-// import { getVisitorOrUndefined } from '../helpers/error_utils'
-// import {
-//     EmailNotConfirmedResponse,
-//     ErrorCode,
-//     ApiErrorResponse,
-//     GenericErrorResponse,
-//     UnauthorizedResponse,
-//     UnexpectedErrorResponse,
-// } from '../helpers/errors'
-// import { Visitor, SuccessfulResponse, makeRequest } from '../helpers/request'
+import { getVisitorOrUndefined } from '../helpers/error_utils'
+import {
+    EmailNotConfirmedResponse,
+    ErrorCode,
+    ApiErrorResponse,
+    GenericErrorResponse,
+    UnauthorizedResponse,
+    UnexpectedErrorResponse,
+} from '../helpers/errors'
+import { SuccessfulResponse, ErrorResponse, Visitor, makeRequest } from '../helpers/request'
 
-// /////////////////
-// ///////////////// Request
-// /////////////////
-// export type UpdateEmailRequest = {
-//     email: string
-// }
+/////////////////
+///////////////// Request
+/////////////////
+export type UpdateEmailRequest = {
+    new_email: string
+}
 
-// /////////////////
-// ///////////////// Errors specific to this request
-// /////////////////
-// export interface UpdateEmailBadRequestResponse<V extends Visitor> extends ApiErrorResponse<V> {
-//     error_code: ErrorCode.InvalidRequestFields
-//     user_facing_errors: {
-//         email: string
-//     }
-//     field_errors: {
-//         email: string
-//     }
-// }
+/////////////////
+///////////////// Errors specific to this request
+/////////////////
+export interface UpdateEmailBadRequestResponse extends ApiErrorResponse {
+    error_code: ErrorCode.InvalidRequestFields
+    user_facing_errors: {
+        new_email: string
+    }
+    field_errors: {
+        new_email: string
+    }
+}
 
-// export interface UpdateEmailCannotChangeResponse<V extends Visitor> extends GenericErrorResponse<V> {
-//     error_code: ErrorCode.Forbidden
-//     user_facing_error: string
-// }
+export interface OrgRestrictionErrorResponse extends GenericErrorResponse {
+    error_code: ErrorCode.Forbidden
+    user_facing_error: string
+}
 
-// export interface UpdateEmailRateLimitResponse<V extends Visitor> extends GenericErrorResponse<V> {
-//     error_code: ErrorCode.ConfirmationEmailAlreadySentRecently
-//     user_facing_error: string
-// }
+export interface EmailAlreadySentResponse extends GenericErrorResponse {
+    error_code: ErrorCode.ConfirmationEmailAlreadySentRecently
+    user_facing_error: string
+}
 
-// /////////////////
-// ///////////////// Success and Error Responses
-// /////////////////
-// export type UpdateEmailErrorResponse =
-//     | UpdateEmailBadRequestResponse<UpdateEmailVisitor>
-//     | UpdateEmailCannotChangeResponse<UpdateEmailVisitor>
-//     | UpdateEmailRateLimitResponse<UpdateEmailVisitor>
-//     | UnauthorizedResponse<UpdateEmailVisitor>
-//     | UnexpectedErrorResponse<UpdateEmailVisitor>
-//     | EmailNotConfirmedResponse<UpdateEmailVisitor>
+export interface DisabledResponse extends GenericErrorResponse {
+    error_code: ErrorCode.ActionDisabled
+    user_facing_error: string
+}
 
-// export type UpdateEmailSuccessResponse = SuccessfulResponse<UpdateEmailVisitor>
+/////////////////
+///////////////// Success and Error Responses
+/////////////////
+export type UpdateEmailErrorResponse =
+    | UpdateEmailBadRequestResponse
+    | OrgRestrictionErrorResponse
+    | EmailAlreadySentResponse
+    | DisabledResponse
+    | UnauthorizedResponse
+    | UnexpectedErrorResponse
+    | EmailNotConfirmedResponse
 
-// /////////////////
-// ///////////////// Error Visitor
-// /////////////////
-// export interface UpdateEmailVisitor extends Visitor {
-//     badRequest: (error: UpdateEmailBadRequestResponse<UpdateEmailVisitor>) => Promise<void> | void
-//     cannotChangeEmail: (error: UpdateEmailCannotChangeResponse<UpdateEmailVisitor>) => Promise<void> | void
-//     rateLimit: (error: UpdateEmailRateLimitResponse<UpdateEmailVisitor>) => Promise<void> | void
+/////////////////
+///////////////// Error Visitor
+/////////////////
+export interface UpdateEmailVisitor extends Visitor {
+    success: () => Promise<void> | void
 
-//     // These are generic error responses that can occur on any request
-//     unauthorized?: (error: UnauthorizedResponse<UpdateEmailVisitor>) => Promise<void> | void
-//     emailNotConfirmed?: (error: EmailNotConfirmedResponse<UpdateEmailVisitor>) => Promise<void> | void
-// }
+    badRequest: (error: UpdateEmailBadRequestResponse) => Promise<void> | void
+    cannotChangeEmailDueToOrgMembership: (error: OrgRestrictionErrorResponse) => Promise<void> | void
+    rateLimit: (error: EmailAlreadySentResponse) => Promise<void> | void
+    emailChangeDisabled?: (error: DisabledResponse) => Promise<void> | void
 
-// /////////////////
-// ///////////////// The actual Request
-// /////////////////
-// export const updateEmail = (authUrl: string) => async (request: UpdateEmailRequest) => {
-//     return makeRequest<UpdateEmailSuccessResponse, UpdateEmailErrorResponse, UpdateEmailVisitor>({
-//         authUrl,
-//         path: '/update_email',
-//         method: 'POST',
-//         body: request,
-//         responseToHandler: (response, visitor) => {
-//             if (response.ok) {
-//                 return visitor.success
-//             } else {
-//                 switch (response.error_code) {
-//                     case ErrorCode.InvalidRequestFields:
-//                         return getVisitorOrUndefined(visitor.badRequest, response)
-//                     case ErrorCode.Forbidden:
-//                         return getVisitorOrUndefined(visitor.cannotChangeEmail, response)
-//                     case ErrorCode.ConfirmationEmailAlreadySentRecently:
-//                         return getVisitorOrUndefined(visitor.rateLimit, response)
-//                     case ErrorCode.Unauthorized:
-//                         return getVisitorOrUndefined(visitor.unauthorized, response)
-//                     case ErrorCode.EmailNotConfirmed:
-//                         return getVisitorOrUndefined(visitor.emailNotConfirmed, response)
-//                     case ErrorCode.UnexpectedError:
-//                         return visitor.unexpectedOrUnhandled
-//                 }
-//             }
-//         },
-//     })
-// }
+    // These are generic error responses that can occur on any request
+    unauthorized?: (error: UnauthorizedResponse) => Promise<void> | void
+    emailNotConfirmed?: (error: EmailNotConfirmedResponse) => Promise<void> | void
+}
 
-// async function testVisitorErrors() {
-//     const response = await updateEmail('https://auth.example.com')({ email: 'test@propelauth.com' })
-
-//     // One way to handle errors
-//     response.handle({
-//         success: () => {
-//             console.log('Success!')
-//         },
-//         badRequest: (response) => {
-//             console.log('Bad Request')
-//             console.log(response.user_facing_errors)
-//             console.log(response.field_errors)
-//         },
-//         cannotChangeEmail: (response) => {
-//             console.log('Cannot change email')
-//             console.log(response.user_facing_error)
-//         },
-//         rateLimit: (response) => {
-//             console.log('Rate limit')
-//             console.log(response.user_facing_error)
-//         },
-//         unexpectedOrUnhandled: () => {
-//             console.log('Unexpected or unhandled error')
-//         },
-//     })
-
-//     // Another way to handle errors, with the caveat that you might not know
-//     // which error codes are appropriate
-//     if (response.ok) {
-//         console.log('Success!')
-//         return
-//     }
-
-//     switch (response.error_code) {
-//         case ErrorCode.InvalidRequestFields:
-//             console.log('Bad Request')
-//             console.log(response.user_facing_errors)
-//             console.log(response.field_errors)
-//             break
-//         case ErrorCode.Forbidden:
-//             console.log('Cannot change email')
-//             console.log(response.user_facing_error)
-//             break
-//         case ErrorCode.ConfirmationEmailAlreadySentRecently:
-//             console.log('Rate limit')
-//             console.log(response.user_facing_error)
-//             break
-//         default:
-//             console.log('Unexpected or unhandled error')
-//     }
-// }
+/////////////////
+///////////////// The actual Request
+/////////////////
+export const updateEmail = (authUrl: string) => async (request: UpdateEmailRequest) => {
+    return makeRequest<
+        SuccessfulResponse<UpdateEmailVisitor>,
+        UpdateEmailErrorResponse,
+        ErrorResponse<UpdateEmailVisitor, UpdateEmailErrorResponse>,
+        UpdateEmailVisitor
+    >({
+        authUrl,
+        path: '/update_email',
+        method: 'POST',
+        body: request,
+        responseToSuccessHandler: (visitor) => {
+            return async () => await visitor.success()
+        },
+        responseToErrorHandler: (error, visitor) => {
+            switch (error.error_code) {
+                case ErrorCode.InvalidRequestFields:
+                    return getVisitorOrUndefined(visitor.badRequest, error)
+                case ErrorCode.Forbidden:
+                    return getVisitorOrUndefined(visitor.cannotChangeEmailDueToOrgMembership, error)
+                case ErrorCode.ConfirmationEmailAlreadySentRecently:
+                    return getVisitorOrUndefined(visitor.rateLimit, error)
+                case ErrorCode.ActionDisabled:
+                    return getVisitorOrUndefined(visitor.emailChangeDisabled, error)
+                case ErrorCode.Unauthorized:
+                    return getVisitorOrUndefined(visitor.unauthorized, error)
+                case ErrorCode.EmailNotConfirmed:
+                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
+                case ErrorCode.UnexpectedError:
+                    return visitor.unexpectedOrUnhandled
+            }
+        },
+    })
+}

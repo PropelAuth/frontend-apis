@@ -99,3 +99,23 @@ export const enableMfa = (authUrl: string) => async (request: MfaEnableRequest) 
         },
     })
 }
+
+async function example() {
+    const apiCall = enableMfa('https://auth.example.com')
+    const response = await apiCall({ code: '123456' })
+
+    await response.handle({
+        success: async () => {
+            console.log('MFA enabled')
+        },
+        badRequest: (error) => {
+            console.log('Bad request', error)
+        },
+        alreadyEnabled: (error) => {
+            console.log('MFA already enabled', error)
+        },
+        incorrectCode: (error) => {
+            console.log('Incorrect code', error)
+        },
+    })
+}

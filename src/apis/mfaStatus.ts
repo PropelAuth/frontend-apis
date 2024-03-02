@@ -30,6 +30,7 @@ export type MfaStatusErrorResponse = UnauthorizedResponse | UnexpectedErrorRespo
 /////////////////
 export interface MfaStatusVisitor extends Visitor {
     success: (response: MfaStatusResponse) => Promise<void> | void
+
     // These are generic error responses that can occur on any request
     unauthorized?: (error: UnauthorizedResponse) => Promise<void> | void
     emailNotConfirmed?: (error: EmailNotConfirmedResponse) => Promise<void> | void
@@ -66,14 +67,13 @@ export const fetchMfaStatusWithNewSecret = (authUrl: string) => async () => {
     })
 }
 
-async function test() {
-    const response = await fetchMfaStatusWithNewSecret('https://auth.example.com')()
+async function example() {
+    const apiCall = fetchMfaStatusWithNewSecret('https://auth.example.com')
+    const response = await apiCall()
 
-    // One way to handle errors
     await response.handle({
         success: async (response) => {
-            await new Promise((resolve) => setTimeout(resolve, 1000))
-            console.log('Success!')
+            console.log(response)
         },
         unauthorized: (error) => {
             console.log('Unauthorized')
