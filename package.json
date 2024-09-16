@@ -33,7 +33,7 @@
     }
   },
   "lint-staged": {
-    "*.ts": [
+    "**/*.ts": [
       "eslint --fix",
       "prettier --write"
     ]
@@ -47,5 +47,8 @@
     "tsup": "^8.0.2",
     "typescript": "^5.6.2",
     "typescript-eslint": "^8.6.0"
+  },
+  "dependencies": {
+    "prettier": "^3.3.3"
   }
 }

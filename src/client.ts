@@ -20,7 +20,7 @@ export const getApis = ({ authUrl: unvalidatedAuthUrl }: ApiOptions) => {
 const validateAuthUrl = (authUrl: string) => {
     try {
         return new URL(authUrl).origin
-    } catch (e) {
+    } catch {
         throw new Error('Invalid authUrl')
     }
 }
