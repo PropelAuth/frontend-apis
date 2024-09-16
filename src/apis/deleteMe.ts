@@ -58,6 +58,7 @@ export const deleteMe = (authUrl: string) => async () => {
     })
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function test() {
     const response = await deleteMe('https://auth.example.com')()
     if (response.ok) {
