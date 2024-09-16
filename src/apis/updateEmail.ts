@@ -97,6 +97,7 @@ export const updateEmail = (authUrl: string) => async (request: UpdateEmailReque
     })
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function testVisitorErrors() {
     const response = await updateEmail('https://auth.example.com')({ email: 'test@propelauth.com' })
     if (response.ok) {
