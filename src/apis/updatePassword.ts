@@ -48,7 +48,7 @@ export type UpdatePasswordErrorResponse =
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-export interface UpdatePasswordVisitor extends Visitor {
+type UpdatePasswordVisitor = Visitor & {
     success: () => Promise<void> | void
     incorrectPassword: (error: IncorrectPasswordResponse) => Promise<void> | void
     badRequest: (error: UpdatePasswordBadRequestResponse) => Promise<void> | void

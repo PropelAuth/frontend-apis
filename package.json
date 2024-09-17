@@ -25,7 +25,8 @@
         "build": "tsup",
         "dev": "tsup --watch",
         "test": "jest",
-        "prepare": "husky"
+        "prepare": "husky",
+        "yalc:publish": "npm run build && yalc publish --push --update"
     },
     "husky": {
         "hooks": {

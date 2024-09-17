@@ -49,7 +49,7 @@ export type UpdateUserFacingMetadataErrorResponse =
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-export interface UpdateUserFacingMetadataVisitor extends Visitor {
+type UpdateUserFacingMetadataVisitor = Visitor & {
     success: () => Promise<void> | void
     badRequest: (error: UpdateMetadataBadRequestResponse) => Promise<void> | void
 }

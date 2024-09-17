@@ -59,7 +59,7 @@ export type UpdateEmailErrorResponse =
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-export interface UpdateEmailVisitor extends Visitor {
+type UpdateEmailVisitor = Visitor & {
     success: () => Promise<void> | void
 
     badRequest: (error: UpdateEmailBadRequestResponse) => Promise<void> | void

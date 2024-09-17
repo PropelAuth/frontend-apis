@@ -28,7 +28,7 @@ export type MfaDisableErrorResponse =
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-export interface MfaDisableVisitor extends Visitor {
+type MfaDisableVisitor = Visitor & {
     success: () => Promise<void> | void
     alreadyDisabled: (error: MfaAlreadyDisabledResponse) => Promise<void> | void
 }

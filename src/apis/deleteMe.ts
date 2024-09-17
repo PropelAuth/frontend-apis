@@ -18,7 +18,7 @@ export type DeleteAccountErrorResponse = DeleteAccountDisabledResponse | Unautho
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-export interface DeleteAccountVisitor extends Visitor {
+type DeleteAccountVisitor = Visitor & {
     success: () => Promise<void> | void
     actionDisabled: (error: DeleteAccountDisabledResponse) => Promise<void> | void
 }

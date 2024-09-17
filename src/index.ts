@@ -22,7 +22,7 @@ export type {
     MfaIncorrectCodeResponse,
     MfaEnableErrorResponse,
 } from './apis/mfa/enableMfa'
-export type { MfaAlreadyDisabledResponse, MfaDisableErrorResponse, MfaDisableVisitor } from './apis/mfa/disableMfa'
+export type { MfaAlreadyDisabledResponse, MfaDisableErrorResponse } from './apis/mfa/disableMfa'
 // export type {
 //     DeletionIsDisabledError,
 //     DeleteMeErrorResponse,
