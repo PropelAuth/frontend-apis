@@ -1,6 +1,11 @@
-import { getVisitorOrUndefined } from '../helpers/error_utils'
-import { EmailNotConfirmedResponse, ErrorCode, UnauthorizedResponse, UnexpectedErrorResponse } from '../helpers/errors'
-import { Visitor, SuccessfulResponse, ErrorResponse, makeRequest } from '../helpers/request'
+import { getVisitorOrUndefined } from '../../helpers/error_utils'
+import {
+    EmailNotConfirmedResponse,
+    ErrorCode,
+    UnauthorizedResponse,
+    UnexpectedErrorResponse,
+} from '../../helpers/errors'
+import { Visitor, makeRequest } from '../../helpers/request'
 
 /////////////////
 ///////////////// Success Responses
@@ -26,12 +31,10 @@ export type MfaStatusResponse = MfaEnabledResponse | MfaDisabledResponse
 export type MfaStatusErrorResponse = UnauthorizedResponse | UnexpectedErrorResponse | EmailNotConfirmedResponse
 
 /////////////////
-///////////////// Error Visitor
+///////////////// Visitor
 /////////////////
-export interface MfaStatusVisitor extends Visitor {
+type MfaStatusVisitor = Visitor & {
     success: (response: MfaStatusResponse) => Promise<void> | void
-
-    // These are generic error responses that can occur on any request
     unauthorized?: (error: UnauthorizedResponse) => Promise<void> | void
     emailNotConfirmed?: (error: EmailNotConfirmedResponse) => Promise<void> | void
 }
@@ -40,19 +43,19 @@ export interface MfaStatusVisitor extends Visitor {
 ///////////////// The actual Request
 /////////////////
 export const fetchMfaStatusWithNewSecret = (authUrl: string) => async () => {
-    return makeRequest<
-        SuccessfulResponse<MfaStatusVisitor, MfaStatusResponse>,
-        MfaStatusErrorResponse,
-        ErrorResponse<MfaStatusVisitor, MfaStatusErrorResponse>,
+    const res = await makeRequest<
+        // SuccessfulResponse<MfaStatusVisitor, MfaStatusResponse>,
         MfaStatusVisitor,
+        MfaStatusErrorResponse,
         MfaStatusResponse
+        // ErrorResponse<MfaStatusVisitor, MfaStatusErrorResponse>,
     >({
         authUrl,
         path: '/security_status',
         method: 'POST',
         parseResponseAsJson: true,
         responseToSuccessHandler: (response, visitor) => {
-            return async () => await visitor.success(response)
+            return () => visitor.success(response)
         },
         responseToErrorHandler: (error, visitor) => {
             switch (error.error_code) {
@@ -65,14 +68,17 @@ export const fetchMfaStatusWithNewSecret = (authUrl: string) => async () => {
             }
         },
     })
+
+    return res
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function example() {
     const apiCall = fetchMfaStatusWithNewSecret('https://auth.example.com')
     const response = await apiCall()
 
-    await response.handle({
-        success: async (response) => {
+    response.handle({
+        success: (response) => {
             console.log(response)
         },
         unauthorized: (error) => {

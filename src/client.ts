@@ -1,8 +1,8 @@
 import { useContext } from 'react'
-import { disableMfa } from './apis/disableMfa'
-import { enableMfa } from './apis/enableMfa'
-import { fetchMfaStatusWithNewSecret } from './apis/mfaStatus'
 import { AuthUrlContext } from './AuthUrlProvider'
+import { disableMfa } from './apis/mfa/disableMfa'
+import { enableMfa } from './apis/mfa/enableMfa'
+import { fetchMfaStatusWithNewSecret } from './apis/mfa/mfaStatus'
 
 export type ApiOptions = {
     authUrl: string
@@ -27,10 +27,10 @@ export const useAuthApis = () => {
     }
 }
 
-const validateAuthUrl = (authUrl: string) => {
-    try {
-        return new URL(authUrl).origin
-    } catch {
-        throw new Error('Invalid authUrl')
-    }
-}
+// const validateAuthUrl = (authUrl: string) => {
+//     try {
+//         return new URL(authUrl).origin
+//     } catch {
+//         throw new Error('Invalid authUrl')
+//     }
+// }

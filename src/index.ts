@@ -9,23 +9,20 @@ export type {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from './helpers/errors'
-export type { SuccessfulResponse, ErrorResponse, Visitor } from './helpers/request'
 export type {
     MfaEnabledResponse,
     MfaDisabledResponse,
     MfaStatusResponse,
     MfaStatusErrorResponse,
-    MfaStatusVisitor,
-} from './apis/mfaStatus'
+} from './apis/mfa/mfaStatus'
 export type {
     MfaEnableRequest,
     MfaAlreadyEnabledResponse,
     MfaEnableBadRequestResponse,
     MfaIncorrectCodeResponse,
     MfaEnableErrorResponse,
-    MfaEnableVisitor,
-} from './apis/enableMfa'
-export type { MfaAlreadyDisabledResponse, MfaDisableErrorResponse, MfaDisableVisitor } from './apis/disableMfa'
+} from './apis/mfa/enableMfa'
+export type { MfaAlreadyDisabledResponse, MfaDisableErrorResponse, MfaDisableVisitor } from './apis/mfa/disableMfa'
 // export type {
 //     DeletionIsDisabledError,
 //     DeleteMeErrorResponse,

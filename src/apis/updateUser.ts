@@ -6,7 +6,7 @@ import {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../helpers/errors'
-import { SuccessfulResponse, ErrorResponse, Visitor, makeRequest } from '../helpers/request'
+import { Visitor, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Request
@@ -63,12 +63,7 @@ export interface UpdateUserFacingMetadataVisitor extends Visitor {
 ///////////////// The actual Request
 /////////////////
 export const updateUserFacingMetadata = (authUrl: string) => async (request: UpdateUserFacingMetadataRequest) => {
-    return makeRequest<
-        SuccessfulResponse<UpdateUserFacingMetadataVisitor>,
-        UpdateUserFacingMetadataErrorResponse,
-        ErrorResponse<UpdateUserFacingMetadataVisitor, UpdateUserFacingMetadataErrorResponse>,
-        UpdateUserFacingMetadataVisitor
-    >({
+    return makeRequest<UpdateUserFacingMetadataVisitor, UpdateUserFacingMetadataErrorResponse>({
         authUrl,
         path: '/update_metadata',
         method: 'POST',

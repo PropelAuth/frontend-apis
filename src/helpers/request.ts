@@ -7,17 +7,19 @@ type GenericRequestArgs<E extends ApiErrorResponse, V extends Visitor> = {
     path: string
     method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
     body?: unknown
-    responseToErrorHandler: (result: E, visitor: V) => (() => Promise<void> | void) | undefined
+    responseToErrorHandler: (result: E, visitor: V) => (() => void) | undefined
     parseResponseAsJson?: boolean
 }
 
+type VoidFunction = Promise<void> | void
+
 export type RequestArgsWithArgs<S, E extends ApiErrorResponse, V extends Visitor> = GenericRequestArgs<E, V> & {
-    responseToSuccessHandler: (response: S, visitor: V) => () => Promise<void> | void
+    responseToSuccessHandler: (response: S, visitor: V) => () => void
     parseResponseAsJson: true
 }
 
 export type RequestArgsWithNoArgs<E extends ApiErrorResponse, V extends Visitor> = GenericRequestArgs<E, V> & {
-    responseToSuccessHandler: (visitor: V) => () => Promise<void> | void
+    responseToSuccessHandler: (visitor: V) => () => void
     parseResponseAsJson?: false
 }
 
@@ -26,36 +28,31 @@ export type RequestArgs<S, E extends ApiErrorResponse, V extends Visitor> =
     | RequestArgsWithNoArgs<E, V>
 
 export type Visitor = {
-    unexpectedOrUnhandled?: () => Promise<void> | void
+    unexpectedOrUnhandled?: () => void
 }
 
-export interface Response<V extends Visitor> {
-    // Whether the request was successful or not
-    ok: boolean
-
+interface ResponseHandler<V extends Visitor> {
     // A handler for both success and error responses
-    handle: (visitor: V) => Promise<void>
+    handle: (visitor: V) => VoidFunction
 }
 
-export type SuccessfulResponse<V extends Visitor, S = undefined> = Response<V> &
-    S & {
-        ok: true
-    }
+export type SuccessfulResponse<V extends Visitor, S = undefined> = ResponseHandler<V> & {
+    ok: true
+    response?: S
+}
 
-export type ErrorResponse<V extends Visitor, E> = Response<V> &
-    E & {
-        ok: false
-    }
+export type ErrorResponse<V extends Visitor, E> = ResponseHandler<V> & {
+    ok: false
+    error: E
+}
 
-export const makeRequest = async <
-    SV extends SuccessfulResponse<V, S>,
-    E extends ApiErrorResponse,
-    EV extends ErrorResponse<V, E>,
-    V extends Visitor,
-    S = undefined
->(
+export type Response<V extends Visitor, E extends ApiErrorResponse, S = undefined> =
+    | SuccessfulResponse<V, S>
+    | ErrorResponse<V, E>
+
+export const makeRequest = async <V extends Visitor, E extends ApiErrorResponse, S = undefined>(
     args: RequestArgs<S, E, V>
-): Promise<SV | EV> => {
+): Promise<Response<V, E, S>> => {
     const response = await fetch(`${args.authUrl}${BASE_PATH}${args.path}`, {
         method: args.method,
         credentials: 'include',
@@ -68,10 +65,10 @@ export const makeRequest = async <
 
     if (response.ok) {
         if (args.parseResponseAsJson) {
-            const jsonResponse = await response.json()
+            const jsonResponse = (await response.json()) as S
             return {
-                ...jsonResponse,
                 ok: true,
+                response: jsonResponse,
                 handle: (visitor: V) => {
                     const handler = args.responseToSuccessHandler(jsonResponse, visitor)
                     return handler()
@@ -84,13 +81,13 @@ export const makeRequest = async <
                     const handler = args.responseToSuccessHandler(visitor)
                     return handler()
                 },
-            } as SV
+            }
         }
     } else {
         const error = (await response.json()) as E
         return {
-            ...error,
             ok: false,
+            error,
             handle: (visitor: V) => {
                 const handler = args.responseToErrorHandler(error, visitor)
                 if (handler) {
@@ -101,6 +98,6 @@ export const makeRequest = async <
                     console.error(`No error handler for: ${error.error_code}`)
                 }
             },
-        } as EV
+        }
     }
 }

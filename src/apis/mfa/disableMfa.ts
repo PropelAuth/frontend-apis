@@ -1,12 +1,12 @@
-import { getVisitorOrUndefined } from '../helpers/error_utils'
+import { getVisitorOrUndefined } from '../../helpers/error_utils'
 import {
     EmailNotConfirmedResponse,
     ErrorCode,
     GenericErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
-} from '../helpers/errors'
-import { SuccessfulResponse, ErrorResponse, Visitor, makeRequest } from '../helpers/request'
+} from '../../helpers/errors'
+import { Visitor, makeRequest } from '../../helpers/request'
 
 /////////////////
 ///////////////// Errors specific to this request
@@ -41,12 +41,7 @@ export interface MfaDisableVisitor extends Visitor {
 ///////////////// The actual Request
 /////////////////
 export const disableMfa = (authUrl: string) => async () => {
-    return makeRequest<
-        SuccessfulResponse<MfaDisableVisitor>,
-        MfaDisableErrorResponse,
-        ErrorResponse<MfaDisableVisitor, MfaDisableErrorResponse>,
-        MfaDisableVisitor
-    >({
+    return makeRequest<MfaDisableVisitor, MfaDisableErrorResponse>({
         authUrl,
         path: '/mfa_disable',
         method: 'POST',
@@ -68,6 +63,7 @@ export const disableMfa = (authUrl: string) => async () => {
     })
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function example() {
     const apiCall = disableMfa('https://auth.example.com')
     const response = await apiCall()

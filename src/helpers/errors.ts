@@ -1,5 +1,3 @@
-import { Response, Visitor } from './request'
-
 export enum ErrorCode {
     InvalidRequestFields = 'invalid_request_fields',
     BadRequest = 'bad_request',

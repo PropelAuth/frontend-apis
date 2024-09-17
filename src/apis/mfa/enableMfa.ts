@@ -1,16 +1,17 @@
-import { getVisitorOrUndefined } from '../helpers/error_utils'
+/////////////////
+///////////////// Request
+
+import { getVisitorOrUndefined } from '../../helpers/error_utils'
 import {
-    EmailNotConfirmedResponse,
-    ErrorCode,
     ApiErrorResponse,
+    ErrorCode,
     GenericErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
-} from '../helpers/errors'
-import { SuccessfulResponse, ErrorResponse, Visitor, makeRequest } from '../helpers/request'
+    EmailNotConfirmedResponse,
+} from '../../helpers/errors'
+import { makeRequest, Visitor } from '../../helpers/request'
 
-/////////////////
-///////////////// Request
 /////////////////
 export type MfaEnableRequest = {
     code: string
@@ -68,12 +69,7 @@ export interface MfaEnableVisitor extends Visitor {
 ///////////////// The actual Request
 /////////////////
 export const enableMfa = (authUrl: string) => async (request: MfaEnableRequest) => {
-    return makeRequest<
-        SuccessfulResponse<MfaEnableVisitor>,
-        MfaEnableErrorResponse,
-        ErrorResponse<MfaEnableVisitor, MfaEnableErrorResponse>,
-        MfaEnableVisitor
-    >({
+    return makeRequest<MfaEnableVisitor, MfaEnableErrorResponse>({
         authUrl,
         path: '/mfa_enable',
         method: 'POST',
@@ -100,6 +96,7 @@ export const enableMfa = (authUrl: string) => async (request: MfaEnableRequest) 
     })
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function example() {
     const apiCall = enableMfa('https://auth.example.com')
     const response = await apiCall({ code: '123456' })
