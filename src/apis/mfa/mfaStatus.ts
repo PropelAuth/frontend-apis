@@ -43,13 +43,7 @@ type MfaStatusVisitor = Visitor & {
 ///////////////// The actual Request
 /////////////////
 export const fetchMfaStatusWithNewSecret = (authUrl: string) => async () => {
-    const res = await makeRequest<
-        // SuccessfulResponse<MfaStatusVisitor, MfaStatusResponse>,
-        MfaStatusVisitor,
-        MfaStatusErrorResponse,
-        MfaStatusResponse
-        // ErrorResponse<MfaStatusVisitor, MfaStatusErrorResponse>,
-    >({
+    const res = await makeRequest<MfaStatusVisitor, MfaStatusErrorResponse, MfaStatusResponse>({
         authUrl,
         path: '/security_status',
         method: 'POST',

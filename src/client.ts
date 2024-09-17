@@ -5,6 +5,8 @@ import { enableMfa } from './apis/mfa/enableMfa'
 import { fetchMfaStatusWithNewSecret } from './apis/mfa/mfaStatus'
 import { updatePassword } from './apis/updatePassword'
 import { deleteAccount } from './apis/deleteMe'
+import { updateUserFacingMetadata } from './apis/userMetadata/updateUserMetadata'
+import { fetchUserMetadata } from './apis/userMetadata/fetchUserMetadata'
 
 export type ApiOptions = {
     authUrl: string
@@ -25,8 +27,9 @@ export const useAuthApis = () => {
         fetchMfaStatusWithNewSecret: fetchMfaStatusWithNewSecret(authUrl),
         updatePassword: updatePassword(authUrl),
         deleteAccount: deleteAccount(authUrl),
+        updateUserMetadata: updateUserFacingMetadata(authUrl),
+        fetchUserMetadata: fetchUserMetadata(authUrl),
         // updateEmail: updateEmail(authUrl),
-        // updateUser: updateUser(authUrl),
     }
 }
 

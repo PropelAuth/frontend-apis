@@ -1,12 +1,12 @@
-import { getVisitorOrUndefined, unmatchedCase } from '../helpers/error_utils'
+import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
 import {
     EmailNotConfirmedResponse,
     ErrorCode,
     ApiErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
-} from '../helpers/errors'
-import { Visitor, makeRequest } from '../helpers/request'
+} from '../../helpers/errors'
+import { Visitor, makeRequest } from '../../helpers/request'
 
 /////////////////
 ///////////////// Request
