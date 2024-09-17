@@ -1,4 +1,4 @@
-import { getVisitorOrUndefined } from '../helpers/error_utils'
+import { getVisitorOrUndefined, unmatchedCase } from '../helpers/error_utils'
 import {
     EmailNotConfirmedResponse,
     ErrorCode,
@@ -7,7 +7,7 @@ import {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../helpers/errors'
-import { SuccessfulResponse, ErrorResponse, Visitor, makeRequest } from '../helpers/request'
+import { Visitor, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Request
@@ -50,25 +50,15 @@ export type UpdatePasswordErrorResponse =
 /////////////////
 export interface UpdatePasswordVisitor extends Visitor {
     success: () => Promise<void> | void
-
     incorrectPassword: (error: IncorrectPasswordResponse) => Promise<void> | void
     badRequest: (error: UpdatePasswordBadRequestResponse) => Promise<void> | void
-
-    // These are generic error responses that can occur on any request
-    unauthorized?: (error: UnauthorizedResponse) => Promise<void> | void
-    emailNotConfirmed?: (error: EmailNotConfirmedResponse) => Promise<void> | void
 }
 
 /////////////////
 ///////////////// The actual Request
 /////////////////
 export const updatePassword = (authUrl: string) => async (request: UpdatePasswordRequest) => {
-    return makeRequest<
-        SuccessfulResponse<UpdatePasswordVisitor>,
-        UpdatePasswordErrorResponse,
-        ErrorResponse<UpdatePasswordVisitor, UpdatePasswordErrorResponse>,
-        UpdatePasswordVisitor
-    >({
+    return makeRequest<UpdatePasswordVisitor, UpdatePasswordErrorResponse>({
         authUrl,
         path: '/update_password',
         method: 'POST',
@@ -77,7 +67,8 @@ export const updatePassword = (authUrl: string) => async (request: UpdatePasswor
             return async () => await visitor.success()
         },
         responseToErrorHandler: (error, visitor) => {
-            switch (error.error_code) {
+            const { error_code: errorCode } = error
+            switch (errorCode) {
                 case ErrorCode.IncorrectPassword:
                     return getVisitorOrUndefined(visitor.incorrectPassword, error)
                 case ErrorCode.InvalidRequestFields:
@@ -87,7 +78,10 @@ export const updatePassword = (authUrl: string) => async (request: UpdatePasswor
                 case ErrorCode.EmailNotConfirmed:
                     return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
                 case ErrorCode.UnexpectedError:
-                    return visitor.unexpectedOrUnhandled
+                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                default:
+                    unmatchedCase(errorCode)
+                    return undefined
             }
         },
     })

@@ -1,4 +1,4 @@
-import { getVisitorOrUndefined } from '../../helpers/error_utils'
+import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
 import {
     EmailNotConfirmedResponse,
     ErrorCode,
@@ -31,10 +31,6 @@ export type MfaDisableErrorResponse =
 export interface MfaDisableVisitor extends Visitor {
     success: () => Promise<void> | void
     alreadyDisabled: (error: MfaAlreadyDisabledResponse) => Promise<void> | void
-
-    // These are generic error responses that can occur on any request
-    unauthorized?: (error: UnauthorizedResponse) => Promise<void> | void
-    emailNotConfirmed?: (error: EmailNotConfirmedResponse) => Promise<void> | void
 }
 
 /////////////////
@@ -49,7 +45,8 @@ export const disableMfa = (authUrl: string) => async () => {
             return async () => await visitor.success()
         },
         responseToErrorHandler: (error, visitor) => {
-            switch (error.error_code) {
+            const { error_code: errorCode } = error
+            switch (errorCode) {
                 case ErrorCode.ActionAlreadyComplete:
                     return getVisitorOrUndefined(visitor.alreadyDisabled, error)
                 case ErrorCode.Unauthorized:
@@ -57,7 +54,10 @@ export const disableMfa = (authUrl: string) => async () => {
                 case ErrorCode.EmailNotConfirmed:
                     return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
                 case ErrorCode.UnexpectedError:
-                    return visitor.unexpectedOrUnhandled
+                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                default:
+                    unmatchedCase(errorCode)
+                    return undefined
             }
         },
     })

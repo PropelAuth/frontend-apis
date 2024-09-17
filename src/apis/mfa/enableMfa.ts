@@ -1,7 +1,7 @@
 /////////////////
 ///////////////// Request
 
-import { getVisitorOrUndefined } from '../../helpers/error_utils'
+import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
 import {
     ApiErrorResponse,
     ErrorCode,
@@ -59,10 +59,6 @@ export interface MfaEnableVisitor extends Visitor {
     badRequest: (error: MfaEnableBadRequestResponse) => Promise<void> | void
     alreadyEnabled: (error: MfaAlreadyEnabledResponse) => Promise<void> | void
     incorrectCode: (error: MfaIncorrectCodeResponse) => Promise<void> | void
-
-    // These are generic error responses that can occur on any request
-    unauthorized?: (error: UnauthorizedResponse) => Promise<void> | void
-    emailNotConfirmed?: (error: EmailNotConfirmedResponse) => Promise<void> | void
 }
 
 /////////////////
@@ -78,7 +74,8 @@ export const enableMfa = (authUrl: string) => async (request: MfaEnableRequest) 
             return async () => await visitor.success()
         },
         responseToErrorHandler: (error, visitor) => {
-            switch (error.error_code) {
+            const { error_code: errorCode } = error
+            switch (errorCode) {
                 case ErrorCode.InvalidRequestFields:
                     return getVisitorOrUndefined(visitor.badRequest, error)
                 case ErrorCode.ActionAlreadyComplete:
@@ -90,7 +87,10 @@ export const enableMfa = (authUrl: string) => async (request: MfaEnableRequest) 
                 case ErrorCode.EmailNotConfirmed:
                     return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
                 case ErrorCode.UnexpectedError:
-                    return visitor.unexpectedOrUnhandled
+                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                default:
+                    unmatchedCase(errorCode)
+                    return undefined
             }
         },
     })

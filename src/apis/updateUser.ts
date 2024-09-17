@@ -1,4 +1,4 @@
-import { getVisitorOrUndefined } from '../helpers/error_utils'
+import { getVisitorOrUndefined, unmatchedCase } from '../helpers/error_utils'
 import {
     EmailNotConfirmedResponse,
     ErrorCode,
@@ -51,12 +51,7 @@ export type UpdateUserFacingMetadataErrorResponse =
 /////////////////
 export interface UpdateUserFacingMetadataVisitor extends Visitor {
     success: () => Promise<void> | void
-
     badRequest: (error: UpdateMetadataBadRequestResponse) => Promise<void> | void
-
-    // These are generic error responses that can occur on any request
-    unauthorized?: (error: UnauthorizedResponse) => Promise<void> | void
-    emailNotConfirmed?: (error: EmailNotConfirmedResponse) => Promise<void> | void
 }
 
 /////////////////
@@ -72,7 +67,8 @@ export const updateUserFacingMetadata = (authUrl: string) => async (request: Upd
             return async () => await visitor.success()
         },
         responseToErrorHandler: (error, visitor) => {
-            switch (error.error_code) {
+            const { error_code: errorCode } = error
+            switch (errorCode) {
                 case ErrorCode.InvalidRequestFields:
                     return getVisitorOrUndefined(visitor.badRequest, error)
                 case ErrorCode.Unauthorized:
@@ -80,7 +76,10 @@ export const updateUserFacingMetadata = (authUrl: string) => async (request: Upd
                 case ErrorCode.EmailNotConfirmed:
                     return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
                 case ErrorCode.UnexpectedError:
-                    return visitor.unexpectedOrUnhandled
+                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                default:
+                    unmatchedCase(errorCode)
+                    return undefined
             }
         },
     })

@@ -1,4 +1,4 @@
-import { getVisitorOrUndefined } from '../helpers/error_utils'
+import { getVisitorOrUndefined, unmatchedCase } from '../helpers/error_utils'
 import {
     EmailNotConfirmedResponse,
     ErrorCode,
@@ -7,7 +7,7 @@ import {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../helpers/errors'
-import { SuccessfulResponse, ErrorResponse, Visitor, makeRequest } from '../helpers/request'
+import { Visitor, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Request
@@ -66,22 +66,13 @@ export interface UpdateEmailVisitor extends Visitor {
     cannotChangeEmailDueToOrgMembership: (error: OrgRestrictionErrorResponse) => Promise<void> | void
     rateLimit: (error: EmailAlreadySentResponse) => Promise<void> | void
     emailChangeDisabled?: (error: DisabledResponse) => Promise<void> | void
-
-    // These are generic error responses that can occur on any request
-    unauthorized?: (error: UnauthorizedResponse) => Promise<void> | void
-    emailNotConfirmed?: (error: EmailNotConfirmedResponse) => Promise<void> | void
 }
 
 /////////////////
 ///////////////// The actual Request
 /////////////////
 export const updateEmail = (authUrl: string) => async (request: UpdateEmailRequest) => {
-    return makeRequest<
-        SuccessfulResponse<UpdateEmailVisitor>,
-        UpdateEmailErrorResponse,
-        ErrorResponse<UpdateEmailVisitor, UpdateEmailErrorResponse>,
-        UpdateEmailVisitor
-    >({
+    return makeRequest<UpdateEmailVisitor, UpdateEmailErrorResponse>({
         authUrl,
         path: '/update_email',
         method: 'POST',
@@ -90,7 +81,8 @@ export const updateEmail = (authUrl: string) => async (request: UpdateEmailReque
             return async () => await visitor.success()
         },
         responseToErrorHandler: (error, visitor) => {
-            switch (error.error_code) {
+            const { error_code: errorCode } = error
+            switch (errorCode) {
                 case ErrorCode.InvalidRequestFields:
                     return getVisitorOrUndefined(visitor.badRequest, error)
                 case ErrorCode.Forbidden:
@@ -104,7 +96,10 @@ export const updateEmail = (authUrl: string) => async (request: UpdateEmailReque
                 case ErrorCode.EmailNotConfirmed:
                     return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
                 case ErrorCode.UnexpectedError:
-                    return visitor.unexpectedOrUnhandled
+                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                default:
+                    unmatchedCase(errorCode)
+                    return undefined
             }
         },
     })

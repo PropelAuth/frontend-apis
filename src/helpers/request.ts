@@ -1,4 +1,4 @@
-import { ApiErrorResponse } from './errors'
+import { ApiErrorResponse, EmailNotConfirmedResponse, UnauthorizedResponse } from './errors'
 
 const BASE_PATH = '/api/fe/v3'
 
@@ -28,7 +28,9 @@ export type RequestArgs<S, E extends ApiErrorResponse, V extends Visitor> =
     | RequestArgsWithNoArgs<E, V>
 
 export type Visitor = {
-    unexpectedOrUnhandled?: () => void
+    unauthorized?: (error: UnauthorizedResponse) => Promise<void> | void
+    emailNotConfirmed?: (error: EmailNotConfirmedResponse) => Promise<void> | void
+    unexpectedOrUnhandled?: (error: ApiErrorResponse) => void
 }
 
 interface ResponseHandler<V extends Visitor> {
@@ -93,7 +95,7 @@ export const makeRequest = async <V extends Visitor, E extends ApiErrorResponse,
                 if (handler) {
                     return handler()
                 } else if (visitor.unexpectedOrUnhandled) {
-                    return visitor.unexpectedOrUnhandled()
+                    return visitor.unexpectedOrUnhandled(error)
                 } else {
                     console.error(`No error handler for: ${error.error_code}`)
                 }

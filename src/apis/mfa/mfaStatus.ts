@@ -1,4 +1,4 @@
-import { getVisitorOrUndefined } from '../../helpers/error_utils'
+import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
 import {
     EmailNotConfirmedResponse,
     ErrorCode,
@@ -58,13 +58,17 @@ export const fetchMfaStatusWithNewSecret = (authUrl: string) => async () => {
             return () => visitor.success(response)
         },
         responseToErrorHandler: (error, visitor) => {
-            switch (error.error_code) {
+            const { error_code: errorCode } = error
+            switch (errorCode) {
                 case ErrorCode.Unauthorized:
                     return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.EmailNotConfirmed:
                     return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
                 case ErrorCode.UnexpectedError:
-                    return visitor.unexpectedOrUnhandled
+                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                default:
+                    unmatchedCase(errorCode)
+                    return undefined
             }
         },
     })
@@ -85,8 +89,8 @@ async function example() {
             console.log('Unauthorized')
             console.log(error.user_facing_error)
         },
-        unexpectedOrUnhandled: () => {
-            console.log('Unexpected or unhandled error')
+        unexpectedOrUnhandled: (error) => {
+            console.log('Unexpected or unhandled error', error)
         },
     })
 }
