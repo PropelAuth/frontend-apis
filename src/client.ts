@@ -7,6 +7,7 @@ import { updatePassword } from './apis/updatePassword'
 import { deleteAccount } from './apis/deleteMe'
 import { updateUserFacingMetadata } from './apis/userMetadata/updateUserMetadata'
 import { fetchUserMetadata } from './apis/userMetadata/fetchUserMetadata'
+import { updateEmail } from './apis/updateEmail'
 
 export type ApiOptions = {
     authUrl: string
@@ -29,7 +30,7 @@ export const useAuthApis = () => {
         deleteAccount: deleteAccount(authUrl),
         updateUserMetadata: updateUserFacingMetadata(authUrl),
         fetchUserMetadata: fetchUserMetadata(authUrl),
-        // updateEmail: updateEmail(authUrl),
+        updateEmail: updateEmail(authUrl),
     }
 }
 
