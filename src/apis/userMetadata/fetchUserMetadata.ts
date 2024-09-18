@@ -32,11 +32,19 @@ export enum PropertyFieldType {
     Url = 'Url',
 }
 
+export enum PropertyFieldPermission {
+    Write = 'Write',
+    WriteIfUnset = 'WriteIfUnset',
+    Read = 'Read',
+}
+
 export type UserPropertySetting = {
     name: string
     display_name: string
     field_type: PropertyFieldType
     show_in_account: boolean
+    user_writable: PropertyFieldPermission
+    required: boolean
 }
 
 /////////////////
@@ -61,7 +69,7 @@ export type FetchUserMetadataErrorResponse =
 /////////////////
 type FetchUserMetadataVisitor = Visitor & {
     success: (response: FetchUserMetadataSuccessResponse) => FetchUserMetadataSuccessResponse | void
-    userNotFound: (error: FetchUserMetadataErrorResponse) => void
+    userNotFound?: (error: FetchUserMetadataErrorResponse) => void
 }
 
 /////////////////

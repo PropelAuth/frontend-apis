@@ -30,7 +30,7 @@ export type MfaDisableErrorResponse =
 /////////////////
 type MfaDisableVisitor = Visitor & {
     success: () => void
-    alreadyDisabled: (error: MfaAlreadyDisabledResponse) => void
+    alreadyDisabled?: (error: MfaAlreadyDisabledResponse) => void
 }
 
 /////////////////

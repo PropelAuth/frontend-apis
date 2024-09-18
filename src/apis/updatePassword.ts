@@ -50,8 +50,8 @@ export type UpdatePasswordErrorResponse =
 /////////////////
 type UpdatePasswordVisitor = Visitor & {
     success: () => void
-    incorrectPassword: (error: IncorrectPasswordResponse) => void
-    badRequest: (error: UpdatePasswordBadRequestResponse) => void
+    incorrectPassword?: (error: IncorrectPasswordResponse) => void
+    badRequest?: (error: UpdatePasswordBadRequestResponse) => void
 }
 
 /////////////////

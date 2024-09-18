@@ -22,6 +22,8 @@ export type {
     MfaIncorrectCodeResponse,
     MfaEnableErrorResponse,
 } from './apis/mfa/enableMfa'
+export type { UserPropertySetting } from './apis/userMetadata/fetchUserMetadata'
+export { PropertyFieldPermission, PropertyFieldType } from './apis/userMetadata/fetchUserMetadata'
 export type { MfaAlreadyDisabledResponse, MfaDisableErrorResponse } from './apis/mfa/disableMfa'
 // export type {
 //     DeletionIsDisabledError,

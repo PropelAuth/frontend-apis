@@ -61,10 +61,9 @@ export type UpdateEmailErrorResponse =
 /////////////////
 type UpdateEmailVisitor = Visitor & {
     success: () => void
-
-    badRequest: (error: UpdateEmailBadRequestResponse) => void
-    cannotChangeEmailDueToOrgMembership: (error: OrgRestrictionErrorResponse) => void
-    rateLimit: (error: EmailAlreadySentResponse) => void
+    badRequest?: (error: UpdateEmailBadRequestResponse) => void
+    cannotChangeEmailDueToOrgMembership?: (error: OrgRestrictionErrorResponse) => void
+    rateLimit?: (error: EmailAlreadySentResponse) => void
     emailChangeDisabled?: (error: DisabledResponse) => void
 }
 

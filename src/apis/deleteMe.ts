@@ -20,7 +20,7 @@ export type DeleteAccountErrorResponse = DeleteAccountDisabledResponse | Unautho
 /////////////////
 type DeleteAccountVisitor = Visitor & {
     success: () => void
-    actionDisabled: (error: DeleteAccountDisabledResponse) => void
+    actionDisabled?: (error: DeleteAccountDisabledResponse) => void
 }
 
 /////////////////

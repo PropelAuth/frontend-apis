@@ -56,9 +56,9 @@ export type MfaEnableErrorResponse =
 /////////////////
 type MfaEnableVisitor = Visitor & {
     success: () => void
-    badRequest: (error: MfaEnableBadRequestResponse) => void
-    alreadyEnabled: (error: MfaAlreadyEnabledResponse) => void
-    incorrectCode: (error: MfaIncorrectCodeResponse) => void
+    badRequest?: (error: MfaEnableBadRequestResponse) => void
+    alreadyEnabled?: (error: MfaAlreadyEnabledResponse) => void
+    incorrectCode?: (error: MfaIncorrectCodeResponse) => void
 }
 
 /////////////////
