@@ -59,8 +59,8 @@ export type FetchUserMetadataErrorResponse =
 ///////////////// Error Visitor
 /////////////////
 type FetchUserMetadataVisitor = Visitor & {
-    success: (response: FetchUserMetadataSuccessResponse) => Promise<void> | void
-    userNotFound: (error: FetchUserMetadataErrorResponse) => Promise<void> | void
+    success: (response: FetchUserMetadataSuccessResponse) => FetchUserMetadataSuccessResponse | void
+    userNotFound: (error: FetchUserMetadataErrorResponse) => void
 }
 
 /////////////////

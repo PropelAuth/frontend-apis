@@ -55,10 +55,10 @@ export type MfaEnableErrorResponse =
 ///////////////// Error Visitor
 /////////////////
 type MfaEnableVisitor = Visitor & {
-    success: () => Promise<void> | void
-    badRequest: (error: MfaEnableBadRequestResponse) => Promise<void> | void
-    alreadyEnabled: (error: MfaAlreadyEnabledResponse) => Promise<void> | void
-    incorrectCode: (error: MfaIncorrectCodeResponse) => Promise<void> | void
+    success: () => void
+    badRequest: (error: MfaEnableBadRequestResponse) => void
+    alreadyEnabled: (error: MfaAlreadyEnabledResponse) => void
+    incorrectCode: (error: MfaIncorrectCodeResponse) => void
 }
 
 /////////////////

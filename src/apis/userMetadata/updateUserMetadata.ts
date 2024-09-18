@@ -50,8 +50,8 @@ export type UpdateUserFacingMetadataErrorResponse =
 ///////////////// Error Visitor
 /////////////////
 type UpdateUserFacingMetadataVisitor = Visitor & {
-    success: () => Promise<void> | void
-    badRequest: (error: UpdateMetadataBadRequestResponse) => Promise<void> | void
+    success: () => void
+    badRequest: (error: UpdateMetadataBadRequestResponse) => void
 }
 
 /////////////////

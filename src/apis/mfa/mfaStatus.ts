@@ -34,9 +34,9 @@ export type MfaStatusErrorResponse = UnauthorizedResponse | UnexpectedErrorRespo
 ///////////////// Visitor
 /////////////////
 type MfaStatusVisitor = Visitor & {
-    success: (response: MfaStatusResponse) => Promise<void> | void
-    unauthorized?: (error: UnauthorizedResponse) => Promise<void> | void
-    emailNotConfirmed?: (error: EmailNotConfirmedResponse) => Promise<void> | void
+    success: (response: MfaStatusResponse) => MfaStatusResponse | void
+    unauthorized?: (error: UnauthorizedResponse) => void
+    emailNotConfirmed?: (error: EmailNotConfirmedResponse) => void
 }
 
 /////////////////

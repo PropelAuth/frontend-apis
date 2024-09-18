@@ -60,12 +60,12 @@ export type UpdateEmailErrorResponse =
 ///////////////// Error Visitor
 /////////////////
 type UpdateEmailVisitor = Visitor & {
-    success: () => Promise<void> | void
+    success: () => void
 
-    badRequest: (error: UpdateEmailBadRequestResponse) => Promise<void> | void
-    cannotChangeEmailDueToOrgMembership: (error: OrgRestrictionErrorResponse) => Promise<void> | void
-    rateLimit: (error: EmailAlreadySentResponse) => Promise<void> | void
-    emailChangeDisabled?: (error: DisabledResponse) => Promise<void> | void
+    badRequest: (error: UpdateEmailBadRequestResponse) => void
+    cannotChangeEmailDueToOrgMembership: (error: OrgRestrictionErrorResponse) => void
+    rateLimit: (error: EmailAlreadySentResponse) => void
+    emailChangeDisabled?: (error: DisabledResponse) => void
 }
 
 /////////////////
