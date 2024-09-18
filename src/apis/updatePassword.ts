@@ -64,7 +64,7 @@ export const updatePassword = (authUrl: string) => async (request: UpdatePasswor
         method: 'POST',
         body: request,
         responseToSuccessHandler: (visitor) => {
-            return async () => await visitor.success()
+            return () => visitor.success()
         },
         responseToErrorHandler: (error, visitor) => {
             const { error_code: errorCode } = error

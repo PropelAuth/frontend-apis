@@ -32,7 +32,7 @@ export const deleteAccount = (authUrl: string) => async () => {
         path: '/delete_me',
         method: 'DELETE',
         responseToSuccessHandler: (visitor) => {
-            return async () => await visitor.success()
+            return () => visitor.success()
         },
         responseToErrorHandler: (error, visitor) => {
             const { error_code: errorCode } = error

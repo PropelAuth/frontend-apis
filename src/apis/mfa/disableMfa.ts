@@ -68,7 +68,7 @@ async function example() {
     const apiCall = disableMfa('https://auth.example.com')
     const response = await apiCall()
 
-    await response.handle({
+    response.handle({
         success: async () => {
             console.log('MFA enabled')
         },

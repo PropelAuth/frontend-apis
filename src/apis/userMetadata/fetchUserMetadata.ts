@@ -36,6 +36,7 @@ export type UserPropertySetting = {
     name: string
     display_name: string
     field_type: PropertyFieldType
+    show_in_account: boolean
 }
 
 /////////////////
@@ -73,7 +74,7 @@ export const fetchUserMetadata = (authUrl: string) => async () => {
         method: 'GET',
         parseResponseAsJson: true,
         responseToSuccessHandler: (response, visitor) => {
-            return async () => await visitor.success(response)
+            return () => visitor.success(response)
         },
         responseToErrorHandler: (error, visitor) => {
             const { error_code: errorCode } = error

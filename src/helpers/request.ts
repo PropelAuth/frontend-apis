@@ -11,10 +11,8 @@ type GenericRequestArgs<E extends ApiErrorResponse, V extends Visitor> = {
     parseResponseAsJson?: boolean
 }
 
-type VoidFunction = Promise<void> | void
-
 export type RequestArgsWithArgs<S, E extends ApiErrorResponse, V extends Visitor> = GenericRequestArgs<E, V> & {
-    responseToSuccessHandler: (response: S, visitor: V) => () => void
+    responseToSuccessHandler: (response: S, visitor: V) => () => S | void
     parseResponseAsJson: true
 }
 
@@ -28,19 +26,19 @@ export type RequestArgs<S, E extends ApiErrorResponse, V extends Visitor> =
     | RequestArgsWithNoArgs<E, V>
 
 export type Visitor = {
-    unauthorized?: (error: UnauthorizedResponse) => Promise<void> | void
-    emailNotConfirmed?: (error: EmailNotConfirmedResponse) => Promise<void> | void
+    unauthorized?: (error: UnauthorizedResponse) => void
+    emailNotConfirmed?: (error: EmailNotConfirmedResponse) => void
     unexpectedOrUnhandled?: (error: ApiErrorResponse) => void
 }
 
-interface ResponseHandler<V extends Visitor> {
+interface ResponseHandler<V extends Visitor, S = undefined> {
     // A handler for both success and error responses
-    handle: (visitor: V) => VoidFunction
+    handle: (visitor: V) => Promise<void | S> | void | S
 }
 
-export type SuccessfulResponse<V extends Visitor, S = undefined> = ResponseHandler<V> & {
+export type SuccessfulResponse<V extends Visitor, S = undefined> = ResponseHandler<V, S> & {
     ok: true
-    response?: S
+    data: S
 }
 
 export type ErrorResponse<V extends Visitor, E> = ResponseHandler<V> & {
@@ -70,7 +68,7 @@ export const makeRequest = async <V extends Visitor, E extends ApiErrorResponse,
             const jsonResponse = (await response.json()) as S
             return {
                 ok: true,
-                response: jsonResponse,
+                data: jsonResponse,
                 handle: (visitor: V) => {
                     const handler = args.responseToSuccessHandler(jsonResponse, visitor)
                     return handler()
@@ -79,6 +77,7 @@ export const makeRequest = async <V extends Visitor, E extends ApiErrorResponse,
         } else {
             return {
                 ok: true,
+                data: undefined as S,
                 handle: (visitor: V) => {
                     const handler = args.responseToSuccessHandler(visitor)
                     return handler()

@@ -64,7 +64,7 @@ export const updateUserFacingMetadata = (authUrl: string) => async (request: Upd
         method: 'POST',
         body: request,
         responseToSuccessHandler: (visitor) => {
-            return async () => await visitor.success()
+            return () => visitor.success()
         },
         responseToErrorHandler: (error, visitor) => {
             const { error_code: errorCode } = error

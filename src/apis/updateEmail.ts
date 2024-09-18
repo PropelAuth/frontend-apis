@@ -78,7 +78,7 @@ export const updateEmail = (authUrl: string) => async (request: UpdateEmailReque
         method: 'POST',
         body: request,
         responseToSuccessHandler: (visitor) => {
-            return async () => await visitor.success()
+            return () => visitor.success()
         },
         responseToErrorHandler: (error, visitor) => {
             const { error_code: errorCode } = error

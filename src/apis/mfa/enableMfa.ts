@@ -71,7 +71,7 @@ export const enableMfa = (authUrl: string) => async (request: MfaEnableRequest) 
         method: 'POST',
         body: request,
         responseToSuccessHandler: (visitor) => {
-            return async () => await visitor.success()
+            return () => visitor.success()
         },
         responseToErrorHandler: (error, visitor) => {
             const { error_code: errorCode } = error
