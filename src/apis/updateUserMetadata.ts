@@ -27,14 +27,12 @@ export interface UpdateMetadataBadRequestResponse extends ApiErrorResponse {
         username?: string
         first_name?: string
         last_name?: string
-        properties?: string
-    }
+    } & { [key: string]: string }
     field_errors: {
         username?: string
         first_name?: string
         last_name?: string
-        properties?: string
-    }
+    } & { [key: string]: string }
 }
 
 /////////////////
