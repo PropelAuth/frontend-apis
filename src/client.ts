@@ -1,13 +1,12 @@
 import { useContext } from 'react'
 import { AuthUrlContext } from './AuthUrlProvider'
+import { deleteAccount } from './apis/deleteAccount'
 import { disableMfa } from './apis/mfa/disableMfa'
 import { enableMfa } from './apis/mfa/enableMfa'
 import { fetchMfaStatusWithNewSecret } from './apis/mfa/mfaStatus'
-import { updatePassword } from './apis/updatePassword'
-import { deleteAccount } from './apis/deleteMe'
-import { updateUserFacingMetadata } from './apis/userMetadata/updateUserMetadata'
-import { fetchUserMetadata } from './apis/userMetadata/fetchUserMetadata'
 import { updateEmail } from './apis/updateEmail'
+import { updatePassword } from './apis/updatePassword'
+import { updateUserFacingMetadata } from './apis/updateUserMetadata'
 
 export type ApiOptions = {
     authUrl: string
@@ -29,15 +28,6 @@ export const useAuthApis = () => {
         updatePassword: updatePassword(authUrl),
         deleteAccount: deleteAccount(authUrl),
         updateUserMetadata: updateUserFacingMetadata(authUrl),
-        fetchUserMetadata: fetchUserMetadata(authUrl),
         updateEmail: updateEmail(authUrl),
     }
 }
-
-// const validateAuthUrl = (authUrl: string) => {
-//     try {
-//         return new URL(authUrl).origin
-//     } catch {
-//         throw new Error('Invalid authUrl')
-//     }
-// }
