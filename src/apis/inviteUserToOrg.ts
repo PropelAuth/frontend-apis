@@ -13,7 +13,7 @@ import { Visitor, makeRequest } from '../helpers/request'
 ///////////////// Request
 /////////////////
 export type InviteUserToOrgRequest = {
-    orgId: string
+    org_id: string
     email: string
     role: string
     additional_roles?: string[]
@@ -94,7 +94,10 @@ export const inviteUserToOrg = (authUrl: string) => async (request: InviteUserTo
         authUrl,
         path: '/invite_user',
         method: 'POST',
-        body: request,
+        body: {
+            ...request,
+            additional_roles: request.additional_roles ?? [],
+        },
         responseToSuccessHandler: (visitor) => {
             return () => visitor.success()
         },
