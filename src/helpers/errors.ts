@@ -13,6 +13,7 @@ export enum ErrorCode {
     IncorrectPassword = 'incorrect_password',
     MaxFileSizeExceeded = 'max_file_size',
     ActionAlreadyComplete = 'action_already_complete',
+    OrgMaxUsersLimitExceeded = 'org_max_users_limit_exceeded',
 }
 
 export interface ApiErrorResponse {
