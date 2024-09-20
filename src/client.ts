@@ -1,6 +1,7 @@
 import { useContext } from 'react'
 import { AuthUrlContext } from './AuthUrlProvider'
 import { deleteAccount } from './apis/deleteAccount'
+import { fetchOrgMembers } from './apis/fetchOrgMembers'
 import { disableMfa } from './apis/mfa/disableMfa'
 import { enableMfa } from './apis/mfa/enableMfa'
 import { fetchMfaStatusWithNewSecret } from './apis/mfa/mfaStatus'
@@ -29,5 +30,6 @@ export const useAuthApis = () => {
         deleteAccount: deleteAccount(authUrl),
         updateUserMetadata: updateUserFacingMetadata(authUrl),
         updateEmail: updateEmail(authUrl),
+        fetchOrgMembers: fetchOrgMembers(authUrl),
     }
 }

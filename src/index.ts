@@ -1,3 +1,9 @@
+export type {
+    FetchOrgMembersErrorResponse,
+    FetchOrgMembersSuccessResponse,
+    OrgMember,
+    PendingOrgInvite,
+} from './apis/fetchOrgMembers'
 export type { MfaAlreadyDisabledResponse, MfaDisableErrorResponse } from './apis/mfa/disableMfa'
 export type {
     MfaAlreadyEnabledResponse,
