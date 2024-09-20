@@ -60,7 +60,7 @@ export type FetchOrgMembersErrorResponse =
 ///////////////// Visitor
 /////////////////
 type FetchOrgMembersVisitor = Visitor & {
-    success: () => void
+    success: (data: FetchOrgMembersSuccessResponse) => FetchOrgMembersSuccessResponse | void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
     orgNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
 }
@@ -69,12 +69,13 @@ type FetchOrgMembersVisitor = Visitor & {
 ///////////////// Request
 /////////////////
 export const fetchOrgMembers = (authUrl: string) => async (orgId: string) => {
-    return makeRequest<FetchOrgMembersVisitor, FetchOrgMembersErrorResponse>({
+    return makeRequest<FetchOrgMembersVisitor, FetchOrgMembersErrorResponse, FetchOrgMembersSuccessResponse>({
         authUrl,
         path: `/selected_org_status/${orgId}`,
         method: 'GET',
-        responseToSuccessHandler: (visitor) => {
-            return () => visitor.success()
+        parseResponseAsJson: true,
+        responseToSuccessHandler: (response, visitor) => {
+            return () => visitor.success(response)
         },
         responseToErrorHandler: (error, visitor) => {
             const { error_code: errorCode } = error
