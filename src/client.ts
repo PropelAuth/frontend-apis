@@ -1,6 +1,7 @@
 import { useContext } from 'react'
 import { AuthUrlContext } from './AuthUrlProvider'
 import { deleteAccount } from './apis/deleteAccount'
+import { deleteOrg } from './apis/deleteOrg'
 import { fetchOrgSettings } from './apis/fetchOrgSettings'
 import { inviteUserToOrg } from './apis/inviteUserToOrg'
 import { disableMfa } from './apis/mfa/disableMfa'
@@ -47,5 +48,6 @@ export const useAuthApis = () => {
         revokeUserOrgInvitation: revokeUserOrgInvitation(authUrl),
         updateOrgSettings: updateOrgSettings(authUrl),
         fetchOrgSettings: fetchOrgSettings(authUrl),
+        deleteOrg: deleteOrg(authUrl),
     }
 }
