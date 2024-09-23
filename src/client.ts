@@ -7,6 +7,7 @@ import { disableMfa } from './apis/mfa/disableMfa'
 import { enableMfa } from './apis/mfa/enableMfa'
 import { fetchMfaStatusWithNewSecret } from './apis/mfa/mfaStatus'
 import { removeUserFromOrg } from './apis/removeUserFromOrg'
+import { revokeUserOrgInvitation } from './apis/revokeUserOrgInvitation'
 import { updateEmail } from './apis/updateEmail'
 import { updatePassword } from './apis/updatePassword'
 import { updateUserFacingMetadata } from './apis/updateUserMetadata'
@@ -37,5 +38,6 @@ export const useAuthApis = () => {
         inviteUserToOrg: inviteUserToOrg(authUrl),
         removeUserFromOrg: removeUserFromOrg(authUrl),
         updateUserRoleInOrg: updateUserRoleInOrg(authUrl),
+        revokeUserOrgInvitation: revokeUserOrgInvitation(authUrl),
     }
 }

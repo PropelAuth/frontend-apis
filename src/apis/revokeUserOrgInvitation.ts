@@ -5,26 +5,24 @@ import {
     ErrorCode,
     ForbiddenErrorResponse,
     OrgNotEnabledErrorResponse,
+    OrgNotFoundErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
-    UserNotFoundErrorResponse,
 } from '../helpers/errors'
 import { Visitor, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Request
 /////////////////
-export type UpdateUserRoleInOrgRequest = {
+export type RevokeUserOrgInvitationRequest = {
     org_id: string
-    user_id: string
-    role: string
-    additional_roles?: string[]
+    email: string
 }
 
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface UpdateUserRoleInOrgFieldValidationErrorResponse extends ApiErrorResponse {
+export interface RevokeUserOrgInvitationFieldValidationErrorResponse extends ApiErrorResponse {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
         org_id?: string
@@ -39,10 +37,10 @@ export interface UpdateUserRoleInOrgFieldValidationErrorResponse extends ApiErro
 /////////////////
 ///////////////// Success and Error Responses
 /////////////////
-export type UpdateUserRoleInOrgErrorResponse =
-    | UpdateUserRoleInOrgFieldValidationErrorResponse
+export type RevokeUserOrgInvitationErrorResponse =
+    | RevokeUserOrgInvitationFieldValidationErrorResponse
     | OrgNotEnabledErrorResponse
-    | UserNotFoundErrorResponse
+    | OrgNotFoundErrorResponse
     | ForbiddenErrorResponse
     | UnexpectedErrorResponse
     | EmailNotConfirmedResponse
@@ -51,25 +49,22 @@ export type UpdateUserRoleInOrgErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type UpdateUserRoleInOrgVisitor = Visitor & {
+type RevokeUserOrgInvitationVisitor = Visitor & {
     success: () => void
-    badRequest?: (error: UpdateUserRoleInOrgFieldValidationErrorResponse) => void
-    noUpdateRolePermission?: (error: ForbiddenErrorResponse) => void
-    userNotFound?: (error: UserNotFoundErrorResponse) => void
+    badRequest?: (error: RevokeUserOrgInvitationFieldValidationErrorResponse) => void
+    noRevokeInvitePermission?: (error: ForbiddenErrorResponse) => void
     orgNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    orgNotFound?: (error: OrgNotFoundErrorResponse) => void
 }
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const updateUserRoleInOrg = (authUrl: string) => async (request: UpdateUserRoleInOrgRequest) => {
-    return makeRequest<UpdateUserRoleInOrgVisitor, UpdateUserRoleInOrgErrorResponse>({
+export const revokeUserOrgInvitation = (authUrl: string) => async (request: RevokeUserOrgInvitationRequest) => {
+    return makeRequest<RevokeUserOrgInvitationVisitor, RevokeUserOrgInvitationErrorResponse>({
         authUrl,
-        path: '/change_role',
+        path: '/revoke_user_invitation',
         method: 'POST',
-        body: {
-            ...request,
-            additional_roles: request.additional_roles ?? [],
-        },
+        body: request,
         responseToSuccessHandler: (visitor) => {
             return () => visitor.success()
         },
@@ -79,9 +74,9 @@ export const updateUserRoleInOrg = (authUrl: string) => async (request: UpdateUs
                 case ErrorCode.InvalidRequestFields:
                     return getVisitorOrUndefined(visitor.badRequest, error)
                 case ErrorCode.Forbidden:
-                    return getVisitorOrUndefined(visitor.noUpdateRolePermission, error)
-                case ErrorCode.UserNotFound:
-                    return getVisitorOrUndefined(visitor.userNotFound, error)
+                    return getVisitorOrUndefined(visitor.noRevokeInvitePermission, error)
+                case ErrorCode.OrgNotFound:
+                    return getVisitorOrUndefined(visitor.orgNotFound, error)
                 case ErrorCode.ActionDisabled:
                     return getVisitorOrUndefined(visitor.orgNotEnabled, error)
                 case ErrorCode.Unauthorized:

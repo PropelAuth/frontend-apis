@@ -2,24 +2,12 @@ import { getVisitorOrUndefined, unmatchedCase } from '../helpers/error_utils'
 import {
     EmailNotConfirmedResponse,
     ErrorCode,
-    GenericErrorResponse,
+    OrgNotEnabledErrorResponse,
+    OrgNotFoundErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../helpers/errors'
 import { Visitor, makeRequest } from '../helpers/request'
-
-/////////////////
-///////////////// Errors specific to this request
-/////////////////
-export interface OrgNotEnabledErrorResponse extends GenericErrorResponse {
-    error_code: ErrorCode.ActionDisabled
-    user_facing_error: string
-}
-
-export interface OrgNotFoundErrorResponse extends GenericErrorResponse {
-    error_code: ErrorCode.OrgNotFound
-    user_facing_error: string
-}
 
 /////////////////
 ///////////////// Success and Error Responses
