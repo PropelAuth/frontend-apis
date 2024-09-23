@@ -3,7 +3,7 @@ import {
     ApiErrorResponse,
     EmailNotConfirmedResponse,
     ErrorCode,
-    GenericErrorResponse,
+    ForbiddenErrorResponse,
     OrgNotEnabledErrorResponse,
     OrgNotFoundErrorResponse,
     UnauthorizedResponse,
@@ -33,11 +33,6 @@ export interface RemoveUserFromOrgBadRequestResponse extends ApiErrorResponse {
     }
 }
 
-export interface ForbiddenResponse extends GenericErrorResponse {
-    error_code: ErrorCode.Forbidden
-    user_facing_error: string
-}
-
 /////////////////
 ///////////////// Success and Error Responses
 /////////////////
@@ -46,7 +41,7 @@ export type RemoveUserFromOrgErrorResponse =
     | OrgNotEnabledErrorResponse
     | OrgNotFoundErrorResponse
     | UserNotFoundErrorResponse
-    | ForbiddenResponse
+    | ForbiddenErrorResponse
     | UnexpectedErrorResponse
     | EmailNotConfirmedResponse
     | UnauthorizedResponse
@@ -57,7 +52,7 @@ export type RemoveUserFromOrgErrorResponse =
 type RemoveUserFromOrgVisitor = Visitor & {
     success: () => void
     badRequest?: (error: RemoveUserFromOrgBadRequestResponse) => void
-    noRemovePermission?: (error: ForbiddenResponse) => void
+    noRemovePermission?: (error: ForbiddenErrorResponse) => void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
     orgNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
     userNotFound?: (error: UserNotFoundErrorResponse) => void
