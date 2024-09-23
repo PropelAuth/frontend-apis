@@ -10,6 +10,7 @@ import { removeUserFromOrg } from './apis/removeUserFromOrg'
 import { updateEmail } from './apis/updateEmail'
 import { updatePassword } from './apis/updatePassword'
 import { updateUserFacingMetadata } from './apis/updateUserMetadata'
+import { updateUserRoleInOrg } from './apis/updateUserRoleInOrg'
 
 export type ApiOptions = {
     authUrl: string
@@ -35,5 +36,6 @@ export const useAuthApis = () => {
         fetchOrgMembers: fetchOrgMembers(authUrl),
         inviteUserToOrg: inviteUserToOrg(authUrl),
         removeUserFromOrg: removeUserFromOrg(authUrl),
+        updateUserRoleInOrg: updateUserRoleInOrg(authUrl),
     }
 }
