@@ -51,3 +51,19 @@ export interface UnexpectedErrorResponse extends GenericErrorResponse {
 export interface EmailNotConfirmedResponse extends GenericErrorResponse {
     error_code: ErrorCode.EmailNotConfirmed
 }
+
+export interface OrgNotFoundErrorResponse extends GenericErrorResponse {
+    error_code: ErrorCode.OrgNotFound
+}
+
+export interface UserNotFoundErrorResponse extends GenericErrorResponse {
+    error_code: ErrorCode.UserNotFound
+}
+
+export interface OrgNotEnabledErrorResponse extends GenericErrorResponse {
+    error_code: ErrorCode.ActionDisabled
+}
+
+export interface ForbiddenErrorResponse extends GenericErrorResponse {
+    error_code: ErrorCode.Forbidden
+}

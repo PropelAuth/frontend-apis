@@ -3,7 +3,10 @@ import {
     ApiErrorResponse,
     EmailNotConfirmedResponse,
     ErrorCode,
+    ForbiddenErrorResponse,
     GenericErrorResponse,
+    OrgNotEnabledErrorResponse,
+    OrgNotFoundErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../helpers/errors'
@@ -22,11 +25,6 @@ export type InviteUserToOrgRequest = {
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface OrgNotEnabledErrorResponse extends GenericErrorResponse {
-    error_code: ErrorCode.ActionDisabled
-    user_facing_error: string
-}
-
 export interface InviteUserToOrgFieldValidationErrorResponse extends ApiErrorResponse {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
@@ -41,16 +39,6 @@ export interface InviteUserToOrgFieldValidationErrorResponse extends ApiErrorRes
 
 export interface OrgMaxUsersLimitExceededErrorResponse extends GenericErrorResponse {
     error_code: ErrorCode.OrgMaxUsersLimitExceeded
-    user_facing_error: string
-}
-
-export interface ForbiddenErrorResponse extends GenericErrorResponse {
-    error_code: ErrorCode.Forbidden
-    user_facing_error: string
-}
-
-export interface OrgNotFoundErrorResponse extends GenericErrorResponse {
-    error_code: ErrorCode.OrgNotFound
     user_facing_error: string
 }
 

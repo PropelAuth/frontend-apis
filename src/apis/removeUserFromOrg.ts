@@ -4,8 +4,11 @@ import {
     EmailNotConfirmedResponse,
     ErrorCode,
     GenericErrorResponse,
+    OrgNotEnabledErrorResponse,
+    OrgNotFoundErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
+    UserNotFoundErrorResponse,
 } from '../helpers/errors'
 import { Visitor, makeRequest } from '../helpers/request'
 
@@ -28,21 +31,6 @@ export interface RemoveUserFromOrgBadRequestResponse extends ApiErrorResponse {
     field_errors: {
         org_id: string
     }
-}
-
-export interface OrgNotEnabledErrorResponse extends GenericErrorResponse {
-    error_code: ErrorCode.ActionDisabled
-    user_facing_error: string
-}
-
-export interface OrgNotFoundErrorResponse extends GenericErrorResponse {
-    error_code: ErrorCode.OrgNotFound
-    user_facing_error: string
-}
-
-export interface UserNotFoundErrorResponse extends GenericErrorResponse {
-    error_code: ErrorCode.UserNotFound
-    user_facing_error: string
 }
 
 export interface ForbiddenResponse extends GenericErrorResponse {
