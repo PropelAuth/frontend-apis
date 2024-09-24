@@ -56,7 +56,6 @@ type CreatePersonalApiKeyVisitor = Visitor & {
 ///////////////// The actual Request
 /////////////////
 export const createPersonalApiKey = (authUrl: string) => async (expirationOption?: ExpirationOption) => {
-    const body = expirationOption ? { expiration_option: expirationOption } : undefined
     return makeRequest<
         CreatePersonalApiKeyVisitor,
         CreatePersonalApiKeyErrorResponse,
@@ -66,7 +65,9 @@ export const createPersonalApiKey = (authUrl: string) => async (expirationOption
         path: '/api_keys',
         method: 'POST',
         parseResponseAsJson: true,
-        body,
+        body: {
+            expiration_option: expirationOption,
+        },
         responseToSuccessHandler: (response, visitor) => {
             return () => visitor.success(response)
         },
