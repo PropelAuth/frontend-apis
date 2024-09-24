@@ -1,5 +1,6 @@
 import { useContext } from 'react'
 import { AuthUrlContext } from './AuthUrlProvider'
+import { fetchPersonalApiKeys } from './apis/apiKeys/fetchPersonalApiKeys'
 import { createOrg } from './apis/createOrg'
 import { deleteAccount } from './apis/deleteAccount'
 import { deleteOrg } from './apis/deleteOrg'
@@ -51,5 +52,6 @@ export const useAuthApis = () => {
         fetchOrgSettings: fetchOrgSettings(authUrl),
         deleteOrg: deleteOrg(authUrl),
         createOrg: createOrg(authUrl),
+        fetchPersonalApiKeys: fetchPersonalApiKeys(authUrl),
     }
 }
