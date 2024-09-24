@@ -64,7 +64,7 @@ export const makeRequest = async <V extends Visitor, E extends ApiErrorResponse,
         responseToSuccessHandler,
         responseToErrorHandler,
     } = args
-    const url = `${authUrl}${BASE_PATH}${path}${queryParams ? queryParams.toString() : ''}`
+    const url = `${authUrl}${BASE_PATH}${path}${queryParams ? `?${queryParams.toString()}` : ''}`
     const response = await fetch(url, {
         method: method,
         credentials: 'include',
