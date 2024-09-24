@@ -12,6 +12,15 @@ import {
 import { Visitor, makeRequest } from '../helpers/request'
 
 /////////////////
+///////////////// Request
+/////////////////
+export type CreateOrgRequest = {
+    name: string
+    autojoin_by_domain: boolean
+    restrict_to_domain: boolean
+}
+
+/////////////////
 ///////////////// Errors specific to this request
 /////////////////
 export interface CreateOrgBadRequestResponse extends ApiErrorResponse {
@@ -65,13 +74,13 @@ type CreateOrgVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const createOrg = (authUrl: string) => async (orgId: string) => {
+export const createOrg = (authUrl: string) => async (request: CreateOrgRequest) => {
     return makeRequest<CreateOrgVisitor, CreateOrgErrorResponse, CreateOrgSuccessResponse>({
         authUrl,
         path: '/create_org',
         parseResponseAsJson: true,
         method: 'POST',
-        body: { org_id: orgId },
+        body: request,
         responseToSuccessHandler: (response, visitor) => {
             return () => visitor.success(response)
         },
