@@ -12,9 +12,14 @@ import {
 } from '../../helpers/errors'
 import { makeRequest, Visitor } from '../../helpers/request'
 
-export interface CreatePersonalApiKeyRequest {
-    expiration_option?: 'TwoWeeks' | 'OneMonth' | 'ThreeMonths' | 'SixMonths' | 'OneYear' | 'Never'
-}
+// TwoWeeks,
+// OneMonth,
+// ThreeMonths,
+// SixMonths,
+// OneYear,
+// Never,
+
+type ExpirationOption = 'TwoWeeks' | 'OneMonth' | 'ThreeMonths' | 'SixMonths' | 'OneYear' | 'Never'
 
 /////////////////
 ///////////////// Errors specific to this request
@@ -42,7 +47,7 @@ export type CreatePersonalApiKeyErrorResponse =
 ///////////////// Error Visitor
 /////////////////
 type CreatePersonalApiKeyVisitor = Visitor & {
-    success: () => void
+    success: (data: CreatePersonalApiKeySuccessResponse) => void
     badRequest?: (error: InvalidExpirationOptionResponse) => void
     forbidden?: (error: ForbiddenErrorResponse) => void
 }
@@ -50,19 +55,20 @@ type CreatePersonalApiKeyVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const createPersonalApiKey = (authUrl: string) => async (request: CreatePersonalApiKeyRequest) => {
-    const body = request.expiration_option
-        ? {
-              expiration_option: request.expiration_option,
-          }
-        : {}
-    return makeRequest<CreatePersonalApiKeyVisitor, CreatePersonalApiKeyErrorResponse>({
+export const createPersonalApiKey = (authUrl: string) => async (expirationOption?: ExpirationOption) => {
+    const body = expirationOption ? { expiration_option: expirationOption } : undefined
+    return makeRequest<
+        CreatePersonalApiKeyVisitor,
+        CreatePersonalApiKeyErrorResponse,
+        CreatePersonalApiKeySuccessResponse
+    >({
         authUrl,
         path: '/api_keys',
         method: 'POST',
+        parseResponseAsJson: true,
         body,
-        responseToSuccessHandler: (visitor) => {
-            return () => visitor.success()
+        responseToSuccessHandler: (response, visitor) => {
+            return () => visitor.success(response)
         },
         responseToErrorHandler: (error, visitor) => {
             const { error_code: errorCode } = error
