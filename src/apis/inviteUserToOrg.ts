@@ -5,6 +5,7 @@ import {
     ErrorCode,
     ForbiddenErrorResponse,
     GenericErrorResponse,
+    OrgMaxUsersLimitExceededErrorResponse,
     OrgNotEnabledErrorResponse,
     OrgNotFoundErrorResponse,
     UnauthorizedResponse,
@@ -35,11 +36,6 @@ export interface InviteUserToOrgFieldValidationErrorResponse extends ApiErrorRes
         email?: string
         role?: string
     }
-}
-
-export interface OrgMaxUsersLimitExceededErrorResponse extends GenericErrorResponse {
-    error_code: ErrorCode.OrgMaxUsersLimitExceeded
-    user_facing_error: string
 }
 
 export interface UserAlreadyInOrgErrorResponse extends GenericErrorResponse {
