@@ -1,5 +1,6 @@
 import { useContext } from 'react'
 import { AuthUrlContext } from './AuthUrlProvider'
+import { fetchPersonalApiKeys } from './apis/apiKeys/fetchPersonalApiKeys'
 import { deleteAccount } from './apis/deleteAccount'
 import { fetchOrgMembers } from './apis/fetchOrgMembers'
 import { inviteUserToOrg } from './apis/inviteUserToOrg'
@@ -39,5 +40,6 @@ export const useAuthApis = () => {
         removeUserFromOrg: removeUserFromOrg(authUrl),
         updateUserRoleInOrg: updateUserRoleInOrg(authUrl),
         revokeUserOrgInvitation: revokeUserOrgInvitation(authUrl),
+        fetchPersonalApiKeys: fetchPersonalApiKeys(authUrl),
     }
 }

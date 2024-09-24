@@ -7,6 +7,7 @@ type GenericRequestArgs<E extends ApiErrorResponse, V extends Visitor> = {
     path: string
     method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
     body?: unknown
+    queryParams?: URLSearchParams
     responseToErrorHandler: (result: E, visitor: V) => (() => void) | undefined
     parseResponseAsJson?: boolean
 }
@@ -53,24 +54,35 @@ export type Response<V extends Visitor, E extends ApiErrorResponse, S = undefine
 export const makeRequest = async <V extends Visitor, E extends ApiErrorResponse, S = undefined>(
     args: RequestArgs<S, E, V>
 ): Promise<Response<V, E, S>> => {
-    const response = await fetch(`${args.authUrl}${BASE_PATH}${args.path}`, {
-        method: args.method,
+    const {
+        authUrl,
+        parseResponseAsJson,
+        method,
+        body,
+        path,
+        queryParams,
+        responseToSuccessHandler,
+        responseToErrorHandler,
+    } = args
+    const url = `${authUrl}${BASE_PATH}${path}${queryParams ? queryParams.toString() : ''}`
+    const response = await fetch(url, {
+        method: method,
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-Token': '-.-',
         },
-        body: args.body ? JSON.stringify(args.body) : undefined,
+        body: body ? JSON.stringify(body) : undefined,
     })
 
     if (response.ok) {
-        if (args.parseResponseAsJson) {
+        if (parseResponseAsJson) {
             const jsonResponse = (await response.json()) as S
             return {
                 ok: true,
                 data: jsonResponse,
                 handle: (visitor: V) => {
-                    const handler = args.responseToSuccessHandler(jsonResponse, visitor)
+                    const handler = responseToSuccessHandler(jsonResponse, visitor)
                     return handler()
                 },
             }
@@ -79,7 +91,7 @@ export const makeRequest = async <V extends Visitor, E extends ApiErrorResponse,
                 ok: true,
                 data: undefined as S,
                 handle: (visitor: V) => {
-                    const handler = args.responseToSuccessHandler(visitor)
+                    const handler = responseToSuccessHandler(visitor)
                     return handler()
                 },
             }
@@ -90,7 +102,7 @@ export const makeRequest = async <V extends Visitor, E extends ApiErrorResponse,
             ok: false,
             error,
             handle: (visitor: V) => {
-                const handler = args.responseToErrorHandler(error, visitor)
+                const handler = responseToErrorHandler(error, visitor)
                 if (handler) {
                     return handler()
                 } else if (visitor.unexpectedOrUnhandled) {
