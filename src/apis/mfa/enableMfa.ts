@@ -4,11 +4,11 @@
 import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
 import {
     ApiErrorResponse,
+    EmailNotConfirmedResponse,
     ErrorCode,
     GenericErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
-    EmailNotConfirmedResponse,
 } from '../../helpers/errors'
 import { makeRequest, Visitor } from '../../helpers/request'
 
@@ -35,18 +35,12 @@ export interface MfaAlreadyEnabledResponse extends GenericErrorResponse {
     user_facing_error: string
 }
 
-export interface MfaIncorrectCodeResponse extends GenericErrorResponse {
-    error_code: ErrorCode.Forbidden
-    user_facing_error: string
-}
-
 /////////////////
 ///////////////// Success and Error Responses
 /////////////////
 export type MfaEnableErrorResponse =
     | MfaEnableBadRequestResponse
     | MfaAlreadyEnabledResponse
-    | MfaIncorrectCodeResponse
     | UnauthorizedResponse
     | UnexpectedErrorResponse
     | EmailNotConfirmedResponse
@@ -58,7 +52,6 @@ type MfaEnableVisitor = Visitor & {
     success: () => void
     badRequest?: (error: MfaEnableBadRequestResponse) => void
     alreadyEnabled?: (error: MfaAlreadyEnabledResponse) => void
-    incorrectCode?: (error: MfaIncorrectCodeResponse) => void
 }
 
 /////////////////
@@ -80,8 +73,6 @@ export const enableMfa = (authUrl: string) => async (request: MfaEnableRequest) 
                     return getVisitorOrUndefined(visitor.badRequest, error)
                 case ErrorCode.ActionAlreadyComplete:
                     return getVisitorOrUndefined(visitor.alreadyEnabled, error)
-                case ErrorCode.Forbidden:
-                    return getVisitorOrUndefined(visitor.incorrectCode, error)
                 case ErrorCode.Unauthorized:
                     return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.EmailNotConfirmed:
@@ -110,9 +101,6 @@ async function example() {
         },
         alreadyEnabled: (error) => {
             console.log('MFA already enabled', error)
-        },
-        incorrectCode: (error) => {
-            console.log('Incorrect code', error)
         },
     })
 }
