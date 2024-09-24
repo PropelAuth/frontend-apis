@@ -1,3 +1,4 @@
+export type { CreatePersonalApiKeySuccessResponse } from './apis/apiKeys/createPersonalApiKey'
 export type { FetchPersonalApiKeysSuccessResponse, PersonalApiKey } from './apis/apiKeys/fetchPersonalApiKeys'
 export type { MfaAlreadyDisabledResponse, MfaDisableErrorResponse } from './apis/mfa/disableMfa'
 export type {
