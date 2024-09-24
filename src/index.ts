@@ -4,7 +4,6 @@ export type {
     MfaEnableBadRequestResponse,
     MfaEnableErrorResponse,
     MfaEnableRequest,
-    MfaIncorrectCodeResponse,
 } from './apis/mfa/enableMfa'
 export type {
     MfaDisabledResponse,
