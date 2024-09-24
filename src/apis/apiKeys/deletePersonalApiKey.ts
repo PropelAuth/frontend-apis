@@ -6,77 +6,55 @@ import {
     EmailNotConfirmedResponse,
     ErrorCode,
     ForbiddenErrorResponse,
-    GenericErrorResponse,
+    NotFoundErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../../helpers/errors'
 import { makeRequest, Visitor } from '../../helpers/request'
 
-type ExpirationOption = 'TwoWeeks' | 'OneMonth' | 'ThreeMonths' | 'SixMonths' | 'OneYear' | 'Never'
-
 /////////////////
-///////////////// Errors specific to this request
+///////////////// Error Responses
 /////////////////
-export interface InvalidExpirationOptionResponse extends GenericErrorResponse {
-    error_code: ErrorCode.BadRequest
-}
-
-/////////////////
-///////////////// Success and Error Responses
-/////////////////
-export type CreatePersonalApiKeySuccessResponse = {
-    api_key_id: string
-    api_key_token: string
-}
-
-export type CreatePersonalApiKeyErrorResponse =
-    | InvalidExpirationOptionResponse
+export type DeletePersonalApiKeyErrorResponse =
     | UnauthorizedResponse
     | UnexpectedErrorResponse
     | EmailNotConfirmedResponse
     | ForbiddenErrorResponse
+    | NotFoundErrorResponse
 
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-type CreatePersonalApiKeyVisitor = Visitor & {
-    success: (data: CreatePersonalApiKeySuccessResponse) => void
-    badRequest?: (error: InvalidExpirationOptionResponse) => void
+type DeletePersonalApiKeyVisitor = Visitor & {
+    success: () => void
     forbidden?: (error: ForbiddenErrorResponse) => void
+    apiKeyNotFound?: (error: NotFoundErrorResponse) => void
 }
 
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const createPersonalApiKey = (authUrl: string) => async (expirationOption?: ExpirationOption) => {
-    return makeRequest<
-        CreatePersonalApiKeyVisitor,
-        CreatePersonalApiKeyErrorResponse,
-        CreatePersonalApiKeySuccessResponse
-    >({
+export const deletePersonalApiKey = (authUrl: string) => async (apiKeyId: string) => {
+    return makeRequest<DeletePersonalApiKeyVisitor, DeletePersonalApiKeyErrorResponse>({
         authUrl,
-        path: '/api_keys',
-        method: 'POST',
-        parseResponseAsJson: true,
-        body: {
-            expiration_option: expirationOption,
-        },
-        responseToSuccessHandler: (response, visitor) => {
-            return () => visitor.success(response)
+        path: `/api_keys/${apiKeyId}`,
+        method: 'DELETE',
+        responseToSuccessHandler: (visitor) => {
+            return () => visitor.success()
         },
         responseToErrorHandler: (error, visitor) => {
             const { error_code: errorCode } = error
             switch (errorCode) {
                 case ErrorCode.Forbidden:
                     return getVisitorOrUndefined(visitor.forbidden, error)
-                case ErrorCode.BadRequest:
-                    return getVisitorOrUndefined(visitor.badRequest, error)
                 case ErrorCode.Unauthorized:
                     return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.EmailNotConfirmed:
                     return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
                 case ErrorCode.UnexpectedError:
                     return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                case ErrorCode.NotFound:
+                    return getVisitorOrUndefined(visitor.apiKeyNotFound, error)
                 default:
                     unmatchedCase(errorCode)
                     return undefined
