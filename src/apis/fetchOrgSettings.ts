@@ -24,6 +24,12 @@ export type FetchOrgSettingsSuccessResponse = {
     existing_domain: string | null
     current_user_domain: string
     current_user_domain_is_personal: boolean
+
+    can_setup_saml: boolean
+    is_saml_enabled: boolean
+    is_saml_in_test_mode: boolean
+    can_setup_scim: boolean
+    is_scim_enabled: boolean
 }
 
 /////////////////
