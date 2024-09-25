@@ -3,6 +3,8 @@ import {
     ApiErrorResponse,
     EmailNotConfirmedResponse,
     ErrorCode,
+    ForbiddenErrorResponse,
+    OrgNotFoundErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../../helpers/errors'
@@ -11,7 +13,8 @@ import { Visitor, makeRequest } from '../../helpers/request'
 /////////////////
 ///////////////// Request
 /////////////////
-export type FetchPersonalApiKeysRequest = {
+export type FetchOrgApiKeysRequest = {
+    org_id: string
     page_number?: number
     page_size?: number
     api_key_search?: string
@@ -20,22 +23,22 @@ export type FetchPersonalApiKeysRequest = {
 /////////////////
 ///////////////// Success and Error Responses
 /////////////////
-export type PersonalApiKey = {
+export type OrgApiKey = {
     api_key_id: string
     created_at: number
     expires_at_seconds: number | null
     metadata: Record<string, unknown> | null
 }
 
-export type FetchPersonalApiKeysSuccessResponse = {
-    api_keys: PersonalApiKey[]
+export type FetchOrgApiKeysSuccessResponse = {
+    api_keys: OrgApiKey[]
     total_api_keys: number
     current_page: number
     page_size: number
     has_more_results: boolean
 }
 
-export interface FetchPersonalApiKeysBadRequestResponse extends ApiErrorResponse {
+export interface FetchOrgApiKeysBadRequestResponse extends ApiErrorResponse {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
         page_size?: string
@@ -47,29 +50,34 @@ export interface FetchPersonalApiKeysBadRequestResponse extends ApiErrorResponse
     }
 }
 
-export interface PersonalApiKeysDisabledErrorResponse extends ApiErrorResponse {
+export interface OrgApiKeysDisabledErrorResponse extends ApiErrorResponse {
     error_code: ErrorCode.ActionDisabled
 }
 
-export type FetchPersonalApiKeysErrorResponse =
-    | FetchPersonalApiKeysBadRequestResponse
+export type FetchOrgApiKeysErrorResponse =
+    | FetchOrgApiKeysBadRequestResponse
     | UnauthorizedResponse
     | UnexpectedErrorResponse
     | EmailNotConfirmedResponse
-    | PersonalApiKeysDisabledErrorResponse
+    | ForbiddenErrorResponse
+    | OrgNotFoundErrorResponse
+    | OrgApiKeysDisabledErrorResponse
 
 /////////////////
 ///////////////// Visitor
 /////////////////
-type FetchPersonalApiKeysVisitor = Visitor & {
-    success: (data: FetchPersonalApiKeysSuccessResponse) => FetchPersonalApiKeysSuccessResponse | void
-    badRequest?: (error: FetchPersonalApiKeysBadRequestResponse) => void
-    personalApiKeysDisabled?: (error: PersonalApiKeysDisabledErrorResponse) => void
+type FetchOrgApiKeysVisitor = Visitor & {
+    success: (data: FetchOrgApiKeysSuccessResponse) => FetchOrgApiKeysSuccessResponse | void
+    badRequest?: (error: FetchOrgApiKeysBadRequestResponse) => void
+    orgApiKeysDisabled?: (error: OrgApiKeysDisabledErrorResponse) => void
+    orgNotFound?: (error: OrgNotFoundErrorResponse) => void
+    cannotAccessOrgApiKeys?: (error: ForbiddenErrorResponse) => void
 }
 
-export const fetchPersonalApiKeys = (authUrl: string) => async (request: FetchPersonalApiKeysRequest) => {
+export const fetchOrgApiKeys = (authUrl: string) => async (request: FetchOrgApiKeysRequest) => {
     const queryParams = new URLSearchParams()
     const { page_number, page_size, api_key_search } = request
+    queryParams.append('org_id', request.org_id)
     if (page_number) {
         queryParams.append('page_number', page_number.toString())
     }
@@ -80,13 +88,9 @@ export const fetchPersonalApiKeys = (authUrl: string) => async (request: FetchPe
         queryParams.append('api_key_search', api_key_search)
     }
 
-    return makeRequest<
-        FetchPersonalApiKeysVisitor,
-        FetchPersonalApiKeysErrorResponse,
-        FetchPersonalApiKeysSuccessResponse
-    >({
+    return makeRequest<FetchOrgApiKeysVisitor, FetchOrgApiKeysErrorResponse, FetchOrgApiKeysSuccessResponse>({
         authUrl,
-        path: '/personal_api_keys',
+        path: '/org_api_keys',
         method: 'GET',
         parseResponseAsJson: true,
         queryParams,
@@ -102,10 +106,14 @@ export const fetchPersonalApiKeys = (authUrl: string) => async (request: FetchPe
                     return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
                 case ErrorCode.UnexpectedError:
                     return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
-                case ErrorCode.ActionDisabled:
-                    return getVisitorOrUndefined(visitor.personalApiKeysDisabled, error)
+                case ErrorCode.Forbidden:
+                    return getVisitorOrUndefined(visitor.cannotAccessOrgApiKeys, error)
                 case ErrorCode.InvalidRequestFields:
                     return getVisitorOrUndefined(visitor.badRequest, error)
+                case ErrorCode.OrgNotFound:
+                    return getVisitorOrUndefined(visitor.orgNotFound, error)
+                case ErrorCode.ActionDisabled:
+                    return getVisitorOrUndefined(visitor.orgApiKeysDisabled, error)
                 default:
                     unmatchedCase(errorCode)
                     return undefined
