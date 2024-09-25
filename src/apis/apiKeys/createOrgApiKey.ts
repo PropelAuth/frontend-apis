@@ -21,12 +21,12 @@ export interface InvalidExpirationOptionResponse extends GenericErrorResponse {
 /////////////////
 ///////////////// Success and Error Responses
 /////////////////
-export type CreatePersonalApiKeySuccessResponse = {
+export type CreateOrgApiKeySuccessResponse = {
     api_key_id: string
     api_key_token: string
 }
 
-export type CreatePersonalApiKeyErrorResponse =
+export type CreateOrgApiKeyErrorResponse =
     | InvalidExpirationOptionResponse
     | UnauthorizedResponse
     | UnexpectedErrorResponse
@@ -36,8 +36,8 @@ export type CreatePersonalApiKeyErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type CreatePersonalApiKeyVisitor = Visitor & {
-    success: (data: CreatePersonalApiKeySuccessResponse) => void
+type CreateOrgApiKeyVisitor = Visitor & {
+    success: (data: CreateOrgApiKeySuccessResponse) => void
     badRequest?: (error: InvalidExpirationOptionResponse) => void
     forbidden?: (error: ForbiddenErrorResponse) => void
 }
@@ -45,17 +45,14 @@ type CreatePersonalApiKeyVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const createPersonalApiKey = (authUrl: string) => async (expirationOption?: ExpirationOption) => {
-    return makeRequest<
-        CreatePersonalApiKeyVisitor,
-        CreatePersonalApiKeyErrorResponse,
-        CreatePersonalApiKeySuccessResponse
-    >({
+export const createOrgApiKey = (authUrl: string) => async (orgId: string, expirationOption?: ExpirationOption) => {
+    return makeRequest<CreateOrgApiKeyVisitor, CreateOrgApiKeyErrorResponse, CreateOrgApiKeySuccessResponse>({
         authUrl,
         path: '/api_keys',
         method: 'POST',
         parseResponseAsJson: true,
         body: {
+            org_id: orgId,
             expiration_option: expirationOption,
         },
         responseToSuccessHandler: (response, visitor) => {

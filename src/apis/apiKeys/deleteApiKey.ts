@@ -1,6 +1,3 @@
-/////////////////
-///////////////// Request
-
 import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
 import {
     EmailNotConfirmedResponse,
@@ -15,7 +12,7 @@ import { makeRequest, Visitor } from '../../helpers/request'
 /////////////////
 ///////////////// Error Responses
 /////////////////
-export type DeletePersonalApiKeyErrorResponse =
+export type DeleteApiKeyErrorResponse =
     | UnauthorizedResponse
     | UnexpectedErrorResponse
     | EmailNotConfirmedResponse
@@ -23,9 +20,9 @@ export type DeletePersonalApiKeyErrorResponse =
     | NotFoundErrorResponse
 
 /////////////////
-///////////////// Error Visitor
+///////////////// Visitor
 /////////////////
-type DeletePersonalApiKeyVisitor = Visitor & {
+type DeleteApiKeyVisitor = Visitor & {
     success: () => void
     forbidden?: (error: ForbiddenErrorResponse) => void
     apiKeyNotFound?: (error: NotFoundErrorResponse) => void
@@ -34,8 +31,8 @@ type DeletePersonalApiKeyVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const deletePersonalApiKey = (authUrl: string) => async (apiKeyId: string) => {
-    return makeRequest<DeletePersonalApiKeyVisitor, DeletePersonalApiKeyErrorResponse>({
+export const deleteApiKey = (authUrl: string) => async (apiKeyId: string) => {
+    return makeRequest<DeleteApiKeyVisitor, DeleteApiKeyErrorResponse>({
         authUrl,
         path: `/api_keys/${apiKeyId}`,
         method: 'DELETE',

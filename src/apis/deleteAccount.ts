@@ -16,7 +16,7 @@ export interface DeleteAccountDisabledResponse extends GenericErrorResponse {
 export type DeleteAccountErrorResponse = DeleteAccountDisabledResponse | UnauthorizedResponse | UnexpectedErrorResponse
 
 /////////////////
-///////////////// Error Visitor
+///////////////// Visitor
 /////////////////
 type DeleteAccountVisitor = Visitor & {
     success: () => void
