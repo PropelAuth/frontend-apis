@@ -15,6 +15,7 @@ import { Visitor, makeRequest } from '../helpers/request'
 ///////////////// Success Response
 /////////////////
 export type FetchOrgSettingsSuccessResponse = {
+    org_name: string
     user_can_update_org_settings: boolean
     user_can_update_metadata: boolean
     autojoin_by_domain: boolean
