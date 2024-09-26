@@ -8,8 +8,7 @@ import {
     UnexpectedErrorResponse,
 } from '../../helpers/errors'
 import { makeRequest, Visitor } from '../../helpers/request'
-
-type ExpirationOption = 'TwoWeeks' | 'OneMonth' | 'ThreeMonths' | 'SixMonths' | 'OneYear' | 'Never'
+import { ApiKeyExpirationOption } from './types'
 
 /////////////////
 ///////////////// Errors specific to this request
@@ -38,14 +37,14 @@ export type CreatePersonalApiKeyErrorResponse =
 /////////////////
 type CreatePersonalApiKeyVisitor = Visitor & {
     success: (data: CreatePersonalApiKeySuccessResponse) => void
-    badRequest?: (error: InvalidExpirationOptionResponse) => void
+    invalidExpirationOption?: (error: InvalidExpirationOptionResponse) => void
     forbidden?: (error: ForbiddenErrorResponse) => void
 }
 
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const createPersonalApiKey = (authUrl: string) => async (expirationOption?: ExpirationOption) => {
+export const createPersonalApiKey = (authUrl: string) => async (expirationOption?: ApiKeyExpirationOption) => {
     return makeRequest<
         CreatePersonalApiKeyVisitor,
         CreatePersonalApiKeyErrorResponse,
@@ -67,7 +66,7 @@ export const createPersonalApiKey = (authUrl: string) => async (expirationOption
                 case ErrorCode.Forbidden:
                     return getVisitorOrUndefined(visitor.forbidden, error)
                 case ErrorCode.BadRequest:
-                    return getVisitorOrUndefined(visitor.badRequest, error)
+                    return getVisitorOrUndefined(visitor.invalidExpirationOption, error)
                 case ErrorCode.Unauthorized:
                     return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.EmailNotConfirmed:

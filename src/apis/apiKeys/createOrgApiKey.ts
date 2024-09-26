@@ -8,8 +8,7 @@ import {
     UnexpectedErrorResponse,
 } from '../../helpers/errors'
 import { makeRequest, Visitor } from '../../helpers/request'
-
-type ExpirationOption = 'TwoWeeks' | 'OneMonth' | 'ThreeMonths' | 'SixMonths' | 'OneYear' | 'Never'
+import { ApiKeyExpirationOption } from './types'
 
 /////////////////
 ///////////////// Errors specific to this request
@@ -38,43 +37,44 @@ export type CreateOrgApiKeyErrorResponse =
 /////////////////
 type CreateOrgApiKeyVisitor = Visitor & {
     success: (data: CreateOrgApiKeySuccessResponse) => void
-    badRequest?: (error: InvalidExpirationOptionResponse) => void
+    invalidExpirationOption?: (error: InvalidExpirationOptionResponse) => void
     forbidden?: (error: ForbiddenErrorResponse) => void
 }
 
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const createOrgApiKey = (authUrl: string) => async (orgId: string, expirationOption?: ExpirationOption) => {
-    return makeRequest<CreateOrgApiKeyVisitor, CreateOrgApiKeyErrorResponse, CreateOrgApiKeySuccessResponse>({
-        authUrl,
-        path: '/api_keys',
-        method: 'POST',
-        parseResponseAsJson: true,
-        body: {
-            org_id: orgId,
-            expiration_option: expirationOption,
-        },
-        responseToSuccessHandler: (response, visitor) => {
-            return () => visitor.success(response)
-        },
-        responseToErrorHandler: (error, visitor) => {
-            const { error_code: errorCode } = error
-            switch (errorCode) {
-                case ErrorCode.Forbidden:
-                    return getVisitorOrUndefined(visitor.forbidden, error)
-                case ErrorCode.BadRequest:
-                    return getVisitorOrUndefined(visitor.badRequest, error)
-                case ErrorCode.Unauthorized:
-                    return getVisitorOrUndefined(visitor.unauthorized, error)
-                case ErrorCode.EmailNotConfirmed:
-                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
-                case ErrorCode.UnexpectedError:
-                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
-                default:
-                    unmatchedCase(errorCode)
-                    return undefined
-            }
-        },
-    })
-}
+export const createOrgApiKey =
+    (authUrl: string) => async (orgId: string, expirationOption?: ApiKeyExpirationOption) => {
+        return makeRequest<CreateOrgApiKeyVisitor, CreateOrgApiKeyErrorResponse, CreateOrgApiKeySuccessResponse>({
+            authUrl,
+            path: '/api_keys',
+            method: 'POST',
+            parseResponseAsJson: true,
+            body: {
+                org_id: orgId,
+                expiration_option: expirationOption,
+            },
+            responseToSuccessHandler: (response, visitor) => {
+                return () => visitor.success(response)
+            },
+            responseToErrorHandler: (error, visitor) => {
+                const { error_code: errorCode } = error
+                switch (errorCode) {
+                    case ErrorCode.Forbidden:
+                        return getVisitorOrUndefined(visitor.forbidden, error)
+                    case ErrorCode.BadRequest:
+                        return getVisitorOrUndefined(visitor.invalidExpirationOption, error)
+                    case ErrorCode.Unauthorized:
+                        return getVisitorOrUndefined(visitor.unauthorized, error)
+                    case ErrorCode.EmailNotConfirmed:
+                        return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
+                    case ErrorCode.UnexpectedError:
+                        return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                    default:
+                        unmatchedCase(errorCode)
+                        return undefined
+                }
+            },
+        })
+    }
