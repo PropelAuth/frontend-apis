@@ -1,46 +1,46 @@
-import { getVisitorOrUndefined, unmatchedCase } from '../helpers/error_utils'
+/////////////////
+///////////////// Request
+
+import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
 import {
+    ApiErrorResponse,
     EmailNotConfirmedResponse,
     ErrorCode,
-    ApiErrorResponse,
     GenericErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
-} from '../helpers/errors'
-import { Visitor, makeRequest } from '../helpers/request'
+} from '../../helpers/errors'
+import { makeRequest, Visitor } from '../../helpers/request'
 
 /////////////////
-///////////////// Request
-/////////////////
-export type UpdatePasswordRequest = {
-    current_password?: string
-    password: string
+export type MfaEnableRequest = {
+    code: string
 }
 
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface IncorrectPasswordResponse extends GenericErrorResponse {
-    error_code: ErrorCode.IncorrectPassword
-    user_facing_error: string
-}
-
-export interface UpdatePasswordBadRequestResponse extends ApiErrorResponse {
+export interface MfaEnableBadRequestResponse extends ApiErrorResponse {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
-        password: string
+        code: string
     }
     field_errors: {
-        password: string
+        code: string
     }
+}
+
+export interface MfaAlreadyEnabledResponse extends GenericErrorResponse {
+    error_code: ErrorCode.ActionAlreadyComplete
+    user_facing_error: string
 }
 
 /////////////////
 ///////////////// Success and Error Responses
 /////////////////
-export type UpdatePasswordErrorResponse =
-    | IncorrectPasswordResponse
-    | UpdatePasswordBadRequestResponse
+export type MfaEnableErrorResponse =
+    | MfaEnableBadRequestResponse
+    | MfaAlreadyEnabledResponse
     | UnauthorizedResponse
     | UnexpectedErrorResponse
     | EmailNotConfirmedResponse
@@ -48,19 +48,19 @@ export type UpdatePasswordErrorResponse =
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-type UpdatePasswordVisitor = Visitor & {
+type MfaEnableVisitor = Visitor & {
     success: () => void
-    incorrectPassword?: (error: IncorrectPasswordResponse) => void
-    badRequest?: (error: UpdatePasswordBadRequestResponse) => void
+    badRequest?: (error: MfaEnableBadRequestResponse) => void
+    alreadyEnabled?: (error: MfaAlreadyEnabledResponse) => void
 }
 
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const updatePassword = (authUrl: string) => async (request: UpdatePasswordRequest) => {
-    return makeRequest<UpdatePasswordVisitor, UpdatePasswordErrorResponse>({
+export const enableMfa = (authUrl: string) => async (request: MfaEnableRequest) => {
+    return makeRequest<MfaEnableVisitor, MfaEnableErrorResponse>({
         authUrl,
-        path: '/update_password',
+        path: '/mfa_enable',
         method: 'POST',
         body: request,
         responseToSuccessHandler: (visitor) => {
@@ -69,10 +69,10 @@ export const updatePassword = (authUrl: string) => async (request: UpdatePasswor
         responseToErrorHandler: (error, visitor) => {
             const { error_code: errorCode } = error
             switch (errorCode) {
-                case ErrorCode.IncorrectPassword:
-                    return getVisitorOrUndefined(visitor.incorrectPassword, error)
                 case ErrorCode.InvalidRequestFields:
                     return getVisitorOrUndefined(visitor.badRequest, error)
+                case ErrorCode.ActionAlreadyComplete:
+                    return getVisitorOrUndefined(visitor.alreadyEnabled, error)
                 case ErrorCode.Unauthorized:
                     return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.EmailNotConfirmed:
@@ -83,6 +83,24 @@ export const updatePassword = (authUrl: string) => async (request: UpdatePasswor
                     unmatchedCase(errorCode)
                     return undefined
             }
+        },
+    })
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function example() {
+    const apiCall = enableMfa('https://auth.example.com')
+    const response = await apiCall({ code: '123456' })
+
+    await response.handle({
+        success: async () => {
+            console.log('MFA enabled')
+        },
+        badRequest: (error) => {
+            console.log('Bad request', error)
+        },
+        alreadyEnabled: (error) => {
+            console.log('MFA already enabled', error)
         },
     })
 }

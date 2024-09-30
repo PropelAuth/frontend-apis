@@ -1,26 +1,33 @@
-import { deleteMe } from './apis/deleteMe'
+import { useContext } from 'react'
+import { AuthUrlContext } from './AuthUrlProvider'
+import { deleteAccount } from './apis/deleteAccount'
+import { disableMfa } from './apis/mfa/disableMfa'
+import { enableMfa } from './apis/mfa/enableMfa'
+import { fetchMfaStatusWithNewSecret } from './apis/mfa/mfaStatus'
 import { updateEmail } from './apis/updateEmail'
-import { updateUser } from './apis/updateUser'
+import { updatePassword } from './apis/updatePassword'
+import { updateUserFacingMetadata } from './apis/updateUserMetadata'
 
 export type ApiOptions = {
     authUrl: string
 }
 
-export type PropelAuthApi = ReturnType<typeof getApis>
+export type PropelAuthApi = ReturnType<typeof useAuthApis>
 
-export const getApis = ({ authUrl: unvalidatedAuthUrl }: ApiOptions) => {
-    const authUrl = validateAuthUrl(unvalidatedAuthUrl)
-    return {
-        deleteMe: deleteMe(authUrl),
-        updateEmail: updateEmail(authUrl),
-        updateUser: updateUser(authUrl),
+export const useAuthApis = () => {
+    const context = useContext(AuthUrlContext)
+    if (context === undefined) {
+        throw new Error('useAuthApis must be used within an AuthProvider')
     }
-}
+    const authUrl = context.authUrl
 
-const validateAuthUrl = (authUrl: string) => {
-    try {
-        return new URL(authUrl).origin
-    } catch {
-        throw new Error('Invalid authUrl')
+    return {
+        enableMfa: enableMfa(authUrl),
+        disableMfa: disableMfa(authUrl),
+        fetchMfaStatusWithNewSecret: fetchMfaStatusWithNewSecret(authUrl),
+        updatePassword: updatePassword(authUrl),
+        deleteAccount: deleteAccount(authUrl),
+        updateUserMetadata: updateUserFacingMetadata(authUrl),
+        updateEmail: updateEmail(authUrl),
     }
 }

@@ -1,22 +1,58 @@
-import { ErrorResponse, ErrorVisitor } from './errors'
+import { ApiErrorResponse, EmailNotConfirmedResponse, UnauthorizedResponse } from './errors'
 
 const BASE_PATH = '/api/fe/v3'
 
-export type RequestArgs<E extends ErrorResponse<V>, V extends ErrorVisitor> = {
+type GenericRequestArgs<E extends ApiErrorResponse, V extends Visitor> = {
     authUrl: string
     path: string
     method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
     body?: unknown
-    errorToHandler: (error: E, visitor: V) => (() => void) | undefined
+    responseToErrorHandler: (result: E, visitor: V) => (() => void) | undefined
+    parseResponseAsJson?: boolean
 }
 
-export type SuccessfulResponse = {
+export type RequestArgsWithArgs<S, E extends ApiErrorResponse, V extends Visitor> = GenericRequestArgs<E, V> & {
+    responseToSuccessHandler: (response: S, visitor: V) => () => S | void
+    parseResponseAsJson: true
+}
+
+export type RequestArgsWithNoArgs<E extends ApiErrorResponse, V extends Visitor> = GenericRequestArgs<E, V> & {
+    responseToSuccessHandler: (visitor: V) => () => void
+    parseResponseAsJson?: false
+}
+
+export type RequestArgs<S, E extends ApiErrorResponse, V extends Visitor> =
+    | RequestArgsWithArgs<S, E, V>
+    | RequestArgsWithNoArgs<E, V>
+
+export type Visitor = {
+    unauthorized?: (error: UnauthorizedResponse) => void
+    emailNotConfirmed?: (error: EmailNotConfirmedResponse) => void
+    unexpectedOrUnhandled?: (error: ApiErrorResponse) => void
+}
+
+interface ResponseHandler<V extends Visitor, S = undefined> {
+    // A handler for both success and error responses
+    handle: (visitor: V) => Promise<void | S> | void | S
+}
+
+export type SuccessfulResponse<V extends Visitor, S = undefined> = ResponseHandler<V, S> & {
     ok: true
+    data: S
 }
 
-export const makeRequest = async <S extends SuccessfulResponse, E extends ErrorResponse<V>, V extends ErrorVisitor>(
-    args: RequestArgs<E, V>
-): Promise<S | E> => {
+export type ErrorResponse<V extends Visitor, E> = ResponseHandler<V> & {
+    ok: false
+    error: E
+}
+
+export type Response<V extends Visitor, E extends ApiErrorResponse, S = undefined> =
+    | SuccessfulResponse<V, S>
+    | ErrorResponse<V, E>
+
+export const makeRequest = async <V extends Visitor, E extends ApiErrorResponse, S = undefined>(
+    args: RequestArgs<S, E, V>
+): Promise<Response<V, E, S>> => {
     const response = await fetch(`${args.authUrl}${BASE_PATH}${args.path}`, {
         method: args.method,
         credentials: 'include',
@@ -28,23 +64,41 @@ export const makeRequest = async <S extends SuccessfulResponse, E extends ErrorR
     })
 
     if (response.ok) {
-        return response.json() as Promise<S>
+        if (args.parseResponseAsJson) {
+            const jsonResponse = (await response.json()) as S
+            return {
+                ok: true,
+                data: jsonResponse,
+                handle: (visitor: V) => {
+                    const handler = args.responseToSuccessHandler(jsonResponse, visitor)
+                    return handler()
+                },
+            }
+        } else {
+            return {
+                ok: true,
+                data: undefined as S,
+                handle: (visitor: V) => {
+                    const handler = args.responseToSuccessHandler(visitor)
+                    return handler()
+                },
+            }
+        }
     } else {
         const error = (await response.json()) as E
         return {
-            ...error,
-
             ok: false,
-            handleError: (visitor: V) => {
-                const handler = args.errorToHandler(error, visitor)
+            error,
+            handle: (visitor: V) => {
+                const handler = args.responseToErrorHandler(error, visitor)
                 if (handler) {
-                    handler()
+                    return handler()
                 } else if (visitor.unexpectedOrUnhandled) {
-                    visitor.unexpectedOrUnhandled()
+                    return visitor.unexpectedOrUnhandled(error)
                 } else {
                     console.error(`No error handler for: ${error.error_code}`)
                 }
             },
-        } as E
+        }
     }
 }

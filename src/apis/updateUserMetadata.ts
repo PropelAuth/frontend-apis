@@ -1,9 +1,8 @@
 import { getVisitorOrUndefined, unmatchedCase } from '../helpers/error_utils'
 import {
+    ApiErrorResponse,
     EmailNotConfirmedResponse,
     ErrorCode,
-    ApiErrorResponse,
-    GenericErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../helpers/errors'
@@ -12,35 +11,35 @@ import { Visitor, makeRequest } from '../helpers/request'
 /////////////////
 ///////////////// Request
 /////////////////
-export type UpdatePasswordRequest = {
-    current_password?: string
-    password: string
+export type UpdateUserFacingMetadataRequest = {
+    username?: string
+    first_name?: string
+    last_name?: string
+    properties?: { [key: string]: unknown }
 }
 
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface IncorrectPasswordResponse extends GenericErrorResponse {
-    error_code: ErrorCode.IncorrectPassword
-    user_facing_error: string
-}
-
-export interface UpdatePasswordBadRequestResponse extends ApiErrorResponse {
+export interface UpdateMetadataBadRequestResponse extends ApiErrorResponse {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
-        password: string
-    }
+        username?: string
+        first_name?: string
+        last_name?: string
+    } & { [key: string]: string }
     field_errors: {
-        password: string
-    }
+        username?: string
+        first_name?: string
+        last_name?: string
+    } & { [key: string]: string }
 }
 
 /////////////////
 ///////////////// Success and Error Responses
 /////////////////
-export type UpdatePasswordErrorResponse =
-    | IncorrectPasswordResponse
-    | UpdatePasswordBadRequestResponse
+export type UpdateUserFacingMetadataErrorResponse =
+    | UpdateMetadataBadRequestResponse
     | UnauthorizedResponse
     | UnexpectedErrorResponse
     | EmailNotConfirmedResponse
@@ -48,19 +47,18 @@ export type UpdatePasswordErrorResponse =
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-type UpdatePasswordVisitor = Visitor & {
+type UpdateUserFacingMetadataVisitor = Visitor & {
     success: () => void
-    incorrectPassword?: (error: IncorrectPasswordResponse) => void
-    badRequest?: (error: UpdatePasswordBadRequestResponse) => void
+    badRequest?: (error: UpdateMetadataBadRequestResponse) => void
 }
 
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const updatePassword = (authUrl: string) => async (request: UpdatePasswordRequest) => {
-    return makeRequest<UpdatePasswordVisitor, UpdatePasswordErrorResponse>({
+export const updateUserFacingMetadata = (authUrl: string) => async (request: UpdateUserFacingMetadataRequest) => {
+    return makeRequest<UpdateUserFacingMetadataVisitor, UpdateUserFacingMetadataErrorResponse>({
         authUrl,
-        path: '/update_password',
+        path: '/update_metadata',
         method: 'POST',
         body: request,
         responseToSuccessHandler: (visitor) => {
@@ -69,8 +67,6 @@ export const updatePassword = (authUrl: string) => async (request: UpdatePasswor
         responseToErrorHandler: (error, visitor) => {
             const { error_code: errorCode } = error
             switch (errorCode) {
-                case ErrorCode.IncorrectPassword:
-                    return getVisitorOrUndefined(visitor.incorrectPassword, error)
                 case ErrorCode.InvalidRequestFields:
                     return getVisitorOrUndefined(visitor.badRequest, error)
                 case ErrorCode.Unauthorized:

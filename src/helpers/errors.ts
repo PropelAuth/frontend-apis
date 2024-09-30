@@ -15,14 +15,7 @@ export enum ErrorCode {
     ActionAlreadyComplete = 'action_already_complete',
 }
 
-export type ErrorVisitor = {
-    unexpectedOrUnhandled?: () => void
-}
-
-export interface ErrorResponse<V extends ErrorVisitor> {
-    // Whether the request was successful or not
-    ok: false
-
+export interface ApiErrorResponse {
     // An error code that can be used to determine the type of error
     error_code: ErrorCode
 
@@ -39,25 +32,21 @@ export interface ErrorResponse<V extends ErrorVisitor> {
     // your own custom error messages. Otherwise, you can just display the
     // user_facing_error
     field_errors?: { [field: string]: string }
-
-    // This is a helper method that uses the visitor pattern to handle errors.
-    // It will call the appropriate method on the visitor based on the error
-    handleError: (visitor: V) => void
 }
 
-export interface GenericErrorResponse<V extends ErrorVisitor> extends ErrorResponse<V> {
+export interface GenericErrorResponse extends ApiErrorResponse {
     user_facing_errors: undefined
     field_errors: undefined
 }
 
-export interface UnauthorizedResponse<V extends ErrorVisitor> extends GenericErrorResponse<V> {
+export interface UnauthorizedResponse extends GenericErrorResponse {
     error_code: ErrorCode.Unauthorized
 }
 
-export interface UnexpectedErrorResponse<V extends ErrorVisitor> extends GenericErrorResponse<V> {
+export interface UnexpectedErrorResponse extends GenericErrorResponse {
     error_code: ErrorCode.UnexpectedError
 }
 
-export interface EmailNotConfirmedResponse<V extends ErrorVisitor> extends GenericErrorResponse<V> {
+export interface EmailNotConfirmedResponse extends GenericErrorResponse {
     error_code: ErrorCode.EmailNotConfirmed
 }
