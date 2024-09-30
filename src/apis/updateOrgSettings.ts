@@ -53,7 +53,7 @@ export type UpdateOrgSettingsErrorResponse =
 type UpdateOrgSettingsVisitor = Visitor & {
     success: () => void
     badRequest?: (error: UpdateOrgSettingsBadRequestResponse) => void
-    orgNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    orgsNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
     forbidden?: (error: ForbiddenErrorResponse) => void
 }
@@ -76,7 +76,7 @@ export const updateOrgSettings = (authUrl: string) => async (request: UpdateOrgS
                 case ErrorCode.InvalidRequestFields:
                     return getVisitorOrUndefined(visitor.badRequest, error)
                 case ErrorCode.ActionDisabled:
-                    return getVisitorOrUndefined(visitor.orgNotEnabled, error)
+                    return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
                 case ErrorCode.OrgNotFound:
                     return getVisitorOrUndefined(visitor.orgNotFound, error)
                 case ErrorCode.Forbidden:

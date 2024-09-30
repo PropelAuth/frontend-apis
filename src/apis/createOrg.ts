@@ -4,7 +4,6 @@ import {
     EmailNotConfirmedResponse,
     ErrorCode,
     GenericErrorResponse,
-    OrgMaxUsersLimitExceededErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
     UserMaxOrgsLimitExceededErrorResponse,
@@ -54,7 +53,6 @@ export type CreateOrgErrorResponse =
     | CreateOrgDisabledResponse
     | CreateOrgPersonalDomainError
     | UserMaxOrgsLimitExceededErrorResponse
-    | OrgMaxUsersLimitExceededErrorResponse
     | UnauthorizedResponse
     | EmailNotConfirmedResponse
     | UnexpectedErrorResponse
@@ -68,7 +66,6 @@ type CreateOrgVisitor = Visitor & {
     cannotCreateOrgs?: (error: CreateOrgDisabledResponse) => void
     cannotUsePersonalDomain?: (error: CreateOrgPersonalDomainError) => void
     userAlreadyInTooManyOrgs?: (error: UserMaxOrgsLimitExceededErrorResponse) => void
-    orgMaxUsersLimitExceeded?: (error: OrgMaxUsersLimitExceededErrorResponse) => void
 }
 
 /////////////////
@@ -95,8 +92,6 @@ export const createOrg = (authUrl: string) => async (request: CreateOrgRequest) 
                     return getVisitorOrUndefined(visitor.cannotUsePersonalDomain, error)
                 case ErrorCode.UserMaxOrgsLimitExceeded:
                     return getVisitorOrUndefined(visitor.userAlreadyInTooManyOrgs, error)
-                case ErrorCode.OrgMaxUsersLimitExceeded:
-                    return getVisitorOrUndefined(visitor.orgMaxUsersLimitExceeded, error)
                 case ErrorCode.Unauthorized:
                     return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.UnexpectedError:

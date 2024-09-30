@@ -38,7 +38,7 @@ export type CreateOrgApiKeyErrorResponse =
 type CreateOrgApiKeyVisitor = Visitor & {
     success: (data: CreateOrgApiKeySuccessResponse) => void
     invalidExpirationOption?: (error: InvalidExpirationOptionResponse) => void
-    forbidden?: (error: ForbiddenErrorResponse) => void
+    noOrgApiKeyPermission?: (error: ForbiddenErrorResponse) => void
 }
 
 /////////////////
@@ -62,7 +62,7 @@ export const createOrgApiKey =
                 const { error_code: errorCode } = error
                 switch (errorCode) {
                     case ErrorCode.Forbidden:
-                        return getVisitorOrUndefined(visitor.forbidden, error)
+                        return getVisitorOrUndefined(visitor.noOrgApiKeyPermission, error)
                     case ErrorCode.BadRequest:
                         return getVisitorOrUndefined(visitor.invalidExpirationOption, error)
                     case ErrorCode.Unauthorized:

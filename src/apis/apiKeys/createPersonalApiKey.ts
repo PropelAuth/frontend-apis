@@ -38,7 +38,7 @@ export type CreatePersonalApiKeyErrorResponse =
 type CreatePersonalApiKeyVisitor = Visitor & {
     success: (data: CreatePersonalApiKeySuccessResponse) => void
     invalidExpirationOption?: (error: InvalidExpirationOptionResponse) => void
-    forbidden?: (error: ForbiddenErrorResponse) => void
+    noPersonalApiKeyPermission?: (error: ForbiddenErrorResponse) => void
 }
 
 /////////////////
@@ -64,7 +64,7 @@ export const createPersonalApiKey = (authUrl: string) => async (expirationOption
             const { error_code: errorCode } = error
             switch (errorCode) {
                 case ErrorCode.Forbidden:
-                    return getVisitorOrUndefined(visitor.forbidden, error)
+                    return getVisitorOrUndefined(visitor.noPersonalApiKeyPermission, error)
                 case ErrorCode.BadRequest:
                     return getVisitorOrUndefined(visitor.invalidExpirationOption, error)
                 case ErrorCode.Unauthorized:

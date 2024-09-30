@@ -55,8 +55,8 @@ type UpdateUserRoleInOrgVisitor = Visitor & {
     success: () => void
     badRequest?: (error: UpdateUserRoleInOrgFieldValidationErrorResponse) => void
     noUpdateRolePermission?: (error: ForbiddenErrorResponse) => void
-    userNotFound?: (error: UserNotFoundErrorResponse) => void
-    orgNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    userNotFoundInOrg?: (error: UserNotFoundErrorResponse) => void
+    orgsNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
 }
 /////////////////
 ///////////////// The actual Request
@@ -83,7 +83,7 @@ export const updateUserRoleInOrg = (authUrl: string) => async (request: UpdateUs
                 case ErrorCode.UserNotFound:
                     return getVisitorOrUndefined(visitor.userNotFound, error)
                 case ErrorCode.ActionDisabled:
-                    return getVisitorOrUndefined(visitor.orgNotEnabled, error)
+                    return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
                 case ErrorCode.Unauthorized:
                     return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.EmailNotConfirmed:

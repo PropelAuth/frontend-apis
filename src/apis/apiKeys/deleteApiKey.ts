@@ -24,7 +24,7 @@ export type DeleteApiKeyErrorResponse =
 /////////////////
 type DeleteApiKeyVisitor = Visitor & {
     success: () => void
-    forbidden?: (error: ForbiddenErrorResponse) => void
+    noApiKeyPermission?: (error: ForbiddenErrorResponse) => void
     apiKeyNotFound?: (error: NotFoundErrorResponse) => void
 }
 
@@ -43,7 +43,7 @@ export const deleteApiKey = (authUrl: string) => async (apiKeyId: string) => {
             const { error_code: errorCode } = error
             switch (errorCode) {
                 case ErrorCode.Forbidden:
-                    return getVisitorOrUndefined(visitor.forbidden, error)
+                    return getVisitorOrUndefined(visitor.noApiKeyPermission, error)
                 case ErrorCode.Unauthorized:
                     return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.EmailNotConfirmed:
