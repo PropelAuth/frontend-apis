@@ -3,6 +3,9 @@ import {
     ApiErrorResponse,
     EmailNotConfirmedResponse,
     ErrorCode,
+    ForbiddenErrorResponse,
+    OrgNotEnabledErrorResponse,
+    OrgNotFoundErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../helpers/errors'
@@ -11,54 +14,57 @@ import { Visitor, makeRequest } from '../helpers/request'
 /////////////////
 ///////////////// Request
 /////////////////
-export type UpdateUserFacingMetadataRequest = {
-    username?: string
-    first_name?: string
-    last_name?: string
-    properties?: { [key: string]: unknown }
+export type UpdateOrgSettingsRequest = {
+    org_id: string
+    name?: string
+    autojoin_by_domain?: boolean
+    restrict_to_domain?: boolean
+    require_2fa_by?: Date | null
 }
 
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface UpdateMetadataBadRequestResponse extends ApiErrorResponse {
+export interface UpdateOrgSettingsBadRequestResponse extends ApiErrorResponse {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
-        username?: string
-        first_name?: string
-        last_name?: string
-    } & { [key: string]: string }
+        name: string
+    }
     field_errors: {
-        username?: string
-        first_name?: string
-        last_name?: string
-    } & { [key: string]: string }
+        name: string
+    }
 }
 
 /////////////////
-///////////////// Success and Error Responses
+///////////////// Error Responses
 /////////////////
-export type UpdateUserFacingMetadataErrorResponse =
-    | UpdateMetadataBadRequestResponse
+export type UpdateOrgSettingsErrorResponse =
+    | UpdateOrgSettingsBadRequestResponse
+    | OrgNotEnabledErrorResponse
+    | OrgNotFoundErrorResponse
+    | ForbiddenErrorResponse
     | UnauthorizedResponse
     | UnexpectedErrorResponse
     | EmailNotConfirmedResponse
 
 /////////////////
-///////////////// Visitor
+///////////////// Error Visitor
 /////////////////
-type UpdateUserFacingMetadataVisitor = Visitor & {
+type UpdateOrgSettingsVisitor = Visitor & {
     success: () => void
-    badRequest?: (error: UpdateMetadataBadRequestResponse) => void
+    badRequest?: (error: UpdateOrgSettingsBadRequestResponse) => void
+    orgNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    orgNotFound?: (error: OrgNotFoundErrorResponse) => void
+    forbidden?: (error: ForbiddenErrorResponse) => void
 }
 
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const updateUserFacingMetadata = (authUrl: string) => async (request: UpdateUserFacingMetadataRequest) => {
-    return makeRequest<UpdateUserFacingMetadataVisitor, UpdateUserFacingMetadataErrorResponse>({
+export const updateOrgSettings = (authUrl: string) => async (request: UpdateOrgSettingsRequest) => {
+    return makeRequest<UpdateOrgSettingsVisitor, UpdateOrgSettingsErrorResponse>({
         authUrl,
-        path: '/update_metadata',
+        path: '/update_org_metadata',
         method: 'POST',
         body: request,
         responseToSuccessHandler: (visitor) => {
@@ -69,6 +75,12 @@ export const updateUserFacingMetadata = (authUrl: string) => async (request: Upd
             switch (errorCode) {
                 case ErrorCode.InvalidRequestFields:
                     return getVisitorOrUndefined(visitor.badRequest, error)
+                case ErrorCode.ActionDisabled:
+                    return getVisitorOrUndefined(visitor.orgNotEnabled, error)
+                case ErrorCode.OrgNotFound:
+                    return getVisitorOrUndefined(visitor.orgNotFound, error)
+                case ErrorCode.Forbidden:
+                    return getVisitorOrUndefined(visitor.forbidden, error)
                 case ErrorCode.Unauthorized:
                     return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.EmailNotConfirmed:

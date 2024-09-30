@@ -1,11 +1,18 @@
 import { getVisitorOrUndefined, unmatchedCase } from '../helpers/error_utils'
-import { ErrorCode, GenericErrorResponse, UnauthorizedResponse, UnexpectedErrorResponse } from '../helpers/errors'
+import {
+    ErrorCode,
+    ForbiddenErrorResponse,
+    GenericErrorResponse,
+    OrgNotFoundErrorResponse,
+    UnauthorizedResponse,
+    UnexpectedErrorResponse,
+} from '../helpers/errors'
 import { Visitor, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface DeleteAccountDisabledResponse extends GenericErrorResponse {
+export interface DeleteOrgDisabledResponse extends GenericErrorResponse {
     error_code: ErrorCode.ActionDisabled
     user_facing_error: string
 }
@@ -13,24 +20,32 @@ export interface DeleteAccountDisabledResponse extends GenericErrorResponse {
 /////////////////
 ///////////////// Success and Error Responses
 /////////////////
-export type DeleteAccountErrorResponse = DeleteAccountDisabledResponse | UnauthorizedResponse | UnexpectedErrorResponse
+export type DeleteOrgErrorResponse =
+    | DeleteOrgDisabledResponse
+    | OrgNotFoundErrorResponse
+    | UnauthorizedResponse
+    | UnexpectedErrorResponse
+    | ForbiddenErrorResponse
 
 /////////////////
-///////////////// Visitor
+///////////////// Error Visitor
 /////////////////
-type DeleteAccountVisitor = Visitor & {
+type DeleteOrgVisitor = Visitor & {
     success: () => void
-    actionDisabled?: (error: DeleteAccountDisabledResponse) => void
+    actionDisabled?: (error: DeleteOrgDisabledResponse) => void
+    orgNotFound?: (error: OrgNotFoundErrorResponse) => void
+    noDeletePermission?: (error: ForbiddenErrorResponse) => void
 }
 
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const deleteAccount = (authUrl: string) => async () => {
-    return makeRequest<DeleteAccountVisitor, DeleteAccountErrorResponse>({
+export const deleteOrg = (authUrl: string) => async (orgId: string) => {
+    return makeRequest<DeleteOrgVisitor, DeleteOrgErrorResponse>({
         authUrl,
-        path: '/delete_me',
+        path: '/delete_org',
         method: 'DELETE',
+        body: { org_id: orgId },
         responseToSuccessHandler: (visitor) => {
             return () => visitor.success()
         },
@@ -43,6 +58,10 @@ export const deleteAccount = (authUrl: string) => async () => {
                     return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.UnexpectedError:
                     return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                case ErrorCode.OrgNotFound:
+                    return getVisitorOrUndefined(visitor.orgNotFound, error)
+                case ErrorCode.Forbidden:
+                    return getVisitorOrUndefined(visitor.noDeletePermission, error)
                 default:
                     unmatchedCase(errorCode)
                     return undefined

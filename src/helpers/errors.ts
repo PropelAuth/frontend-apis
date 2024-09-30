@@ -1,6 +1,7 @@
 export enum ErrorCode {
     InvalidRequestFields = 'invalid_request_fields',
     BadRequest = 'bad_request',
+    NotFound = 'not_found',
     UserNotFound = 'user_not_found',
     OrgNotFound = 'org_not_found',
     UnexpectedError = 'unexpected_error',
@@ -14,6 +15,8 @@ export enum ErrorCode {
     MaxFileSizeExceeded = 'max_file_size',
     ActionAlreadyComplete = 'action_already_complete',
     OrgMaxUsersLimitExceeded = 'org_max_users_limit_exceeded',
+    UserMaxOrgsLimitExceeded = 'user_max_orgs_limit_exceeded',
+    PersonalDomainError = 'personal_domain_error',
 }
 
 export interface ApiErrorResponse {
@@ -66,4 +69,16 @@ export interface OrgNotEnabledErrorResponse extends GenericErrorResponse {
 
 export interface ForbiddenErrorResponse extends GenericErrorResponse {
     error_code: ErrorCode.Forbidden
+}
+
+export interface UserMaxOrgsLimitExceededErrorResponse extends GenericErrorResponse {
+    error_code: ErrorCode.UserMaxOrgsLimitExceeded
+}
+
+export interface OrgMaxUsersLimitExceededErrorResponse extends GenericErrorResponse {
+    error_code: ErrorCode.OrgMaxUsersLimitExceeded
+}
+
+export interface NotFoundErrorResponse extends GenericErrorResponse {
+    error_code: ErrorCode.NotFound
 }
