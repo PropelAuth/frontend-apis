@@ -12,11 +12,20 @@ export type {
     MfaStatusResponse,
 } from './apis/mfa/mfaStatus'
 export type {
+    ExpiredOrgInvite,
+    FetchExpiredOrgInvitesSuccessResponse,
+    FetchOrgExpiredOrgInvitesErrorResponse,
+} from './apis/orgMembership/fetchExpiredInvites'
+export type {
     FetchOrgMembersErrorResponse,
     FetchOrgMembersSuccessResponse,
     OrgMember,
-    PendingOrgInvite,
 } from './apis/orgMembership/fetchOrgMembers'
+export type {
+    FetchOrgPendingOrgInvitesErrorResponse,
+    FetchPendingOrgInvitesSuccessResponse,
+    PendingOrgInvite,
+} from './apis/orgMembership/fetchPendingInvites'
 export { AuthUrlProvider } from './AuthUrlProvider'
 export { useAuthApis } from './client'
 export type { ApiOptions, PropelAuthApi } from './client'

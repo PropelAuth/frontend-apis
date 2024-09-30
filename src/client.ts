@@ -5,7 +5,9 @@ import { inviteUserToOrg } from './apis/inviteUserToOrg'
 import { disableMfa } from './apis/mfa/disableMfa'
 import { enableMfa } from './apis/mfa/enableMfa'
 import { fetchMfaStatusWithNewSecret } from './apis/mfa/mfaStatus'
+import { fetchExpiredOrgInvites } from './apis/orgMembership/fetchExpiredInvites'
 import { fetchOrgMembers } from './apis/orgMembership/fetchOrgMembers'
+import { fetchPendingOrgInvites } from './apis/orgMembership/fetchPendingInvites'
 import { removeUserFromOrg } from './apis/removeUserFromOrg'
 import { revokeUserOrgInvitation } from './apis/revokeUserOrgInvitation'
 import { updateEmail } from './apis/updateEmail'
@@ -35,6 +37,8 @@ export const useAuthApis = () => {
         updateUserMetadata: updateUserFacingMetadata(authUrl),
         updateEmail: updateEmail(authUrl),
         fetchOrgMembers: fetchOrgMembers(authUrl),
+        fetchPendingOrgInvites: fetchPendingOrgInvites(authUrl),
+        fetchExpiredOrgInvites: fetchExpiredOrgInvites(authUrl),
         inviteUserToOrg: inviteUserToOrg(authUrl),
         removeUserFromOrg: removeUserFromOrg(authUrl),
         updateUserRoleInOrg: updateUserRoleInOrg(authUrl),

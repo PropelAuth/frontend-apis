@@ -10,6 +10,15 @@ import {
 import { Visitor, makeRequest } from '../../helpers/request'
 
 /////////////////
+///////////////// Request Params
+/////////////////
+export interface FetchOrgMembersRequestParams {
+    page_size?: number
+    page_number?: number
+    email_search?: string
+}
+
+/////////////////
 ///////////////// Success and Error Responses
 /////////////////
 export interface OrgMember {
@@ -50,12 +59,23 @@ type FetchOrgMembersVisitor = Visitor & {
 /////////////////
 ///////////////// Request
 /////////////////
-export const fetchOrgMembers = (authUrl: string) => async (orgId: string) => {
+export const fetchOrgMembers = (authUrl: string) => async (orgId: string, params?: FetchOrgMembersRequestParams) => {
+    const queryParams = new URLSearchParams()
+    if (params?.page_size) {
+        queryParams.append('page_size', params.page_size.toString())
+    }
+    if (params?.page_number) {
+        queryParams.append('page_number', params.page_number.toString())
+    }
+    if (params?.email_search) {
+        queryParams.append('email_search', params.email_search)
+    }
     return makeRequest<FetchOrgMembersVisitor, FetchOrgMembersErrorResponse, FetchOrgMembersSuccessResponse>({
         authUrl,
         path: `/org_membership/${orgId}/members`,
         method: 'GET',
         parseResponseAsJson: true,
+        queryParams,
         responseToSuccessHandler: (response, visitor) => {
             return () => visitor.success(response)
         },
