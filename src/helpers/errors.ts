@@ -1,6 +1,7 @@
 export enum ErrorCode {
     InvalidRequestFields = 'invalid_request_fields',
     BadRequest = 'bad_request',
+    NotFound = 'not_found',
     UserNotFound = 'user_not_found',
     OrgNotFound = 'org_not_found',
     UnexpectedError = 'unexpected_error',
@@ -76,4 +77,8 @@ export interface UserMaxOrgsLimitExceededErrorResponse extends GenericErrorRespo
 
 export interface OrgMaxUsersLimitExceededErrorResponse extends GenericErrorResponse {
     error_code: ErrorCode.OrgMaxUsersLimitExceeded
+}
+
+export interface NotFoundErrorResponse extends GenericErrorResponse {
+    error_code: ErrorCode.NotFound
 }

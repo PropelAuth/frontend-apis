@@ -1,6 +1,3 @@
-/////////////////
-///////////////// Request
-
 import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
 import {
     ApiErrorResponse,
@@ -46,7 +43,7 @@ export type MfaEnableErrorResponse =
     | EmailNotConfirmedResponse
 
 /////////////////
-///////////////// Error Visitor
+///////////////// Visitor
 /////////////////
 type MfaEnableVisitor = Visitor & {
     success: () => void

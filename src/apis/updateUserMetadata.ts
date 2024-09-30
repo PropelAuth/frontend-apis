@@ -45,7 +45,7 @@ export type UpdateUserFacingMetadataErrorResponse =
     | EmailNotConfirmedResponse
 
 /////////////////
-///////////////// Error Visitor
+///////////////// Visitor
 /////////////////
 type UpdateUserFacingMetadataVisitor = Visitor & {
     success: () => void
