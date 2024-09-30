@@ -26,7 +26,7 @@ export type MfaDisableErrorResponse =
     | EmailNotConfirmedResponse
 
 /////////////////
-///////////////// Error Visitor
+///////////////// Visitor
 /////////////////
 type MfaDisableVisitor = Visitor & {
     success: () => void

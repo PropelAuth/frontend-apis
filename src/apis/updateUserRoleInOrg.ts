@@ -3,64 +3,73 @@ import {
     ApiErrorResponse,
     EmailNotConfirmedResponse,
     ErrorCode,
+    ForbiddenErrorResponse,
+    OrgNotEnabledErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
+    UserNotFoundErrorResponse,
 } from '../helpers/errors'
 import { Visitor, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Request
 /////////////////
-export type UpdateUserFacingMetadataRequest = {
-    username?: string
-    first_name?: string
-    last_name?: string
-    properties?: { [key: string]: unknown }
+export type UpdateUserRoleInOrgRequest = {
+    org_id: string
+    user_id: string
+    role: string
+    additional_roles?: string[]
 }
 
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface UpdateMetadataBadRequestResponse extends ApiErrorResponse {
+export interface UpdateUserRoleInOrgFieldValidationErrorResponse extends ApiErrorResponse {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
-        username?: string
-        first_name?: string
-        last_name?: string
-    } & { [key: string]: string }
+        org_id?: string
+        role?: string
+    }
     field_errors: {
-        username?: string
-        first_name?: string
-        last_name?: string
-    } & { [key: string]: string }
+        org_id?: string
+        role?: string
+    }
 }
 
 /////////////////
 ///////////////// Success and Error Responses
 /////////////////
-export type UpdateUserFacingMetadataErrorResponse =
-    | UpdateMetadataBadRequestResponse
-    | UnauthorizedResponse
+export type UpdateUserRoleInOrgErrorResponse =
+    | UpdateUserRoleInOrgFieldValidationErrorResponse
+    | OrgNotEnabledErrorResponse
+    | UserNotFoundErrorResponse
+    | ForbiddenErrorResponse
     | UnexpectedErrorResponse
     | EmailNotConfirmedResponse
+    | UnauthorizedResponse
 
 /////////////////
 ///////////////// Visitor
 /////////////////
-type UpdateUserFacingMetadataVisitor = Visitor & {
+type UpdateUserRoleInOrgVisitor = Visitor & {
     success: () => void
-    badRequest?: (error: UpdateMetadataBadRequestResponse) => void
+    badRequest?: (error: UpdateUserRoleInOrgFieldValidationErrorResponse) => void
+    noUpdateRolePermission?: (error: ForbiddenErrorResponse) => void
+    userNotFound?: (error: UserNotFoundErrorResponse) => void
+    orgNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
 }
-
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const updateUserFacingMetadata = (authUrl: string) => async (request: UpdateUserFacingMetadataRequest) => {
-    return makeRequest<UpdateUserFacingMetadataVisitor, UpdateUserFacingMetadataErrorResponse>({
+export const updateUserRoleInOrg = (authUrl: string) => async (request: UpdateUserRoleInOrgRequest) => {
+    return makeRequest<UpdateUserRoleInOrgVisitor, UpdateUserRoleInOrgErrorResponse>({
         authUrl,
-        path: '/update_metadata',
+        path: '/change_role',
         method: 'POST',
-        body: request,
+        body: {
+            ...request,
+            additional_roles: request.additional_roles ?? [],
+        },
         responseToSuccessHandler: (visitor) => {
             return () => visitor.success()
         },
@@ -69,6 +78,12 @@ export const updateUserFacingMetadata = (authUrl: string) => async (request: Upd
             switch (errorCode) {
                 case ErrorCode.InvalidRequestFields:
                     return getVisitorOrUndefined(visitor.badRequest, error)
+                case ErrorCode.Forbidden:
+                    return getVisitorOrUndefined(visitor.noUpdateRolePermission, error)
+                case ErrorCode.UserNotFound:
+                    return getVisitorOrUndefined(visitor.userNotFound, error)
+                case ErrorCode.ActionDisabled:
+                    return getVisitorOrUndefined(visitor.orgNotEnabled, error)
                 case ErrorCode.Unauthorized:
                     return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.EmailNotConfirmed:

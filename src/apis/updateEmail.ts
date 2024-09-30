@@ -1,8 +1,8 @@
 import { getVisitorOrUndefined, unmatchedCase } from '../helpers/error_utils'
 import {
+    ApiErrorResponse,
     EmailNotConfirmedResponse,
     ErrorCode,
-    ApiErrorResponse,
     GenericErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
@@ -60,7 +60,7 @@ export type UpdateEmailErrorResponse =
     | EmailNotConfirmedResponse
 
 /////////////////
-///////////////// Error Visitor
+///////////////// Visitor
 /////////////////
 type UpdateEmailVisitor = Visitor & {
     success: () => void
