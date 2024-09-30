@@ -1,9 +1,3 @@
-export type {
-    FetchOrgMembersErrorResponse,
-    FetchOrgMembersSuccessResponse,
-    OrgMember,
-    PendingOrgInvite,
-} from './apis/fetchOrgMembers'
 export type { MfaAlreadyDisabledResponse, MfaDisableErrorResponse } from './apis/mfa/disableMfa'
 export type {
     MfaAlreadyEnabledResponse,
@@ -17,6 +11,12 @@ export type {
     MfaStatusErrorResponse,
     MfaStatusResponse,
 } from './apis/mfa/mfaStatus'
+export type {
+    FetchOrgMembersErrorResponse,
+    FetchOrgMembersSuccessResponse,
+    OrgMember,
+    PendingOrgInvite,
+} from './apis/orgMembership/fetchOrgMembers'
 export { AuthUrlProvider } from './AuthUrlProvider'
 export { useAuthApis } from './client'
 export type { ApiOptions, PropelAuthApi } from './client'

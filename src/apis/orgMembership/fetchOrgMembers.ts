@@ -1,4 +1,4 @@
-import { getVisitorOrUndefined, unmatchedCase } from '../helpers/error_utils'
+import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
 import {
     EmailNotConfirmedResponse,
     ErrorCode,
@@ -6,19 +6,12 @@ import {
     OrgNotFoundErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
-} from '../helpers/errors'
-import { Visitor, makeRequest } from '../helpers/request'
+} from '../../helpers/errors'
+import { Visitor, makeRequest } from '../../helpers/request'
 
 /////////////////
 ///////////////// Success and Error Responses
 /////////////////
-export interface PendingOrgInvite {
-    email: string
-    role: string
-    additional_roles: string[]
-    expires_at_seconds: number
-}
-
 export interface OrgMember {
     user_id: string
     email: string
@@ -27,14 +20,15 @@ export interface OrgMember {
     possible_roles: string[]
     can_be_deleted: boolean
     is_enabled: boolean
-    is_2fa_enabled?: boolean | null
+    is_2fa_enabled?: boolean
 }
 
 export type FetchOrgMembersSuccessResponse = {
     users: OrgMember[]
-    invitee_possible_roles: string[]
-    pending_invites: PendingOrgInvite[]
-    expired_invites: PendingOrgInvite[]
+    total_count: number
+    page_number: number
+    page_size: number
+    has_more_results: boolean
 }
 
 export type FetchOrgMembersErrorResponse =
@@ -59,7 +53,7 @@ type FetchOrgMembersVisitor = Visitor & {
 export const fetchOrgMembers = (authUrl: string) => async (orgId: string) => {
     return makeRequest<FetchOrgMembersVisitor, FetchOrgMembersErrorResponse, FetchOrgMembersSuccessResponse>({
         authUrl,
-        path: `/selected_org_status/${orgId}`,
+        path: `/org_membership/${orgId}/members`,
         method: 'GET',
         parseResponseAsJson: true,
         responseToSuccessHandler: (response, visitor) => {
