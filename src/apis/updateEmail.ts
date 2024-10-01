@@ -24,11 +24,9 @@ export interface UpdateEmailBadRequestResponse extends ApiErrorResponse {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
         new_email: string
-        password?: string
     }
     field_errors: {
         new_email: string
-        password?: string
     }
 }
 
