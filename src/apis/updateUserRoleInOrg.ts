@@ -81,7 +81,7 @@ export const updateUserRoleInOrg = (authUrl: string) => async (request: UpdateUs
                 case ErrorCode.Forbidden:
                     return getVisitorOrUndefined(visitor.noUpdateRolePermission, error)
                 case ErrorCode.UserNotFound:
-                    return getVisitorOrUndefined(visitor.userNotFound, error)
+                    return getVisitorOrUndefined(visitor.userNotFoundInOrg, error)
                 case ErrorCode.ActionDisabled:
                     return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
                 case ErrorCode.Unauthorized:

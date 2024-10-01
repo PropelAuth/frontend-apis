@@ -80,7 +80,7 @@ export const removeUserFromOrg = (authUrl: string) => async (request: RemoveUser
                 case ErrorCode.OrgNotFound:
                     return getVisitorOrUndefined(visitor.orgNotFound, error)
                 case ErrorCode.UserNotFound:
-                    return getVisitorOrUndefined(visitor.userNotFound, error)
+                    return getVisitorOrUndefined(visitor.userNotFoundInOrg, error)
                 case ErrorCode.ActionDisabled:
                     return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
                 case ErrorCode.Unauthorized:
