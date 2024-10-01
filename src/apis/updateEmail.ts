@@ -32,17 +32,26 @@ export interface UpdateEmailBadRequestResponse extends ApiErrorResponse {
 
 export interface OrgRestrictionErrorResponse extends GenericErrorResponse {
     error_code: ErrorCode.Forbidden
-    user_facing_error: string
 }
 
 export interface EmailAlreadySentResponse extends GenericErrorResponse {
     error_code: ErrorCode.ConfirmationEmailAlreadySentRecently
-    user_facing_error: string
 }
 
 export interface DisabledResponse extends GenericErrorResponse {
     error_code: ErrorCode.ActionDisabled
-    user_facing_error: string
+}
+
+export interface IncorrectPasswordResponse extends GenericErrorResponse {
+    error_code: ErrorCode.IncorrectPassword
+}
+
+export interface FailedToSendEmailResponse extends GenericErrorResponse {
+    error_code: ErrorCode.EmailSendFailure
+}
+
+export interface UserAccountLockedResponse extends GenericErrorResponse {
+    error_code: ErrorCode.UserAccountLocked
 }
 
 /////////////////
@@ -53,6 +62,9 @@ export type UpdateEmailErrorResponse =
     | OrgRestrictionErrorResponse
     | EmailAlreadySentResponse
     | DisabledResponse
+    | IncorrectPasswordResponse
+    | FailedToSendEmailResponse
+    | UserAccountLockedResponse
     | UnauthorizedResponse
     | UnexpectedErrorResponse
     | EmailNotConfirmedResponse
@@ -65,7 +77,10 @@ type UpdateEmailVisitor = Visitor & {
     badRequest?: (error: UpdateEmailBadRequestResponse) => void
     cannotChangeEmailDueToOrgMembership?: (error: OrgRestrictionErrorResponse) => void
     rateLimit?: (error: EmailAlreadySentResponse) => void
+    incorrectPassword?: (error: IncorrectPasswordResponse) => void
+    failedToSendEmail?: (error: FailedToSendEmailResponse) => void
     emailChangeDisabled?: (error: DisabledResponse) => void
+    userAccountLocked?: (error: UserAccountLockedResponse) => void
 }
 
 /////////////////
@@ -91,6 +106,12 @@ export const updateEmail = (authUrl: string) => async (request: UpdateEmailReque
                     return getVisitorOrUndefined(visitor.rateLimit, error)
                 case ErrorCode.ActionDisabled:
                     return getVisitorOrUndefined(visitor.emailChangeDisabled, error)
+                case ErrorCode.IncorrectPassword:
+                    return getVisitorOrUndefined(visitor.incorrectPassword, error)
+                case ErrorCode.EmailSendFailure:
+                    return getVisitorOrUndefined(visitor.failedToSendEmail, error)
+                case ErrorCode.UserAccountLocked:
+                    return getVisitorOrUndefined(visitor.userAccountLocked, error)
                 case ErrorCode.Unauthorized:
                     return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.EmailNotConfirmed:
