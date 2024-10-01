@@ -28,10 +28,12 @@ export interface IncorrectPasswordResponse extends GenericErrorResponse {
 export interface UpdatePasswordBadRequestResponse extends ApiErrorResponse {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
-        password: string
+        password?: string
+        current_password?: string
     }
     field_errors: {
-        password: string
+        password?: string
+        current_password?: string
     }
 }
 
