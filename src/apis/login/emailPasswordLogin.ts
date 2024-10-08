@@ -63,7 +63,7 @@ export type EmailPasswordLoginErrorResponse =
 ///////////////// Visitor
 /////////////////
 type EmailPasswordLoginVisitor = Visitor & {
-    success: () => void
+    success: (data: EmailPasswordLoginSuccessResponse) => void
     badRequest?: (error: EmailPasswordLoginRequestBadRequestResponse) => void
     noEmailProvided?: (error: NoEmailProvidedError) => void
     passwordLoginDisabled?: (error: PasswordLoginDisabledError) => void
@@ -75,14 +75,15 @@ type EmailPasswordLoginVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const emailPasswordLoginRequest = (authUrl: string) => async (request: EmailPasswordLoginRequest) => {
-    return makeRequest<EmailPasswordLoginVisitor, EmailPasswordLoginErrorResponse>({
+export const emailPasswordLogin = (authUrl: string) => async (request: EmailPasswordLoginRequest) => {
+    return makeRequest<EmailPasswordLoginVisitor, EmailPasswordLoginErrorResponse, EmailPasswordLoginSuccessResponse>({
         authUrl,
         path: '/login',
         method: 'POST',
         body: request,
-        responseToSuccessHandler: (visitor) => {
-            return () => visitor.success()
+        parseResponseAsJson: true,
+        responseToSuccessHandler: (response, visitor) => {
+            return () => visitor.success(response)
         },
         responseToErrorHandler: (error, visitor) => {
             const { error_code: errorCode } = error

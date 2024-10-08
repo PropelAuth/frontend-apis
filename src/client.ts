@@ -10,6 +10,7 @@ import { deleteAccount } from './apis/deleteAccount'
 import { deleteOrg } from './apis/deleteOrg'
 import { fetchOrgSettings } from './apis/fetchOrgSettings'
 import { inviteUserToOrg } from './apis/inviteUserToOrg'
+import { emailPasswordLogin } from './apis/login/emailPasswordLogin'
 import { disableMfa } from './apis/mfa/disableMfa'
 import { enableMfa } from './apis/mfa/enableMfa'
 import { fetchMfaStatusWithNewSecret } from './apis/mfa/mfaStatus'
@@ -61,5 +62,6 @@ export const useAuthApis = () => {
         fetchOrgApiKeys: fetchOrgApiKeys(authUrl),
         createOrgApiKey: createOrgApiKey(authUrl),
         deleteApiKey: deleteApiKey(authUrl),
+        emailPasswordLogin: emailPasswordLogin(authUrl),
     }
 }
