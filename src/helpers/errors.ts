@@ -19,6 +19,7 @@ export enum ErrorCode {
     OrgMaxUsersLimitExceeded = 'org_max_users_limit_exceeded',
     UserMaxOrgsLimitExceeded = 'user_max_orgs_limit_exceeded',
     PersonalDomainError = 'personal_domain_error',
+    UserAccountDisabled = 'account_disabled',
 }
 
 export interface ApiErrorResponse {
@@ -83,4 +84,8 @@ export interface OrgMaxUsersLimitExceededErrorResponse extends GenericErrorRespo
 
 export interface NotFoundErrorResponse extends GenericErrorResponse {
     error_code: ErrorCode.NotFound
+}
+
+export interface UserAccountLockedErrorResponse extends GenericErrorResponse {
+    error_code: ErrorCode.UserAccountLocked
 }
