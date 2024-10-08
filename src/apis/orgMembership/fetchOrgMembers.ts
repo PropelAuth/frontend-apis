@@ -53,7 +53,7 @@ export type FetchOrgMembersErrorResponse =
 type FetchOrgMembersVisitor = Visitor & {
     success: (data: FetchOrgMembersSuccessResponse) => FetchOrgMembersSuccessResponse | void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
-    orgNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    orgsNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
 }
 
 /////////////////
@@ -85,7 +85,7 @@ export const fetchOrgMembers = (authUrl: string) => async (orgId: string, params
                 case ErrorCode.OrgNotFound:
                     return getVisitorOrUndefined(visitor.orgNotFound, error)
                 case ErrorCode.ActionDisabled:
-                    return getVisitorOrUndefined(visitor.orgNotEnabled, error)
+                    return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
                 case ErrorCode.Unauthorized:
                     return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.EmailNotConfirmed:

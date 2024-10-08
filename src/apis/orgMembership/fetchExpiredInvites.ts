@@ -49,7 +49,7 @@ export type FetchOrgExpiredOrgInvitesErrorResponse =
 type FetchExpiredOrgInvitesVisitor = Visitor & {
     success: (data: FetchExpiredOrgInvitesSuccessResponse) => FetchExpiredOrgInvitesSuccessResponse | void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
-    orgNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    orgsNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
 }
 
 /////////////////
@@ -86,7 +86,7 @@ export const fetchExpiredOrgInvites =
                     case ErrorCode.OrgNotFound:
                         return getVisitorOrUndefined(visitor.orgNotFound, error)
                     case ErrorCode.ActionDisabled:
-                        return getVisitorOrUndefined(visitor.orgNotEnabled, error)
+                        return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
                     case ErrorCode.Unauthorized:
                         return getVisitorOrUndefined(visitor.unauthorized, error)
                     case ErrorCode.EmailNotConfirmed:

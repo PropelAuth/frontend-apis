@@ -49,7 +49,7 @@ export type FetchOrgSettingsErrorResponse =
 /////////////////
 type FetchOrgSettingsVisitor = Visitor & {
     success: (data: FetchOrgSettingsSuccessResponse) => void
-    orgNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    orgsNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
     userNotFoundInOrg?: (error: UserNotFoundErrorResponse) => void
     forbidden?: (error: ForbiddenErrorResponse) => void
@@ -71,7 +71,7 @@ export const fetchOrgSettings = (authUrl: string) => async (orgId: string) => {
             const { error_code: errorCode } = error
             switch (errorCode) {
                 case ErrorCode.ActionDisabled:
-                    return getVisitorOrUndefined(visitor.orgNotEnabled, error)
+                    return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
                 case ErrorCode.OrgNotFound:
                     return getVisitorOrUndefined(visitor.orgNotFound, error)
                 case ErrorCode.UserNotFound:

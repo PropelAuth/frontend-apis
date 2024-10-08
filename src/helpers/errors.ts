@@ -10,6 +10,8 @@ export enum ErrorCode {
     Forbidden = 'action_forbidden',
     ActionDisabled = 'action_disabled',
     EmailNotConfirmed = 'email_not_confirmed',
+    EmailSendFailure = 'email_send_failure',
+    UserAccountLocked = 'account_locked',
     ConfirmationEmailAlreadySentRecently = 'confirmation_email_sent',
     IncorrectPassword = 'incorrect_password',
     MaxFileSizeExceeded = 'max_file_size',

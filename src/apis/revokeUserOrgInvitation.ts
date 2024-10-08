@@ -53,7 +53,7 @@ type RevokeUserOrgInvitationVisitor = Visitor & {
     success: () => void
     badRequest?: (error: RevokeUserOrgInvitationFieldValidationErrorResponse) => void
     noRevokeInvitePermission?: (error: ForbiddenErrorResponse) => void
-    orgNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    orgsNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
 }
 /////////////////
@@ -78,7 +78,7 @@ export const revokeUserOrgInvitation = (authUrl: string) => async (request: Revo
                 case ErrorCode.OrgNotFound:
                     return getVisitorOrUndefined(visitor.orgNotFound, error)
                 case ErrorCode.ActionDisabled:
-                    return getVisitorOrUndefined(visitor.orgNotEnabled, error)
+                    return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
                 case ErrorCode.Unauthorized:
                     return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.EmailNotConfirmed:

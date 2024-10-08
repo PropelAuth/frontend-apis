@@ -33,7 +33,7 @@ export type PropelAuthApi = ReturnType<typeof useAuthApis>
 export const useAuthApis = () => {
     const context = useContext(AuthUrlContext)
     if (context === undefined) {
-        throw new Error('useAuthApis must be used within an AuthProvider')
+        throw new Error('useAuthApis must be used within an AuthUrlContext')
     }
     const authUrl = context.authUrl
 

@@ -67,7 +67,7 @@ type InviteUserToOrgVisitor = Visitor & {
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
     orgMaxUsersLimitExceeded?: (error: OrgMaxUsersLimitExceededErrorResponse) => void
     userAlreadyInOrg?: (error: UserAlreadyInOrgErrorResponse) => void
-    orgNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    orgsNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
 }
 
 /////////////////
@@ -99,7 +99,7 @@ export const inviteUserToOrg = (authUrl: string) => async (request: InviteUserTo
                 case ErrorCode.ActionAlreadyComplete:
                     return getVisitorOrUndefined(visitor.userAlreadyInOrg, error)
                 case ErrorCode.ActionDisabled:
-                    return getVisitorOrUndefined(visitor.orgNotEnabled, error)
+                    return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
                 case ErrorCode.Unauthorized:
                     return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.EmailNotConfirmed:

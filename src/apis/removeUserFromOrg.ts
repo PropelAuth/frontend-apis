@@ -54,8 +54,8 @@ type RemoveUserFromOrgVisitor = Visitor & {
     badRequest?: (error: RemoveUserFromOrgBadRequestResponse) => void
     noRemovePermission?: (error: ForbiddenErrorResponse) => void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
-    orgNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
-    userNotFound?: (error: UserNotFoundErrorResponse) => void
+    orgsNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    userNotFoundInOrg?: (error: UserNotFoundErrorResponse) => void
 }
 
 /////////////////
@@ -80,9 +80,9 @@ export const removeUserFromOrg = (authUrl: string) => async (request: RemoveUser
                 case ErrorCode.OrgNotFound:
                     return getVisitorOrUndefined(visitor.orgNotFound, error)
                 case ErrorCode.UserNotFound:
-                    return getVisitorOrUndefined(visitor.userNotFound, error)
+                    return getVisitorOrUndefined(visitor.userNotFoundInOrg, error)
                 case ErrorCode.ActionDisabled:
-                    return getVisitorOrUndefined(visitor.orgNotEnabled, error)
+                    return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
                 case ErrorCode.Unauthorized:
                     return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.EmailNotConfirmed:
