@@ -49,7 +49,7 @@ type JoinOrgVisitor = Visitor & {
 export const joinOrg = (authUrl: string) => async (orgId: string) => {
     return makeRequest<JoinOrgVisitor, JoinOrgErrorResponse, JoinOrgSuccessResponse>({
         authUrl,
-        path: `/join_org?org_id=${orgId}`,
+        path: `/join_org/${orgId}`,
         parseResponseAsJson: true,
         method: 'POST',
         responseToSuccessHandler: (response, visitor) => {
