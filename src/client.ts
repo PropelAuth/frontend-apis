@@ -21,6 +21,7 @@ import { disableMfa } from './apis/mfa/disableMfa'
 import { enableMfa } from './apis/mfa/enableMfa'
 import { fetchMfaStatusWithNewSecret } from './apis/mfa/mfaStatus'
 import { fetchExpiredOrgInvites } from './apis/orgMembership/fetchExpiredInvites'
+import { fetchJoinableOrgs } from './apis/orgMembership/fetchJoinableOrgs'
 import { fetchOrgMembers } from './apis/orgMembership/fetchOrgMembers'
 import { fetchPendingOrgInvites } from './apis/orgMembership/fetchPendingInvites'
 import { removeUserFromOrg } from './apis/removeUserFromOrg'
@@ -75,5 +76,6 @@ export const useAuthApis = () => {
         mfaLogin: mfaLogin(authUrl),
         mfaLoginBackupCode: mfaLoginBackupCode(authUrl),
         sendForgotPasswordEmail: sendForgotPasswordEmail(authUrl),
+        fetchJoinableOrgs: fetchJoinableOrgs(authUrl),
     }
 }

@@ -23,6 +23,7 @@ export type {
     FetchExpiredOrgInvitesSuccessResponse,
     FetchOrgExpiredOrgInvitesErrorResponse,
 } from './apis/orgMembership/fetchExpiredInvites'
+export type { FetchJoinableOrgsSuccessResponse, JoinableOrg } from './apis/orgMembership/fetchJoinableOrgs'
 export type {
     FetchOrgMembersErrorResponse,
     FetchOrgMembersSuccessResponse,
