@@ -13,6 +13,7 @@ import { inviteUserToOrg } from './apis/inviteUserToOrg'
 import { emailPasswordLogin } from './apis/login/emailPasswordLogin'
 import { fetchLoginState } from './apis/login/fetchLoginState'
 import { mfaLogin } from './apis/login/mfaLogin'
+import { mfaLoginBackupCode } from './apis/login/mfaLoginBackupCode'
 import { sendEmailConfirmation } from './apis/login/sendEmailConfirmation'
 import { disableMfa } from './apis/mfa/disableMfa'
 import { enableMfa } from './apis/mfa/enableMfa'
@@ -69,5 +70,6 @@ export const useAuthApis = () => {
         emailPasswordLogin: emailPasswordLogin(authUrl),
         sendEmailConfirmation: sendEmailConfirmation(authUrl),
         mfaLogin: mfaLogin(authUrl),
+        mfaLoginBackupCode: mfaLoginBackupCode(authUrl),
     }
 }
