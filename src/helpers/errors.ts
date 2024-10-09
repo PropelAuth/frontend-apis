@@ -20,6 +20,8 @@ export enum ErrorCode {
     UserMaxOrgsLimitExceeded = 'user_max_orgs_limit_exceeded',
     PersonalDomainError = 'personal_domain_error',
     UserAccountDisabled = 'account_disabled',
+    EmailAlreadyConfirmed = 'email_already_confirmed',
+    RateLimited = 'rate_limit_exceeded',
 }
 
 export interface ApiErrorResponse {

@@ -12,6 +12,7 @@ import { fetchOrgSettings } from './apis/fetchOrgSettings'
 import { inviteUserToOrg } from './apis/inviteUserToOrg'
 import { emailPasswordLogin } from './apis/login/emailPasswordLogin'
 import { fetchLoginState } from './apis/login/fetchLoginState'
+import { sendEmailConfirmation } from './apis/login/sendEmailConfirmation'
 import { disableMfa } from './apis/mfa/disableMfa'
 import { enableMfa } from './apis/mfa/enableMfa'
 import { fetchMfaStatusWithNewSecret } from './apis/mfa/mfaStatus'
@@ -65,5 +66,6 @@ export const useAuthApis = () => {
         deleteApiKey: deleteApiKey(authUrl),
         fetchLoginState: fetchLoginState(authUrl),
         emailPasswordLogin: emailPasswordLogin(authUrl),
+        sendEmailConfirmation: sendEmailConfirmation(authUrl),
     }
 }
