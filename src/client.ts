@@ -12,6 +12,7 @@ import { fetchOrgSettings } from './apis/fetchOrgSettings'
 import { inviteUserToOrg } from './apis/inviteUserToOrg'
 import { emailPasswordLogin } from './apis/login/emailPasswordLogin'
 import { fetchLoginState } from './apis/login/fetchLoginState'
+import { sendForgotPasswordEmail } from './apis/login/forgotPassword'
 import { mfaLogin } from './apis/login/mfaLogin'
 import { mfaLoginBackupCode } from './apis/login/mfaLoginBackupCode'
 import { sendEmailConfirmation } from './apis/login/sendEmailConfirmation'
@@ -73,5 +74,6 @@ export const useAuthApis = () => {
         sendEmailConfirmation: sendEmailConfirmation(authUrl),
         mfaLogin: mfaLogin(authUrl),
         mfaLoginBackupCode: mfaLoginBackupCode(authUrl),
+        sendForgotPasswordEmail: sendForgotPasswordEmail(authUrl),
     }
 }

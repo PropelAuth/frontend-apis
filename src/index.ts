@@ -3,6 +3,7 @@ export type { FetchOrgApiKeysSuccessResponse, OrgApiKey } from './apis/apiKeys/f
 export type { FetchPersonalApiKeysSuccessResponse, PersonalApiKey } from './apis/apiKeys/fetchPersonalApiKeys'
 export type { ApiKeyExpirationOption } from './apis/apiKeys/types'
 export type { EmailPasswordLoginSuccessResponse } from './apis/login/emailPasswordLogin'
+export type { ForgotPasswordSuccessResponse } from './apis/login/forgotPassword'
 export { LoginState } from './apis/login/types'
 export type { MfaAlreadyDisabledResponse, MfaDisableErrorResponse } from './apis/mfa/disableMfa'
 export type {
