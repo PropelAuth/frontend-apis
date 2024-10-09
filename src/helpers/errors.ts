@@ -22,6 +22,9 @@ export enum ErrorCode {
     UserAccountDisabled = 'account_disabled',
     EmailAlreadyConfirmed = 'email_already_confirmed',
     RateLimited = 'rate_limit_exceeded',
+    InvalidMfaCookie = 'invalid_mfa_cookie',
+    UserAccountMfaLocked = 'account_mfa_locked',
+    IncorrectMfaCode = 'incorrect_mfa_code',
 }
 
 export interface ApiErrorResponse {
@@ -90,4 +93,8 @@ export interface NotFoundErrorResponse extends GenericErrorResponse {
 
 export interface UserAccountLockedErrorResponse extends GenericErrorResponse {
     error_code: ErrorCode.UserAccountLocked
+}
+
+export interface UserAccountDisabledErrorResponse extends GenericErrorResponse {
+    error_code: ErrorCode.UserAccountDisabled
 }
