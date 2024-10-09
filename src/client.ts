@@ -10,6 +10,7 @@ import { deleteAccount } from './apis/deleteAccount'
 import { deleteOrg } from './apis/deleteOrg'
 import { fetchOrgSettings } from './apis/fetchOrgSettings'
 import { inviteUserToOrg } from './apis/inviteUserToOrg'
+import { joinOrg } from './apis/joinOrg'
 import { emailPasswordLogin } from './apis/login/emailPasswordLogin'
 import { fetchLoginState } from './apis/login/fetchLoginState'
 import { sendForgotPasswordEmail } from './apis/login/forgotPassword'
@@ -77,5 +78,6 @@ export const useAuthApis = () => {
         mfaLoginBackupCode: mfaLoginBackupCode(authUrl),
         sendForgotPasswordEmail: sendForgotPasswordEmail(authUrl),
         fetchJoinableOrgs: fetchJoinableOrgs(authUrl),
+        joinOrg: joinOrg(authUrl),
     }
 }

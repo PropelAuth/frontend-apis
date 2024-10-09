@@ -2,6 +2,7 @@ export type { CreatePersonalApiKeySuccessResponse } from './apis/apiKeys/createP
 export type { FetchOrgApiKeysSuccessResponse, OrgApiKey } from './apis/apiKeys/fetchOrgApiKeys'
 export type { FetchPersonalApiKeysSuccessResponse, PersonalApiKey } from './apis/apiKeys/fetchPersonalApiKeys'
 export type { ApiKeyExpirationOption } from './apis/apiKeys/types'
+export type { JoinOrgSuccessResponse } from './apis/joinOrg'
 export type { EmailPasswordLoginSuccessResponse } from './apis/login/emailPasswordLogin'
 export type { ForgotPasswordSuccessResponse } from './apis/login/forgotPassword'
 export { LoginState } from './apis/login/types'
