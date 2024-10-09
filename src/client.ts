@@ -15,6 +15,7 @@ import { fetchLoginState } from './apis/login/fetchLoginState'
 import { mfaLogin } from './apis/login/mfaLogin'
 import { mfaLoginBackupCode } from './apis/login/mfaLoginBackupCode'
 import { sendEmailConfirmation } from './apis/login/sendEmailConfirmation'
+import { usernamePasswordLogin } from './apis/login/usernamePasswordLogin'
 import { disableMfa } from './apis/mfa/disableMfa'
 import { enableMfa } from './apis/mfa/enableMfa'
 import { fetchMfaStatusWithNewSecret } from './apis/mfa/mfaStatus'
@@ -68,6 +69,7 @@ export const useAuthApis = () => {
         deleteApiKey: deleteApiKey(authUrl),
         fetchLoginState: fetchLoginState(authUrl),
         emailPasswordLogin: emailPasswordLogin(authUrl),
+        usernamePasswordLogin: usernamePasswordLogin(authUrl),
         sendEmailConfirmation: sendEmailConfirmation(authUrl),
         mfaLogin: mfaLogin(authUrl),
         mfaLoginBackupCode: mfaLoginBackupCode(authUrl),
