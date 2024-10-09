@@ -46,3 +46,4 @@ export type {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from './helpers/errors'
+export { SocialLoginProvider, useSocialLoginCallbacks } from './socialLogins'
