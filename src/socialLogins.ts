@@ -1,6 +1,3 @@
-import { useContext } from 'react'
-import { AuthUrlContext } from './AuthUrlProvider'
-
 export enum SocialLoginProvider {
     GOOGLE = 'Google',
     GITHUB = 'Github',
@@ -29,20 +26,4 @@ export const SOCIAL_LOGIN_PATHS: Record<SocialLoginProvider, string> = {
     [SocialLoginProvider.SALESLOFT]: '/salesloft/login',
     [SocialLoginProvider.ATLASSIAN]: '/atlassian/login',
     [SocialLoginProvider.APPLE]: '/apple/login',
-}
-
-export const useSocialLoginCallbacks = () => {
-    const context = useContext(AuthUrlContext)
-    if (context === undefined) {
-        throw new Error('useSocialLoginCallbacks must be used within an AuthUrlContext')
-    }
-    const { authUrl } = context
-
-    const loginWithSocialProvider = (provider: SocialLoginProvider) => {
-        window.location.href = `${authUrl}/${SOCIAL_LOGIN_PATHS[provider]}`
-    }
-
-    return {
-        loginWithSocialProvider,
-    }
 }

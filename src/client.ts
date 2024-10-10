@@ -36,6 +36,7 @@ import { updateOrgSettings } from './apis/updateOrgSettings'
 import { updatePassword } from './apis/updatePassword'
 import { updateUserFacingMetadata } from './apis/updateUserMetadata'
 import { updateUserRoleInOrg } from './apis/updateUserRoleInOrg'
+import { SOCIAL_LOGIN_PATHS, SocialLoginProvider } from './socialLogins'
 
 export type ApiOptions = {
     authUrl: string
@@ -49,6 +50,10 @@ export const useAuthApis = () => {
         throw new Error('useAuthApis must be used within an AuthUrlContext')
     }
     const authUrl = context.authUrl
+
+    const loginWithSocialProvider = (provider: SocialLoginProvider) => {
+        window.location.href = `${authUrl}/${SOCIAL_LOGIN_PATHS[provider]}`
+    }
 
     return {
         enableMfa: enableMfa(authUrl),
@@ -87,5 +92,6 @@ export const useAuthApis = () => {
         samlLoginByEmailDomain: samlLoginByEmailDomain(authUrl),
         samlLoginByOrg: samlLoginByOrg(authUrl),
         signup: signup(authUrl),
+        loginWithSocialProvider,
     }
 }
