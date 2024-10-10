@@ -17,6 +17,7 @@ import { sendForgotPasswordEmail } from './apis/login/forgotPassword'
 import { mfaLogin } from './apis/login/mfaLogin'
 import { mfaLoginBackupCode } from './apis/login/mfaLoginBackupCode'
 import { passwordlessLogin } from './apis/login/passwordlessLogin'
+import { samlLoginByEmailDomain } from './apis/login/samlLoginByEmailDomain'
 import { sendEmailConfirmation } from './apis/login/sendEmailConfirmation'
 import { usernamePasswordLogin } from './apis/login/usernamePasswordLogin'
 import { disableMfa } from './apis/mfa/disableMfa'
@@ -81,5 +82,6 @@ export const useAuthApis = () => {
         fetchJoinableOrgs: fetchJoinableOrgs(authUrl),
         joinOrg: joinOrg(authUrl),
         passwordlessLogin: passwordlessLogin(authUrl),
+        samlLoginByEmailDomain: samlLoginByEmailDomain(authUrl),
     }
 }
