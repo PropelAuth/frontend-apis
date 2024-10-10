@@ -21,11 +21,11 @@ export interface MfaSessionTimeoutErrorResponse extends ApiErrorResponse {
     error_code: ErrorCode.InvalidMfaCookie
 }
 
-export interface MfaAccountLockedResponse extends ApiErrorResponse {
+export interface MfaAccountLockedErrorResponse extends ApiErrorResponse {
     error_code: ErrorCode.UserAccountMfaLocked
 }
 
-export interface IncorrectMfaCodeResponse extends ApiErrorResponse {
+export interface IncorrectMfaCodeErrorResponse extends ApiErrorResponse {
     error_code: ErrorCode.IncorrectMfaCode
 }
 
@@ -41,25 +41,25 @@ export type MfaLoginBackupCodeErrorResponse =
     | UnexpectedErrorResponse
     | EmailNotConfirmedResponse
     | MfaSessionTimeoutErrorResponse
-    | MfaAccountLockedResponse
+    | MfaAccountLockedErrorResponse
     | UserAccountDisabledErrorResponse
-    | IncorrectMfaCodeResponse
+    | IncorrectMfaCodeErrorResponse
 
 /////////////////
 ///////////////// Visitor
 /////////////////
 type MfaLoginBackupCodeVisitor = Visitor & {
     success: (data: MfaLoginBackupCodeSuccessResponse) => void
-    invalidCode?: (error: IncorrectMfaCodeResponse) => void
+    invalidCode?: (error: IncorrectMfaCodeErrorResponse) => void
     sessionTimeout?: (error: MfaSessionTimeoutErrorResponse) => void
-    accountLocked?: (error: MfaAccountLockedResponse) => void
+    accountLocked?: (error: MfaAccountLockedErrorResponse) => void
     accountDisabled?: (error: UserAccountDisabledErrorResponse) => void
 }
 
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const mfaLoginBackupCode = (authUrl: string) => async (request: MfaLoginBackupCodeRequest) => {
+export const verifyMfaBackupCodeForLogin = (authUrl: string) => async (request: MfaLoginBackupCodeRequest) => {
     return makeRequest<MfaLoginBackupCodeVisitor, MfaLoginBackupCodeErrorResponse, MfaLoginBackupCodeSuccessResponse>({
         authUrl,
         path: '/verify_backup',

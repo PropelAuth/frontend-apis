@@ -34,7 +34,7 @@ type SendEmailConfirmationVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const sendEmailConfirmation = (authUrl: string) => async () => {
+export const resendEmailConfirmation = (authUrl: string) => async () => {
     return makeRequest<SendEmailConfirmationVisitor, SendEmailConfirmationErrorResponse>({
         authUrl,
         path: '/resend_email_confirmation',

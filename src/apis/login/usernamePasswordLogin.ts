@@ -35,11 +35,11 @@ type InvalidUsernameErrorResponse = GenericErrorResponse & {
     error_code: ErrorCode.BadRequest
 }
 
-type PasswordLoginDisabledError = GenericErrorResponse & {
+type PasswordLoginDisabledErrorResponse = GenericErrorResponse & {
     error_code: ErrorCode.ActionDisabled
 }
 
-type UserAccountDisabledError = GenericErrorResponse & {
+type UserAccountDisabledErrorResponse = GenericErrorResponse & {
     error_code: ErrorCode.UserAccountDisabled
 }
 
@@ -54,8 +54,8 @@ export type UsernamePasswordLoginErrorResponse =
     | UsernamePasswordLoginRequestBadRequestResponse
     | UnexpectedErrorResponse
     | InvalidUsernameErrorResponse
-    | PasswordLoginDisabledError
-    | UserAccountDisabledError
+    | PasswordLoginDisabledErrorResponse
+    | UserAccountDisabledErrorResponse
     | UserAccountLockedErrorResponse
     | UserNotFoundErrorResponse
 
@@ -66,8 +66,8 @@ type UsernamePasswordLoginVisitor = Visitor & {
     success: (data: UsernamePasswordLoginSuccessResponse) => void
     badRequest?: (error: UsernamePasswordLoginRequestBadRequestResponse) => void
     usernameInvalid?: (error: InvalidUsernameErrorResponse) => void
-    passwordLoginDisabled?: (error: PasswordLoginDisabledError) => void
-    userAccountDisabled?: (error: UserAccountDisabledError) => void
+    passwordLoginDisabled?: (error: PasswordLoginDisabledErrorResponse) => void
+    userAccountDisabled?: (error: UserAccountDisabledErrorResponse) => void
     userAccountLocked?: (error: UserAccountLockedErrorResponse) => void
     userNotFound?: (error: UserNotFoundErrorResponse) => void
 }

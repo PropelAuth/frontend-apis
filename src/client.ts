@@ -14,12 +14,12 @@ import { joinOrg } from './apis/joinOrg'
 import { emailPasswordLogin } from './apis/login/emailPasswordLogin'
 import { fetchLoginState } from './apis/login/fetchLoginState'
 import { sendForgotPasswordEmail } from './apis/login/forgotPassword'
-import { mfaLogin } from './apis/login/mfaLogin'
-import { mfaLoginBackupCode } from './apis/login/mfaLoginBackupCode'
+import { verifyMfaForLogin } from './apis/login/mfaLogin'
+import { verifyMfaBackupCodeForLogin } from './apis/login/mfaLoginBackupCode'
 import { passwordlessLogin } from './apis/login/passwordlessLogin'
+import { resendEmailConfirmation } from './apis/login/resendEmailConfirmation'
 import { samlLoginByEmailDomain } from './apis/login/samlLoginByEmailDomain'
 import { samlLoginByOrg } from './apis/login/samlLoginByOrg'
-import { sendEmailConfirmation } from './apis/login/sendEmailConfirmation'
 import { usernamePasswordLogin } from './apis/login/usernamePasswordLogin'
 import { disableMfa } from './apis/mfa/disableMfa'
 import { enableMfa } from './apis/mfa/enableMfa'
@@ -82,9 +82,9 @@ export const useAuthApis = () => {
         fetchLoginState: fetchLoginState(authUrl),
         emailPasswordLogin: emailPasswordLogin(authUrl),
         usernamePasswordLogin: usernamePasswordLogin(authUrl),
-        sendEmailConfirmation: sendEmailConfirmation(authUrl),
-        mfaLogin: mfaLogin(authUrl),
-        mfaLoginBackupCode: mfaLoginBackupCode(authUrl),
+        resendEmailConfirmation: resendEmailConfirmation(authUrl),
+        verifyMfaForLogin: verifyMfaForLogin(authUrl),
+        verifyMfaBackupCodeForLogin: verifyMfaBackupCodeForLogin(authUrl),
         sendForgotPasswordEmail: sendForgotPasswordEmail(authUrl),
         fetchJoinableOrgs: fetchJoinableOrgs(authUrl),
         joinOrg: joinOrg(authUrl),

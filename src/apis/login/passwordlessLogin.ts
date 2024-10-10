@@ -29,19 +29,19 @@ export interface PasswordlessLoginRequestBadRequestResponse extends ApiErrorResp
     }
 }
 
-type PasswordlessLoginDisabledError = GenericErrorResponse & {
+type PasswordlessLoginDisabledErrorResponse = GenericErrorResponse & {
     error_code: ErrorCode.NotFound
 }
 
-type CannotSignupWithPersonalEmailError = GenericErrorResponse & {
+type CannotSignupWithPersonalEmailErrorResponse = GenericErrorResponse & {
     error_code: ErrorCode.BadRequest
 }
 
-type DomainNotAllowedError = GenericErrorResponse & {
+type DomainNotAllowedErrorResponse = GenericErrorResponse & {
     error_code: ErrorCode.DomainNotAllowed
 }
 
-type UserAccountDisabledError = GenericErrorResponse & {
+type UserAccountDisabledErrorResponse = GenericErrorResponse & {
     error_code: ErrorCode.UserAccountDisabled
 }
 
@@ -51,10 +51,10 @@ type UserAccountDisabledError = GenericErrorResponse & {
 export type PasswordlessLoginErrorResponse =
     | PasswordlessLoginRequestBadRequestResponse
     | UnexpectedErrorResponse
-    | PasswordlessLoginDisabledError
-    | CannotSignupWithPersonalEmailError
-    | DomainNotAllowedError
-    | UserAccountDisabledError
+    | PasswordlessLoginDisabledErrorResponse
+    | CannotSignupWithPersonalEmailErrorResponse
+    | DomainNotAllowedErrorResponse
+    | UserAccountDisabledErrorResponse
     | UserAccountLockedErrorResponse
 
 /////////////////
@@ -63,10 +63,10 @@ export type PasswordlessLoginErrorResponse =
 type PasswordlessLoginVisitor = Visitor & {
     success: () => void
     badRequest?: (error: PasswordlessLoginRequestBadRequestResponse) => void
-    passwordlessLoginDisabled?: (error: PasswordlessLoginDisabledError) => void
-    cannotSignupWithPersonalEmail?: (error: CannotSignupWithPersonalEmailError) => void
-    domainNotAllowed?: (error: DomainNotAllowedError) => void
-    userAccountDisabled?: (error: UserAccountDisabledError) => void
+    passwordlessLoginDisabled?: (error: PasswordlessLoginDisabledErrorResponse) => void
+    cannotSignupWithPersonalEmail?: (error: CannotSignupWithPersonalEmailErrorResponse) => void
+    domainNotAllowed?: (error: DomainNotAllowedErrorResponse) => void
+    userAccountDisabled?: (error: UserAccountDisabledErrorResponse) => void
     userAccountLocked?: (error: UserAccountLockedErrorResponse) => void
 }
 
