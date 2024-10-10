@@ -30,6 +30,7 @@ import { fetchOrgMembers } from './apis/orgMembership/fetchOrgMembers'
 import { fetchPendingOrgInvites } from './apis/orgMembership/fetchPendingInvites'
 import { removeUserFromOrg } from './apis/removeUserFromOrg'
 import { revokeUserOrgInvitation } from './apis/revokeUserOrgInvitation'
+import { signup } from './apis/signup'
 import { updateEmail } from './apis/updateEmail'
 import { updateOrgSettings } from './apis/updateOrgSettings'
 import { updatePassword } from './apis/updatePassword'
@@ -85,5 +86,6 @@ export const useAuthApis = () => {
         passwordlessLogin: passwordlessLogin(authUrl),
         samlLoginByEmailDomain: samlLoginByEmailDomain(authUrl),
         samlLoginByOrg: samlLoginByOrg(authUrl),
+        signup: signup(authUrl),
     }
 }

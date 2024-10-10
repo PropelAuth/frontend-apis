@@ -35,6 +35,7 @@ export type {
     FetchPendingOrgInvitesSuccessResponse,
     PendingOrgInvite,
 } from './apis/orgMembership/fetchPendingInvites'
+export type { SignupRequest, SignupSuccessResponse } from './apis/signup'
 export { AuthUrlProvider } from './AuthUrlProvider'
 export { useAuthApis } from './client'
 export type { ApiOptions, PropelAuthApi } from './client'
