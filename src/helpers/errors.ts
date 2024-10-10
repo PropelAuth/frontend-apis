@@ -25,6 +25,7 @@ export enum ErrorCode {
     InvalidMfaCookie = 'invalid_mfa_cookie',
     UserAccountMfaLocked = 'account_mfa_locked',
     IncorrectMfaCode = 'incorrect_mfa_code',
+    DomainNotAllowed = 'domain_not_allowed',
 }
 
 export interface ApiErrorResponse {
