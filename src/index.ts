@@ -2,6 +2,10 @@ export type { CreatePersonalApiKeySuccessResponse } from './apis/apiKeys/createP
 export type { FetchOrgApiKeysSuccessResponse, OrgApiKey } from './apis/apiKeys/fetchOrgApiKeys'
 export type { FetchPersonalApiKeysSuccessResponse, PersonalApiKey } from './apis/apiKeys/fetchPersonalApiKeys'
 export type { ApiKeyExpirationOption } from './apis/apiKeys/types'
+export type { JoinOrgSuccessResponse } from './apis/joinOrg'
+export type { EmailPasswordLoginSuccessResponse } from './apis/login/emailPasswordLogin'
+export type { ForgotPasswordSuccessResponse } from './apis/login/forgotPassword'
+export { LoginState } from './apis/login/types'
 export type { MfaAlreadyDisabledResponse, MfaDisableErrorResponse } from './apis/mfa/disableMfa'
 export type {
     MfaAlreadyEnabledResponse,
@@ -20,6 +24,7 @@ export type {
     FetchExpiredOrgInvitesSuccessResponse,
     FetchOrgExpiredOrgInvitesErrorResponse,
 } from './apis/orgMembership/fetchExpiredInvites'
+export type { FetchJoinableOrgsSuccessResponse, JoinableOrg } from './apis/orgMembership/fetchJoinableOrgs'
 export type {
     FetchOrgMembersErrorResponse,
     FetchOrgMembersSuccessResponse,
@@ -30,6 +35,7 @@ export type {
     FetchPendingOrgInvitesSuccessResponse,
     PendingOrgInvite,
 } from './apis/orgMembership/fetchPendingInvites'
+export type { SignupRequest, SignupSuccessResponse } from './apis/signup'
 export { AuthUrlProvider } from './AuthUrlProvider'
 export { useAuthApis } from './client'
 export type { ApiOptions, PropelAuthApi } from './client'
@@ -41,3 +47,4 @@ export type {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from './helpers/errors'
+export { SocialLoginProvider } from './socialLogins'

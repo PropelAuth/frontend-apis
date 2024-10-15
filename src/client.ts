@@ -10,19 +10,33 @@ import { deleteAccount } from './apis/deleteAccount'
 import { deleteOrg } from './apis/deleteOrg'
 import { fetchOrgSettings } from './apis/fetchOrgSettings'
 import { inviteUserToOrg } from './apis/inviteUserToOrg'
+import { joinOrg } from './apis/joinOrg'
+import { emailPasswordLogin } from './apis/login/emailPasswordLogin'
+import { fetchLoginState } from './apis/login/fetchLoginState'
+import { sendForgotPasswordEmail } from './apis/login/forgotPassword'
+import { verifyMfaForLogin } from './apis/login/mfaLogin'
+import { verifyMfaBackupCodeForLogin } from './apis/login/mfaLoginBackupCode'
+import { passwordlessLogin } from './apis/login/passwordlessLogin'
+import { resendEmailConfirmation } from './apis/login/resendEmailConfirmation'
+import { samlLoginByEmailDomain } from './apis/login/samlLoginByEmailDomain'
+import { samlLoginByOrg } from './apis/login/samlLoginByOrg'
+import { usernamePasswordLogin } from './apis/login/usernamePasswordLogin'
 import { disableMfa } from './apis/mfa/disableMfa'
 import { enableMfa } from './apis/mfa/enableMfa'
 import { fetchMfaStatusWithNewSecret } from './apis/mfa/mfaStatus'
 import { fetchExpiredOrgInvites } from './apis/orgMembership/fetchExpiredInvites'
+import { fetchJoinableOrgs } from './apis/orgMembership/fetchJoinableOrgs'
 import { fetchOrgMembers } from './apis/orgMembership/fetchOrgMembers'
 import { fetchPendingOrgInvites } from './apis/orgMembership/fetchPendingInvites'
 import { removeUserFromOrg } from './apis/removeUserFromOrg'
 import { revokeUserOrgInvitation } from './apis/revokeUserOrgInvitation'
+import { signup } from './apis/signup'
 import { updateEmail } from './apis/updateEmail'
 import { updateOrgSettings } from './apis/updateOrgSettings'
 import { updatePassword } from './apis/updatePassword'
 import { updateUserFacingMetadata } from './apis/updateUserMetadata'
 import { updateUserRoleInOrg } from './apis/updateUserRoleInOrg'
+import { SOCIAL_LOGIN_PATHS, SocialLoginProvider } from './socialLogins'
 
 export type ApiOptions = {
     authUrl: string
@@ -36,6 +50,10 @@ export const useAuthApis = () => {
         throw new Error('useAuthApis must be used within an AuthUrlContext')
     }
     const authUrl = context.authUrl
+
+    const loginWithSocialProvider = (provider: SocialLoginProvider) => {
+        window.location.href = `${authUrl}/${SOCIAL_LOGIN_PATHS[provider]}`
+    }
 
     return {
         enableMfa: enableMfa(authUrl),
@@ -61,5 +79,19 @@ export const useAuthApis = () => {
         fetchOrgApiKeys: fetchOrgApiKeys(authUrl),
         createOrgApiKey: createOrgApiKey(authUrl),
         deleteApiKey: deleteApiKey(authUrl),
+        fetchLoginState: fetchLoginState(authUrl),
+        emailPasswordLogin: emailPasswordLogin(authUrl),
+        usernamePasswordLogin: usernamePasswordLogin(authUrl),
+        resendEmailConfirmation: resendEmailConfirmation(authUrl),
+        verifyMfaForLogin: verifyMfaForLogin(authUrl),
+        verifyMfaBackupCodeForLogin: verifyMfaBackupCodeForLogin(authUrl),
+        sendForgotPasswordEmail: sendForgotPasswordEmail(authUrl),
+        fetchJoinableOrgs: fetchJoinableOrgs(authUrl),
+        joinOrg: joinOrg(authUrl),
+        passwordlessLogin: passwordlessLogin(authUrl),
+        samlLoginByEmailDomain: samlLoginByEmailDomain(authUrl),
+        samlLoginByOrg: samlLoginByOrg(authUrl),
+        signup: signup(authUrl),
+        loginWithSocialProvider,
     }
 }
