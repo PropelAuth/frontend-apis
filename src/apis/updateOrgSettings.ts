@@ -4,7 +4,7 @@ import {
     EmailNotConfirmedResponse,
     ErrorCode,
     ForbiddenErrorResponse,
-    OrgNotEnabledErrorResponse,
+    OrgsNotEnabledErrorResponse,
     OrgNotFoundErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
@@ -15,6 +15,15 @@ import { Visitor, makeRequest } from '../helpers/request'
 ///////////////// Request
 /////////////////
 export type UpdateOrgSettingsRequest = {
+    org_id: string
+    name?: string
+    // Rename a few fields for usability
+    allow_users_to_join_by_domain?: boolean
+    restrict_invites_by_domain?: boolean
+    require_2fa_by?: Date | null
+}
+
+type InternalUpdateOrgSettingsRequest = {
     org_id: string
     name?: string
     autojoin_by_domain?: boolean
@@ -40,7 +49,7 @@ export interface UpdateOrgSettingsBadRequestResponse extends ApiErrorResponse {
 /////////////////
 export type UpdateOrgSettingsErrorResponse =
     | UpdateOrgSettingsBadRequestResponse
-    | OrgNotEnabledErrorResponse
+    | OrgsNotEnabledErrorResponse
     | OrgNotFoundErrorResponse
     | ForbiddenErrorResponse
     | UnauthorizedResponse
@@ -50,10 +59,10 @@ export type UpdateOrgSettingsErrorResponse =
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-type UpdateOrgSettingsVisitor = Visitor & {
+export type UpdateOrgSettingsVisitor = Visitor & {
     success: () => void
     badRequest?: (error: UpdateOrgSettingsBadRequestResponse) => void
-    orgsNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    orgsNotEnabled?: (error: OrgsNotEnabledErrorResponse) => void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
     forbidden?: (error: ForbiddenErrorResponse) => void
 }
@@ -61,12 +70,21 @@ type UpdateOrgSettingsVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type UpdateOrgSettingsFn = ReturnType<typeof updateOrgSettings>
+
 export const updateOrgSettings = (authUrl: string) => async (request: UpdateOrgSettingsRequest) => {
+    const internalRequest: InternalUpdateOrgSettingsRequest = {
+        org_id: request.org_id,
+        name: request.name,
+        autojoin_by_domain: request.allow_users_to_join_by_domain,
+        restrict_to_domain: request.restrict_invites_by_domain,
+        require_2fa_by: request.require_2fa_by,
+    }
     return makeRequest<UpdateOrgSettingsVisitor, UpdateOrgSettingsErrorResponse>({
         authUrl,
         path: '/update_org_metadata',
         method: 'POST',
-        body: request,
+        body: internalRequest,
         responseToSuccessHandler: (visitor) => {
             return () => visitor.success()
         },

@@ -47,7 +47,7 @@ export type UpdateUserFacingMetadataErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type UpdateUserFacingMetadataVisitor = Visitor & {
+export type UpdateUserFacingMetadataVisitor = Visitor & {
     success: () => void
     badRequest?: (error: UpdateMetadataBadRequestResponse) => void
 }
@@ -55,7 +55,9 @@ type UpdateUserFacingMetadataVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const updateUserFacingMetadata = (authUrl: string) => async (request: UpdateUserFacingMetadataRequest) => {
+export type UpdateUserMetadataFn = ReturnType<typeof updateUserMetadata>
+
+export const updateUserMetadata = (authUrl: string) => async (request: UpdateUserFacingMetadataRequest) => {
     return makeRequest<UpdateUserFacingMetadataVisitor, UpdateUserFacingMetadataErrorResponse>({
         authUrl,
         path: '/update_metadata',

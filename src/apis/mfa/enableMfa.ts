@@ -45,7 +45,7 @@ export type MfaEnableErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type MfaEnableVisitor = Visitor & {
+export type MfaEnableVisitor = Visitor & {
     success: () => void
     badRequest?: (error: MfaEnableBadRequestResponse) => void
     alreadyEnabled?: (error: MfaAlreadyEnabledResponse) => void
@@ -54,6 +54,8 @@ type MfaEnableVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type EnableMfaFn = ReturnType<typeof enableMfa>
+
 export const enableMfa = (authUrl: string) => async (request: MfaEnableRequest) => {
     return makeRequest<MfaEnableVisitor, MfaEnableErrorResponse>({
         authUrl,

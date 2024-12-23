@@ -18,7 +18,7 @@ export type DeleteAccountErrorResponse = DeleteAccountDisabledResponse | Unautho
 /////////////////
 ///////////////// Visitor
 /////////////////
-type DeleteAccountVisitor = Visitor & {
+export type DeleteAccountVisitor = Visitor & {
     success: () => void
     actionDisabled?: (error: DeleteAccountDisabledResponse) => void
 }
@@ -26,6 +26,8 @@ type DeleteAccountVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type DeleteAccountFn = ReturnType<typeof deleteAccount>
+
 export const deleteAccount = (authUrl: string) => async () => {
     return makeRequest<DeleteAccountVisitor, DeleteAccountErrorResponse>({
         authUrl,

@@ -3,7 +3,7 @@ import {
     EmailNotConfirmedResponse,
     ErrorCode,
     ForbiddenErrorResponse,
-    OrgNotEnabledErrorResponse,
+    OrgsNotEnabledErrorResponse,
     OrgNotFoundErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
@@ -37,7 +37,7 @@ export type FetchOrgSettingsSuccessResponse = {
 ///////////////// Error Responses
 /////////////////
 export type FetchOrgSettingsErrorResponse =
-    | OrgNotEnabledErrorResponse
+    | OrgsNotEnabledErrorResponse
     | OrgNotFoundErrorResponse
     | UserNotFoundErrorResponse
     | UnauthorizedResponse
@@ -47,9 +47,9 @@ export type FetchOrgSettingsErrorResponse =
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-type FetchOrgSettingsVisitor = Visitor & {
+export type FetchOrgSettingsVisitor = Visitor & {
     success: (data: FetchOrgSettingsSuccessResponse) => void
-    orgsNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    orgsNotEnabled?: (error: OrgsNotEnabledErrorResponse) => void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
     userNotFoundInOrg?: (error: UserNotFoundErrorResponse) => void
     forbidden?: (error: ForbiddenErrorResponse) => void
@@ -58,6 +58,8 @@ type FetchOrgSettingsVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type FetchOrgSettingsFn = ReturnType<typeof fetchOrgSettings>
+
 export const fetchOrgSettings = (authUrl: string) => async (orgId: string) => {
     return makeRequest<FetchOrgSettingsVisitor, FetchOrgSettingsErrorResponse, FetchOrgSettingsSuccessResponse>({
         authUrl,

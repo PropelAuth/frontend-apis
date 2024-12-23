@@ -31,10 +31,6 @@ export interface EmailPasswordLoginRequestBadRequestResponse extends ApiErrorRes
     }
 }
 
-type NoEmailProvidedErrorResponse = GenericErrorResponse & {
-    error_code: ErrorCode.BadRequest
-}
-
 type PasswordLoginDisabledErrorResponse = GenericErrorResponse & {
     error_code: ErrorCode.ActionDisabled
 }
@@ -53,7 +49,6 @@ export type EmailPasswordLoginSuccessResponse = {
 export type EmailPasswordLoginErrorResponse =
     | EmailPasswordLoginRequestBadRequestResponse
     | UnexpectedErrorResponse
-    | NoEmailProvidedErrorResponse
     | PasswordLoginDisabledErrorResponse
     | UserAccountDisabledErrorResponse
     | UserAccountLockedErrorResponse
@@ -62,19 +57,20 @@ export type EmailPasswordLoginErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type EmailPasswordLoginVisitor = Visitor & {
+export type EmailPasswordLoginVisitor = Visitor & {
     success: (data: EmailPasswordLoginSuccessResponse) => void
     badRequest?: (error: EmailPasswordLoginRequestBadRequestResponse) => void
-    noEmailProvided?: (error: NoEmailProvidedErrorResponse) => void
     passwordLoginDisabled?: (error: PasswordLoginDisabledErrorResponse) => void
     userAccountDisabled?: (error: UserAccountDisabledErrorResponse) => void
     userAccountLocked?: (error: UserAccountLockedErrorResponse) => void
-    mustUseSamlLogin?: (error: UserNotFoundErrorResponse) => void
+    invalidCredentials?: (error: UserNotFoundErrorResponse) => void
 }
 
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type EmailPasswordLoginFn = ReturnType<typeof emailPasswordLogin>
+
 export const emailPasswordLogin = (authUrl: string) => async (request: EmailPasswordLoginRequest) => {
     return makeRequest<EmailPasswordLoginVisitor, EmailPasswordLoginErrorResponse, EmailPasswordLoginSuccessResponse>({
         authUrl,
@@ -92,8 +88,6 @@ export const emailPasswordLogin = (authUrl: string) => async (request: EmailPass
                     return getVisitorOrUndefined(visitor.badRequest, error)
                 case ErrorCode.UnexpectedError:
                     return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
-                case ErrorCode.BadRequest:
-                    return getVisitorOrUndefined(visitor.noEmailProvided, error)
                 case ErrorCode.ActionDisabled:
                     return getVisitorOrUndefined(visitor.passwordLoginDisabled, error)
                 case ErrorCode.UserAccountDisabled:
@@ -101,7 +95,7 @@ export const emailPasswordLogin = (authUrl: string) => async (request: EmailPass
                 case ErrorCode.UserAccountLocked:
                     return getVisitorOrUndefined(visitor.userAccountLocked, error)
                 case ErrorCode.UserNotFound:
-                    return getVisitorOrUndefined(visitor.mustUseSamlLogin, error)
+                    return getVisitorOrUndefined(visitor.invalidCredentials, error)
                 default:
                     unmatchedCase(errorCode)
                     return undefined

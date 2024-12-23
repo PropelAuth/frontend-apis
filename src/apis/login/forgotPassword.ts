@@ -36,7 +36,7 @@ export type ForgotPasswordErrorResponse = ForgotPasswordBadRequestResponse | Une
 /////////////////
 ///////////////// Visitor
 /////////////////
-type ForgotPasswordVisitor = Visitor & {
+export type ForgotPasswordVisitor = Visitor & {
     success: (data: ForgotPasswordSuccessResponse) => void
     badRequest?: (error: ForgotPasswordBadRequestResponse) => void
 }
@@ -44,6 +44,8 @@ type ForgotPasswordVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type SendForgotPasswordEmailFn = ReturnType<typeof sendForgotPasswordEmail>
+
 export const sendForgotPasswordEmail = (authUrl: string) => async (request: ForgotPasswordRequest) => {
     return makeRequest<ForgotPasswordVisitor, ForgotPasswordErrorResponse, ForgotPasswordSuccessResponse>({
         authUrl,

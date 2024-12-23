@@ -3,19 +3,12 @@ import {
     EmailNotConfirmedResponse,
     ErrorCode,
     ForbiddenErrorResponse,
-    GenericErrorResponse,
+    InvalidExpirationOptionResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../../helpers/errors'
 import { makeRequest, Visitor } from '../../helpers/request'
 import { ApiKeyExpirationOption } from './types'
-
-/////////////////
-///////////////// Errors specific to this request
-/////////////////
-export interface InvalidExpirationOptionResponse extends GenericErrorResponse {
-    error_code: ErrorCode.BadRequest
-}
 
 /////////////////
 ///////////////// Success and Error Responses
@@ -35,7 +28,7 @@ export type CreateOrgApiKeyErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type CreateOrgApiKeyVisitor = Visitor & {
+export type CreateOrgApiKeyVisitor = Visitor & {
     success: (data: CreateOrgApiKeySuccessResponse) => void
     invalidExpirationOption?: (error: InvalidExpirationOptionResponse) => void
     noOrgApiKeyPermission?: (error: ForbiddenErrorResponse) => void
@@ -44,6 +37,8 @@ type CreateOrgApiKeyVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type CreateOrgApiKeyFn = ReturnType<typeof createOrgApiKey>
+
 export const createOrgApiKey =
     (authUrl: string) => async (orgId: string, expirationOption?: ApiKeyExpirationOption) => {
         return makeRequest<CreateOrgApiKeyVisitor, CreateOrgApiKeyErrorResponse, CreateOrgApiKeySuccessResponse>({

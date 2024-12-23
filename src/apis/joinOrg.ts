@@ -2,9 +2,9 @@ import { getVisitorOrUndefined, unmatchedCase } from '../helpers/error_utils'
 import {
     EmailNotConfirmedResponse,
     ErrorCode,
-    GenericErrorResponse,
     OrgMaxUsersLimitExceededErrorResponse,
     OrgNotFoundErrorResponse,
+    OrgsNotEnabledErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
     UserMaxOrgsLimitExceededErrorResponse,
@@ -19,10 +19,6 @@ export type JoinOrgSuccessResponse = {
     first_org: boolean
 }
 
-export interface OrgsNotEnabledErrorResponse extends GenericErrorResponse {
-    error_code: ErrorCode.ActionDisabled
-}
-
 export type JoinOrgErrorResponse =
     | OrgsNotEnabledErrorResponse
     | UserMaxOrgsLimitExceededErrorResponse
@@ -35,7 +31,7 @@ export type JoinOrgErrorResponse =
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-type JoinOrgVisitor = Visitor & {
+export type JoinOrgVisitor = Visitor & {
     success: (data: JoinOrgSuccessResponse) => void
     userAlreadyInTooManyOrgs?: (error: UserMaxOrgsLimitExceededErrorResponse) => void
     orgMaxUsersLimitExceeded?: (error: OrgMaxUsersLimitExceededErrorResponse) => void
@@ -46,6 +42,8 @@ type JoinOrgVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type JoinOrgFn = ReturnType<typeof joinOrg>
+
 export const joinOrg = (authUrl: string) => async (orgId: string) => {
     return makeRequest<JoinOrgVisitor, JoinOrgErrorResponse, JoinOrgSuccessResponse>({
         authUrl,

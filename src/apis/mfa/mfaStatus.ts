@@ -33,7 +33,7 @@ export type MfaStatusErrorResponse = UnauthorizedResponse | UnexpectedErrorRespo
 /////////////////
 ///////////////// Visitor
 /////////////////
-type MfaStatusVisitor = Visitor & {
+export type MfaStatusVisitor = Visitor & {
     success: (response: MfaStatusResponse) => MfaStatusResponse | void
     unauthorized?: (error: UnauthorizedResponse) => void
     emailNotConfirmed?: (error: EmailNotConfirmedResponse) => void
@@ -42,8 +42,10 @@ type MfaStatusVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type FetchMfaStatusWithNewSecretFn = ReturnType<typeof fetchMfaStatusWithNewSecret>
+
 export const fetchMfaStatusWithNewSecret = (authUrl: string) => async () => {
-    const res = await makeRequest<MfaStatusVisitor, MfaStatusErrorResponse, MfaStatusResponse>({
+    return await makeRequest<MfaStatusVisitor, MfaStatusErrorResponse, MfaStatusResponse>({
         authUrl,
         path: '/security_status',
         method: 'POST',
@@ -66,8 +68,6 @@ export const fetchMfaStatusWithNewSecret = (authUrl: string) => async () => {
             }
         },
     })
-
-    return res
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

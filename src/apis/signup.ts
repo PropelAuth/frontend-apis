@@ -48,7 +48,7 @@ export type SignupErrorResponse = SignupBadRequestResponse | SignupDisabledError
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-type SignupVisitor = Visitor & {
+export type SignupVisitor = Visitor & {
     success: (data: SignupSuccessResponse) => void
     badRequest?: (error: SignupBadRequestResponse) => void
     signupDisabled?: (error: SignupDisabledError) => void
@@ -57,6 +57,8 @@ type SignupVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type SignupFn = ReturnType<typeof signup>
+
 export const signup = (authUrl: string) => async (request: SignupRequest) => {
     return makeRequest<SignupVisitor, SignupErrorResponse, SignupSuccessResponse>({
         authUrl,

@@ -25,7 +25,7 @@ export type SendEmailConfirmationErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type SendEmailConfirmationVisitor = Visitor & {
+export type SendEmailConfirmationVisitor = Visitor & {
     success: () => void
     rateLimited?: (error: RateLimitedErrorResponse) => void
     emailAlreadyConfirmed?: (error: EmailAlreadyConfirmedErrorResponse) => void
@@ -34,6 +34,8 @@ type SendEmailConfirmationVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type ResendEmailConfirmationFn = ReturnType<typeof resendEmailConfirmation>
+
 export const resendEmailConfirmation = (authUrl: string) => async () => {
     return makeRequest<SendEmailConfirmationVisitor, SendEmailConfirmationErrorResponse>({
         authUrl,

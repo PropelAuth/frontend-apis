@@ -30,7 +30,7 @@ export type DeleteOrgErrorResponse =
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-type DeleteOrgVisitor = Visitor & {
+export type DeleteOrgVisitor = Visitor & {
     success: () => void
     actionDisabled?: (error: DeleteOrgDisabledResponse) => void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
@@ -40,6 +40,8 @@ type DeleteOrgVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type DeleteOrgFn = ReturnType<typeof deleteOrg>
+
 export const deleteOrg = (authUrl: string) => async (orgId: string) => {
     return makeRequest<DeleteOrgVisitor, DeleteOrgErrorResponse>({
         authUrl,

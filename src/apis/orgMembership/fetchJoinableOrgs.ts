@@ -2,7 +2,7 @@ import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
 import {
     EmailNotConfirmedResponse,
     ErrorCode,
-    OrgNotEnabledErrorResponse,
+    OrgsNotEnabledErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../../helpers/errors'
@@ -23,7 +23,7 @@ export type FetchJoinableOrgsSuccessResponse = {
 ///////////////// Error Responses
 /////////////////
 export type FetchJoinableOrgsErrorResponse =
-    | OrgNotEnabledErrorResponse
+    | OrgsNotEnabledErrorResponse
     | UnauthorizedResponse
     | UnexpectedErrorResponse
     | EmailNotConfirmedResponse
@@ -31,14 +31,16 @@ export type FetchJoinableOrgsErrorResponse =
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-type FetchJoinableOrgsVisitor = Visitor & {
+export type FetchJoinableOrgsVisitor = Visitor & {
     success: (data: FetchJoinableOrgsSuccessResponse) => void
-    orgsNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    orgsNotEnabled?: (error: OrgsNotEnabledErrorResponse) => void
 }
 
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type FetchJoinableOrgsFn = ReturnType<typeof fetchJoinableOrgs>
+
 export const fetchJoinableOrgs = (authUrl: string) => async () => {
     return makeRequest<FetchJoinableOrgsVisitor, FetchJoinableOrgsErrorResponse, FetchJoinableOrgsSuccessResponse>({
         authUrl,

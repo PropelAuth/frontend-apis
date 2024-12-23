@@ -2,7 +2,7 @@ import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
 import {
     EmailNotConfirmedResponse,
     ErrorCode,
-    OrgNotEnabledErrorResponse,
+    OrgsNotEnabledErrorResponse,
     OrgNotFoundErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
@@ -37,7 +37,7 @@ export type FetchExpiredOrgInvitesSuccessResponse = {
 }
 
 export type FetchOrgExpiredOrgInvitesErrorResponse =
-    | OrgNotEnabledErrorResponse
+    | OrgsNotEnabledErrorResponse
     | OrgNotFoundErrorResponse
     | UnauthorizedResponse
     | UnexpectedErrorResponse
@@ -46,15 +46,17 @@ export type FetchOrgExpiredOrgInvitesErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type FetchExpiredOrgInvitesVisitor = Visitor & {
+export type FetchExpiredOrgInvitesVisitor = Visitor & {
     success: (data: FetchExpiredOrgInvitesSuccessResponse) => FetchExpiredOrgInvitesSuccessResponse | void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
-    orgsNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    orgsNotEnabled?: (error: OrgsNotEnabledErrorResponse) => void
 }
 
 /////////////////
 ///////////////// Request
 /////////////////
+export type FetchExpiredOrgInvitesFn = ReturnType<typeof fetchExpiredOrgInvites>
+
 export const fetchExpiredOrgInvites =
     (authUrl: string) => async (orgId: string, params?: FetchExpiredOrgInvitesRequestParams) => {
         const queryParams = new URLSearchParams()

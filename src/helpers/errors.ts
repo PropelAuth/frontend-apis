@@ -72,7 +72,7 @@ export interface UserNotFoundErrorResponse extends GenericErrorResponse {
     error_code: ErrorCode.UserNotFound
 }
 
-export interface OrgNotEnabledErrorResponse extends GenericErrorResponse {
+export interface OrgsNotEnabledErrorResponse extends GenericErrorResponse {
     error_code: ErrorCode.ActionDisabled
 }
 
@@ -98,4 +98,26 @@ export interface UserAccountLockedErrorResponse extends GenericErrorResponse {
 
 export interface UserAccountDisabledErrorResponse extends GenericErrorResponse {
     error_code: ErrorCode.UserAccountDisabled
+}
+
+export interface IncorrectPasswordResponse extends GenericErrorResponse {
+    error_code: ErrorCode.IncorrectPassword
+    user_facing_error: string
+}
+
+export interface InvalidExpirationOptionResponse extends GenericErrorResponse {
+    error_code: ErrorCode.BadRequest
+    user_facing_error: string
+}
+
+export interface MfaSessionTimeoutErrorResponse extends ApiErrorResponse {
+    error_code: ErrorCode.InvalidMfaCookie
+}
+
+export interface MfaAccountLockedErrorResponse extends ApiErrorResponse {
+    error_code: ErrorCode.UserAccountMfaLocked
+}
+
+export interface IncorrectMfaCodeErrorResponse extends ApiErrorResponse {
+    error_code: ErrorCode.IncorrectMfaCode
 }

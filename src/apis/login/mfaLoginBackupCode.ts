@@ -1,8 +1,10 @@
 import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
 import {
-    ApiErrorResponse,
     EmailNotConfirmedResponse,
     ErrorCode,
+    IncorrectMfaCodeErrorResponse,
+    MfaAccountLockedErrorResponse,
+    MfaSessionTimeoutErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
     UserAccountDisabledErrorResponse,
@@ -17,17 +19,6 @@ export type MfaLoginBackupCodeRequest = {
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface MfaSessionTimeoutErrorResponse extends ApiErrorResponse {
-    error_code: ErrorCode.InvalidMfaCookie
-}
-
-export interface MfaAccountLockedErrorResponse extends ApiErrorResponse {
-    error_code: ErrorCode.UserAccountMfaLocked
-}
-
-export interface IncorrectMfaCodeErrorResponse extends ApiErrorResponse {
-    error_code: ErrorCode.IncorrectMfaCode
-}
 
 /////////////////
 ///////////////// Success and Error Responses
@@ -48,7 +39,7 @@ export type MfaLoginBackupCodeErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type MfaLoginBackupCodeVisitor = Visitor & {
+export type MfaLoginBackupCodeVisitor = Visitor & {
     success: (data: MfaLoginBackupCodeSuccessResponse) => void
     invalidCode?: (error: IncorrectMfaCodeErrorResponse) => void
     sessionTimeout?: (error: MfaSessionTimeoutErrorResponse) => void
@@ -59,6 +50,8 @@ type MfaLoginBackupCodeVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type VerifyMfaBackupCodeForLoginFn = ReturnType<typeof verifyMfaBackupCodeForLogin>
+
 export const verifyMfaBackupCodeForLogin = (authUrl: string) => async (request: MfaLoginBackupCodeRequest) => {
     return makeRequest<MfaLoginBackupCodeVisitor, MfaLoginBackupCodeErrorResponse, MfaLoginBackupCodeSuccessResponse>({
         authUrl,

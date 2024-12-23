@@ -4,7 +4,7 @@ import {
     EmailNotConfirmedResponse,
     ErrorCode,
     ForbiddenErrorResponse,
-    OrgNotEnabledErrorResponse,
+    OrgsNotEnabledErrorResponse,
     OrgNotFoundErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
@@ -23,7 +23,7 @@ export type RemoveUserFromOrgRequest = {
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface RemoveUserFromOrgBadRequestResponse extends ApiErrorResponse {
+export interface MustBeAtLeastOneOwnerErrorResponse extends ApiErrorResponse {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
         org_id: string
@@ -37,8 +37,8 @@ export interface RemoveUserFromOrgBadRequestResponse extends ApiErrorResponse {
 ///////////////// Success and Error Responses
 /////////////////
 export type RemoveUserFromOrgErrorResponse =
-    | RemoveUserFromOrgBadRequestResponse
-    | OrgNotEnabledErrorResponse
+    | MustBeAtLeastOneOwnerErrorResponse
+    | OrgsNotEnabledErrorResponse
     | OrgNotFoundErrorResponse
     | UserNotFoundErrorResponse
     | ForbiddenErrorResponse
@@ -49,18 +49,20 @@ export type RemoveUserFromOrgErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type RemoveUserFromOrgVisitor = Visitor & {
+export type RemoveUserFromOrgVisitor = Visitor & {
     success: () => void
-    badRequest?: (error: RemoveUserFromOrgBadRequestResponse) => void
+    mustBeAtLeastOneOwner?: (error: MustBeAtLeastOneOwnerErrorResponse) => void
     noRemovePermission?: (error: ForbiddenErrorResponse) => void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
-    orgsNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    orgsNotEnabled?: (error: OrgsNotEnabledErrorResponse) => void
     userNotFoundInOrg?: (error: UserNotFoundErrorResponse) => void
 }
 
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type RemoveUserFromOrgFn = ReturnType<typeof removeUserFromOrg>
+
 export const removeUserFromOrg = (authUrl: string) => async (request: RemoveUserFromOrgRequest) => {
     return makeRequest<RemoveUserFromOrgVisitor, RemoveUserFromOrgErrorResponse>({
         authUrl,
@@ -74,7 +76,7 @@ export const removeUserFromOrg = (authUrl: string) => async (request: RemoveUser
             const { error_code: errorCode } = error
             switch (errorCode) {
                 case ErrorCode.InvalidRequestFields:
-                    return getVisitorOrUndefined(visitor.badRequest, error)
+                    return getVisitorOrUndefined(visitor.mustBeAtLeastOneOwner, error)
                 case ErrorCode.Forbidden:
                     return getVisitorOrUndefined(visitor.noRemovePermission, error)
                 case ErrorCode.OrgNotFound:

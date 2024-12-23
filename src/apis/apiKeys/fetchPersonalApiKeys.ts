@@ -61,11 +61,16 @@ export type FetchPersonalApiKeysErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type FetchPersonalApiKeysVisitor = Visitor & {
+export type FetchPersonalApiKeysVisitor = Visitor & {
     success: (data: FetchPersonalApiKeysSuccessResponse) => FetchPersonalApiKeysSuccessResponse | void
     badRequest?: (error: FetchPersonalApiKeysBadRequestResponse) => void
     personalApiKeysDisabled?: (error: PersonalApiKeysDisabledErrorResponse) => void
 }
+
+/////////////////
+///////////////// Request
+/////////////////
+export type FetchPersonalApiKeysFn = ReturnType<typeof fetchPersonalApiKeys>
 
 export const fetchPersonalApiKeys = (authUrl: string) => async (request: FetchPersonalApiKeysRequest) => {
     const queryParams = new URLSearchParams()

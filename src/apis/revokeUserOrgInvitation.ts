@@ -4,7 +4,7 @@ import {
     EmailNotConfirmedResponse,
     ErrorCode,
     ForbiddenErrorResponse,
-    OrgNotEnabledErrorResponse,
+    OrgsNotEnabledErrorResponse,
     OrgNotFoundErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
@@ -25,11 +25,9 @@ export type RevokeUserOrgInvitationRequest = {
 export interface RevokeUserOrgInvitationFieldValidationErrorResponse extends ApiErrorResponse {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
-        org_id?: string
         role?: string
     }
     field_errors: {
-        org_id?: string
         role?: string
     }
 }
@@ -39,7 +37,7 @@ export interface RevokeUserOrgInvitationFieldValidationErrorResponse extends Api
 /////////////////
 export type RevokeUserOrgInvitationErrorResponse =
     | RevokeUserOrgInvitationFieldValidationErrorResponse
-    | OrgNotEnabledErrorResponse
+    | OrgsNotEnabledErrorResponse
     | OrgNotFoundErrorResponse
     | ForbiddenErrorResponse
     | UnexpectedErrorResponse
@@ -49,16 +47,18 @@ export type RevokeUserOrgInvitationErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type RevokeUserOrgInvitationVisitor = Visitor & {
+export type RevokeUserOrgInvitationVisitor = Visitor & {
     success: () => void
     badRequest?: (error: RevokeUserOrgInvitationFieldValidationErrorResponse) => void
     noRevokeInvitePermission?: (error: ForbiddenErrorResponse) => void
-    orgsNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    orgsNotEnabled?: (error: OrgsNotEnabledErrorResponse) => void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
 }
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type RevokeUserOrgInvitationFn = ReturnType<typeof revokeUserOrgInvitation>
+
 export const revokeUserOrgInvitation = (authUrl: string) => async (request: RevokeUserOrgInvitationRequest) => {
     return makeRequest<RevokeUserOrgInvitationVisitor, RevokeUserOrgInvitationErrorResponse>({
         authUrl,

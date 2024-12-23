@@ -6,7 +6,7 @@ import {
     ForbiddenErrorResponse,
     GenericErrorResponse,
     OrgMaxUsersLimitExceededErrorResponse,
-    OrgNotEnabledErrorResponse,
+    OrgsNotEnabledErrorResponse,
     OrgNotFoundErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
@@ -48,7 +48,7 @@ export interface UserAlreadyInOrgErrorResponse extends GenericErrorResponse {
 /////////////////
 export type InviteUserToOrgErrorResponse =
     | InviteUserToOrgFieldValidationErrorResponse
-    | OrgNotEnabledErrorResponse
+    | OrgsNotEnabledErrorResponse
     | OrgNotFoundErrorResponse
     | OrgMaxUsersLimitExceededErrorResponse
     | UserAlreadyInOrgErrorResponse
@@ -60,19 +60,21 @@ export type InviteUserToOrgErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type InviteUserToOrgVisitor = Visitor & {
+export type InviteUserToOrgVisitor = Visitor & {
     success: () => void
     badRequest?: (error: InviteUserToOrgFieldValidationErrorResponse) => void
     noInvitePermission?: (error: ForbiddenErrorResponse) => void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
     orgMaxUsersLimitExceeded?: (error: OrgMaxUsersLimitExceededErrorResponse) => void
     userAlreadyInOrg?: (error: UserAlreadyInOrgErrorResponse) => void
-    orgsNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    orgsNotEnabled?: (error: OrgsNotEnabledErrorResponse) => void
 }
 
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type InviteUserToOrgFn = ReturnType<typeof inviteUserToOrg>
+
 export const inviteUserToOrg = (authUrl: string) => async (request: InviteUserToOrgRequest) => {
     return makeRequest<InviteUserToOrgVisitor, InviteUserToOrgErrorResponse>({
         authUrl,

@@ -4,7 +4,7 @@ import {
     EmailNotConfirmedResponse,
     ErrorCode,
     ForbiddenErrorResponse,
-    OrgNotEnabledErrorResponse,
+    OrgsNotEnabledErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
     UserNotFoundErrorResponse,
@@ -41,7 +41,7 @@ export interface UpdateUserRoleInOrgFieldValidationErrorResponse extends ApiErro
 /////////////////
 export type UpdateUserRoleInOrgErrorResponse =
     | UpdateUserRoleInOrgFieldValidationErrorResponse
-    | OrgNotEnabledErrorResponse
+    | OrgsNotEnabledErrorResponse
     | UserNotFoundErrorResponse
     | ForbiddenErrorResponse
     | UnexpectedErrorResponse
@@ -51,16 +51,18 @@ export type UpdateUserRoleInOrgErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type UpdateUserRoleInOrgVisitor = Visitor & {
+export type UpdateUserRoleInOrgVisitor = Visitor & {
     success: () => void
     badRequest?: (error: UpdateUserRoleInOrgFieldValidationErrorResponse) => void
     noUpdateRolePermission?: (error: ForbiddenErrorResponse) => void
     userNotFoundInOrg?: (error: UserNotFoundErrorResponse) => void
-    orgsNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    orgsNotEnabled?: (error: OrgsNotEnabledErrorResponse) => void
 }
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type UpdateUserRoleInOrgFn = ReturnType<typeof updateUserRoleInOrg>
+
 export const updateUserRoleInOrg = (authUrl: string) => async (request: UpdateUserRoleInOrgRequest) => {
     return makeRequest<UpdateUserRoleInOrgVisitor, UpdateUserRoleInOrgErrorResponse>({
         authUrl,

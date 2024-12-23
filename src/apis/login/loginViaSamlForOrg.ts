@@ -5,45 +5,52 @@ import { Visitor, makeRequest } from '../../helpers/request'
 /////////////////
 ///////////////// Request
 /////////////////
-export type SamlLoginByEmailDomainRequest =
+export type LoginViaSamlForOrgRequest =
     | {
           domain: string
       }
     | {
           email: string
       }
+    | {
+          org_id: string
+      }
 
 /////////////////
 ///////////////// Success and Error Responses
 /////////////////
-export type SamlLoginByEmailDomainSuccessResponse = {
+export type LoginViaSamlForOrgSuccessfulResponse = {
     login_url: string
 }
 
-export type SamlLoginByEmailDomainErrorResponse = UnexpectedErrorResponse | OrgNotFoundErrorResponse
+export type LoginViaSamlForOrgErrorResponse = UnexpectedErrorResponse | OrgNotFoundErrorResponse
 
 /////////////////
 ///////////////// Visitor
 /////////////////
-type SamlLoginByEmailDomainVisitor = Visitor & {
-    success: (data: SamlLoginByEmailDomainSuccessResponse) => void
+export type LoginViaSamlForOrgVisitor = Visitor & {
+    success: (data: LoginViaSamlForOrgSuccessfulResponse) => void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
 }
 
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const samlLoginByEmailDomain = (authUrl: string) => async (request: SamlLoginByEmailDomainRequest) => {
+export type LoginViaSamlForOrgFn = ReturnType<typeof loginViaSamlForOrg>
+
+export const loginViaSamlForOrg = (authUrl: string) => async (request: LoginViaSamlForOrgRequest) => {
     const queryParams = new URLSearchParams()
     if ('domain' in request) {
         queryParams.append('domain', request.domain)
+    } else if ('org_id' in request) {
+        queryParams.append('org_id', request.org_id)
     } else {
         queryParams.append('email', request.email)
     }
     return makeRequest<
-        SamlLoginByEmailDomainVisitor,
-        SamlLoginByEmailDomainErrorResponse,
-        SamlLoginByEmailDomainSuccessResponse
+        LoginViaSamlForOrgVisitor,
+        LoginViaSamlForOrgErrorResponse,
+        LoginViaSamlForOrgSuccessfulResponse
     >({
         authUrl,
         path: '/login/check',

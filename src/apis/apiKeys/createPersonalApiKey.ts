@@ -3,19 +3,12 @@ import {
     EmailNotConfirmedResponse,
     ErrorCode,
     ForbiddenErrorResponse,
-    GenericErrorResponse,
+    InvalidExpirationOptionResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../../helpers/errors'
 import { makeRequest, Visitor } from '../../helpers/request'
 import { ApiKeyExpirationOption } from './types'
-
-/////////////////
-///////////////// Errors specific to this request
-/////////////////
-export interface InvalidExpirationOptionResponse extends GenericErrorResponse {
-    error_code: ErrorCode.BadRequest
-}
 
 /////////////////
 ///////////////// Success and Error Responses
@@ -35,7 +28,7 @@ export type CreatePersonalApiKeyErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type CreatePersonalApiKeyVisitor = Visitor & {
+export type CreatePersonalApiKeyVisitor = Visitor & {
     success: (data: CreatePersonalApiKeySuccessResponse) => void
     invalidExpirationOption?: (error: InvalidExpirationOptionResponse) => void
     noPersonalApiKeyPermission?: (error: ForbiddenErrorResponse) => void
@@ -44,6 +37,8 @@ type CreatePersonalApiKeyVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type CreatePersonalApiKeyFn = ReturnType<typeof createPersonalApiKey>
+
 export const createPersonalApiKey = (authUrl: string) => async (expirationOption?: ApiKeyExpirationOption) => {
     return makeRequest<
         CreatePersonalApiKeyVisitor,

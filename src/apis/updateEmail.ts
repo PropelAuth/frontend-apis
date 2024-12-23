@@ -4,6 +4,7 @@ import {
     EmailNotConfirmedResponse,
     ErrorCode,
     GenericErrorResponse,
+    IncorrectPasswordResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../helpers/errors'
@@ -42,10 +43,6 @@ export interface DisabledResponse extends GenericErrorResponse {
     error_code: ErrorCode.ActionDisabled
 }
 
-export interface IncorrectPasswordResponse extends GenericErrorResponse {
-    error_code: ErrorCode.IncorrectPassword
-}
-
 export interface FailedToSendEmailResponse extends GenericErrorResponse {
     error_code: ErrorCode.EmailSendFailure
 }
@@ -72,7 +69,7 @@ export type UpdateEmailErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type UpdateEmailVisitor = Visitor & {
+export type UpdateEmailVisitor = Visitor & {
     success: () => void
     badRequest?: (error: UpdateEmailBadRequestResponse) => void
     cannotChangeEmailDueToOrgMembership?: (error: OrgRestrictionErrorResponse) => void
@@ -86,6 +83,8 @@ type UpdateEmailVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type UpdateEmailFn = ReturnType<typeof updateEmail>
+
 export const updateEmail = (authUrl: string) => async (request: UpdateEmailRequest) => {
     return makeRequest<UpdateEmailVisitor, UpdateEmailErrorResponse>({
         authUrl,

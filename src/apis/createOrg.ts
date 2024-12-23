@@ -15,6 +15,12 @@ import { Visitor, makeRequest } from '../helpers/request'
 /////////////////
 export type CreateOrgRequest = {
     name: string
+    allow_users_to_join_by_domain?: boolean
+    restrict_invites_by_domain?: boolean
+}
+
+export type InternalCreateOrgRequest = {
+    name: string
     autojoin_by_domain: boolean
     restrict_to_domain: boolean
 }
@@ -60,7 +66,7 @@ export type CreateOrgErrorResponse =
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-type CreateOrgVisitor = Visitor & {
+export type CreateOrgVisitor = Visitor & {
     success: (data: CreateOrgSuccessResponse) => void
     badRequest?: (error: CreateOrgBadRequestResponse) => void
     cannotCreateOrgs?: (error: CreateOrgDisabledResponse) => void
@@ -71,13 +77,21 @@ type CreateOrgVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type CreateOrgFn = ReturnType<typeof createOrg>
+
 export const createOrg = (authUrl: string) => async (request: CreateOrgRequest) => {
+    const internalRequest: InternalCreateOrgRequest = {
+        name: request.name,
+        autojoin_by_domain: request.allow_users_to_join_by_domain ?? false,
+        restrict_to_domain: request.restrict_invites_by_domain ?? false,
+    }
+
     return makeRequest<CreateOrgVisitor, CreateOrgErrorResponse, CreateOrgSuccessResponse>({
         authUrl,
         path: '/create_org',
         parseResponseAsJson: true,
         method: 'POST',
-        body: request,
+        body: internalRequest,
         responseToSuccessHandler: (response, visitor) => {
             return () => visitor.success(response)
         },

@@ -2,7 +2,7 @@ import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
 import {
     EmailNotConfirmedResponse,
     ErrorCode,
-    OrgNotEnabledErrorResponse,
+    OrgsNotEnabledErrorResponse,
     OrgNotFoundErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
@@ -37,7 +37,7 @@ export type FetchPendingOrgInvitesSuccessResponse = {
 }
 
 export type FetchOrgPendingOrgInvitesErrorResponse =
-    | OrgNotEnabledErrorResponse
+    | OrgsNotEnabledErrorResponse
     | OrgNotFoundErrorResponse
     | UnauthorizedResponse
     | UnexpectedErrorResponse
@@ -46,15 +46,17 @@ export type FetchOrgPendingOrgInvitesErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type FetchPendingOrgInvitesVisitor = Visitor & {
+export type FetchPendingOrgInvitesVisitor = Visitor & {
     success: (data: FetchPendingOrgInvitesSuccessResponse) => FetchPendingOrgInvitesSuccessResponse | void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
-    orgsNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    orgsNotEnabled?: (error: OrgsNotEnabledErrorResponse) => void
 }
 
 /////////////////
 ///////////////// Request
 /////////////////
+export type FetchPendingOrgInvitesFn = ReturnType<typeof fetchPendingOrgInvites>
+
 export const fetchPendingOrgInvites =
     (authUrl: string) => async (orgId: string, params?: FetchPendingOrgInvitesRequestParams) => {
         const queryParams = new URLSearchParams()

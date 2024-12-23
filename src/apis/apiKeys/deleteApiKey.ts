@@ -22,7 +22,7 @@ export type DeleteApiKeyErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type DeleteApiKeyVisitor = Visitor & {
+export type DeleteApiKeyVisitor = Visitor & {
     success: () => void
     noApiKeyPermission?: (error: ForbiddenErrorResponse) => void
     apiKeyNotFound?: (error: NotFoundErrorResponse) => void
@@ -31,6 +31,8 @@ type DeleteApiKeyVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type DeleteApiKeyFn = ReturnType<typeof deleteApiKey>
+
 export const deleteApiKey = (authUrl: string) => async (apiKeyId: string) => {
     return makeRequest<DeleteApiKeyVisitor, DeleteApiKeyErrorResponse>({
         authUrl,

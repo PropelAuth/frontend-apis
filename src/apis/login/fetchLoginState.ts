@@ -15,13 +15,15 @@ export type FetchLoginStateErrorResponse = UnexpectedErrorResponse
 /////////////////
 ///////////////// Visitor
 /////////////////
-type FetchLoginStateVisitor = Visitor & {
+export type FetchLoginStateVisitor = Visitor & {
     success: (data: FetchLoginStateSuccessResponse) => void
 }
 
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type FetchLoginStateFn = ReturnType<typeof fetchLoginState>
+
 export const fetchLoginState = (authUrl: string) => async () => {
     return makeRequest<FetchLoginStateVisitor, FetchLoginStateErrorResponse, FetchLoginStateSuccessResponse>({
         authUrl,

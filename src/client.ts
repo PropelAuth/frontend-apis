@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { AuthUrlContext } from './AuthUrlProvider'
+import { AuthFrontendApisContext } from './AuthFrontendApisProvider'
 import { createOrgApiKey } from './apis/apiKeys/createOrgApiKey'
 import { createPersonalApiKey } from './apis/apiKeys/createPersonalApiKey'
 import { deleteApiKey } from './apis/apiKeys/deleteApiKey'
@@ -18,9 +18,7 @@ import { verifyMfaForLogin } from './apis/login/mfaLogin'
 import { verifyMfaBackupCodeForLogin } from './apis/login/mfaLoginBackupCode'
 import { passwordlessLogin } from './apis/login/passwordlessLogin'
 import { resendEmailConfirmation } from './apis/login/resendEmailConfirmation'
-import { samlLoginByEmailDomain } from './apis/login/samlLoginByEmailDomain'
-import { samlLoginByOrg } from './apis/login/samlLoginByOrg'
-import { usernamePasswordLogin } from './apis/login/usernamePasswordLogin'
+import { loginViaSamlForOrg } from './apis/login/loginViaSamlForOrg'
 import { disableMfa } from './apis/mfa/disableMfa'
 import { enableMfa } from './apis/mfa/enableMfa'
 import { fetchMfaStatusWithNewSecret } from './apis/mfa/mfaStatus'
@@ -34,7 +32,7 @@ import { signup } from './apis/signup'
 import { updateEmail } from './apis/updateEmail'
 import { updateOrgSettings } from './apis/updateOrgSettings'
 import { updatePassword } from './apis/updatePassword'
-import { updateUserFacingMetadata } from './apis/updateUserMetadata'
+import { updateUserMetadata } from './apis/updateUserMetadata'
 import { updateUserRoleInOrg } from './apis/updateUserRoleInOrg'
 import { SOCIAL_LOGIN_PATHS, SocialLoginProvider } from './socialLogins'
 
@@ -45,7 +43,7 @@ export type ApiOptions = {
 export type PropelAuthApi = ReturnType<typeof useAuthApis>
 
 export const useAuthApis = () => {
-    const context = useContext(AuthUrlContext)
+    const context = useContext(AuthFrontendApisContext)
     if (context === undefined) {
         throw new Error('useAuthApis must be used within an AuthUrlContext')
     }
@@ -61,7 +59,7 @@ export const useAuthApis = () => {
         fetchMfaStatusWithNewSecret: fetchMfaStatusWithNewSecret(authUrl),
         updatePassword: updatePassword(authUrl),
         deleteAccount: deleteAccount(authUrl),
-        updateUserMetadata: updateUserFacingMetadata(authUrl),
+        updateUserMetadata: updateUserMetadata(authUrl),
         updateEmail: updateEmail(authUrl),
         fetchOrgMembers: fetchOrgMembers(authUrl),
         fetchPendingOrgInvites: fetchPendingOrgInvites(authUrl),
@@ -81,7 +79,6 @@ export const useAuthApis = () => {
         deleteApiKey: deleteApiKey(authUrl),
         fetchLoginState: fetchLoginState(authUrl),
         emailPasswordLogin: emailPasswordLogin(authUrl),
-        usernamePasswordLogin: usernamePasswordLogin(authUrl),
         resendEmailConfirmation: resendEmailConfirmation(authUrl),
         verifyMfaForLogin: verifyMfaForLogin(authUrl),
         verifyMfaBackupCodeForLogin: verifyMfaBackupCodeForLogin(authUrl),
@@ -89,8 +86,7 @@ export const useAuthApis = () => {
         fetchJoinableOrgs: fetchJoinableOrgs(authUrl),
         joinOrg: joinOrg(authUrl),
         passwordlessLogin: passwordlessLogin(authUrl),
-        samlLoginByEmailDomain: samlLoginByEmailDomain(authUrl),
-        samlLoginByOrg: samlLoginByOrg(authUrl),
+        loginViaSamlForOrg: loginViaSamlForOrg(authUrl),
         signup: signup(authUrl),
         loginWithSocialProvider,
     }

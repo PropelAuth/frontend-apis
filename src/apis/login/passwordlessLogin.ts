@@ -60,7 +60,7 @@ export type PasswordlessLoginErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type PasswordlessLoginVisitor = Visitor & {
+export type PasswordlessLoginVisitor = Visitor & {
     success: () => void
     badRequest?: (error: PasswordlessLoginRequestBadRequestResponse) => void
     passwordlessLoginDisabled?: (error: PasswordlessLoginDisabledErrorResponse) => void
@@ -73,6 +73,8 @@ type PasswordlessLoginVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type PasswordlessLoginFn = ReturnType<typeof passwordlessLogin>
+
 export const passwordlessLogin = (authUrl: string) => async (request: PasswordlessLoginRequest) => {
     return makeRequest<PasswordlessLoginVisitor, PasswordlessLoginErrorResponse>({
         authUrl,

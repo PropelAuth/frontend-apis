@@ -28,7 +28,7 @@ export type MfaDisableErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type MfaDisableVisitor = Visitor & {
+export type MfaDisableVisitor = Visitor & {
     success: () => void
     alreadyDisabled?: (error: MfaAlreadyDisabledResponse) => void
 }
@@ -36,6 +36,8 @@ type MfaDisableVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type DisableMfaFn = ReturnType<typeof disableMfa>
+
 export const disableMfa = (authUrl: string) => async () => {
     return makeRequest<MfaDisableVisitor, MfaDisableErrorResponse>({
         authUrl,

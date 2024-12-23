@@ -3,6 +3,9 @@ import {
     ApiErrorResponse,
     EmailNotConfirmedResponse,
     ErrorCode,
+    IncorrectMfaCodeErrorResponse,
+    MfaAccountLockedErrorResponse,
+    MfaSessionTimeoutErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
     UserAccountDisabledErrorResponse,
@@ -10,7 +13,7 @@ import {
 import { makeRequest, Visitor } from '../../helpers/request'
 import { LoginState } from './types'
 
-export type MfaLoginRequest = {
+export type VerifyMfaForLogin = {
     code: string
 }
 
@@ -25,18 +28,6 @@ export interface MfaLoginBadRequestResponse extends ApiErrorResponse {
     field_errors: {
         code: string
     }
-}
-
-export interface MfaSessionTimeoutErrorResponse extends ApiErrorResponse {
-    error_code: ErrorCode.InvalidMfaCookie
-}
-
-export interface MfaAccountLockedErrorResponse extends ApiErrorResponse {
-    error_code: ErrorCode.UserAccountMfaLocked
-}
-
-export interface IncorrectMfaCodeErrorResponse extends ApiErrorResponse {
-    error_code: ErrorCode.IncorrectMfaCode
 }
 
 /////////////////
@@ -59,7 +50,7 @@ export type MfaLoginErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type MfaLoginVisitor = Visitor & {
+export type MfaLoginVisitor = Visitor & {
     success: (data: MfaLoginSuccessResponse) => void
     badRequest?: (error: MfaLoginBadRequestResponse) => void
     invalidCode?: (error: IncorrectMfaCodeErrorResponse) => void
@@ -71,7 +62,9 @@ type MfaLoginVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
-export const verifyMfaForLogin = (authUrl: string) => async (request: MfaLoginRequest) => {
+export type VerifyMfaForLoginFn = ReturnType<typeof verifyMfaForLogin>
+
+export const verifyMfaForLogin = (authUrl: string) => async (request: VerifyMfaForLogin) => {
     return makeRequest<MfaLoginVisitor, MfaLoginErrorResponse, MfaLoginSuccessResponse>({
         authUrl,
         path: '/verify',

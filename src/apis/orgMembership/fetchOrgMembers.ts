@@ -2,7 +2,7 @@ import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
 import {
     EmailNotConfirmedResponse,
     ErrorCode,
-    OrgNotEnabledErrorResponse,
+    OrgsNotEnabledErrorResponse,
     OrgNotFoundErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
@@ -41,7 +41,7 @@ export type FetchOrgMembersSuccessResponse = {
 }
 
 export type FetchOrgMembersErrorResponse =
-    | OrgNotEnabledErrorResponse
+    | OrgsNotEnabledErrorResponse
     | OrgNotFoundErrorResponse
     | UnauthorizedResponse
     | UnexpectedErrorResponse
@@ -50,15 +50,17 @@ export type FetchOrgMembersErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type FetchOrgMembersVisitor = Visitor & {
+export type FetchOrgMembersVisitor = Visitor & {
     success: (data: FetchOrgMembersSuccessResponse) => FetchOrgMembersSuccessResponse | void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
-    orgsNotEnabled?: (error: OrgNotEnabledErrorResponse) => void
+    orgsNotEnabled?: (error: OrgsNotEnabledErrorResponse) => void
 }
 
 /////////////////
 ///////////////// Request
 /////////////////
+export type FetchOrgMembersFn = ReturnType<typeof fetchOrgMembers>
+
 export const fetchOrgMembers = (authUrl: string) => async (orgId: string, params?: FetchOrgMembersRequestParams) => {
     const queryParams = new URLSearchParams()
     if (params?.page_size) {

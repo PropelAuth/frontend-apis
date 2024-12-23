@@ -66,13 +66,18 @@ export type FetchOrgApiKeysErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type FetchOrgApiKeysVisitor = Visitor & {
+export type FetchOrgApiKeysVisitor = Visitor & {
     success: (data: FetchOrgApiKeysSuccessResponse) => FetchOrgApiKeysSuccessResponse | void
     badRequest?: (error: FetchOrgApiKeysBadRequestResponse) => void
     orgApiKeysDisabled?: (error: OrgApiKeysDisabledErrorResponse) => void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
     cannotAccessOrgApiKeys?: (error: ForbiddenErrorResponse) => void
 }
+
+/////////////////
+///////////////// The actual Request
+/////////////////
+export type FetchOrgApiKeysFn = ReturnType<typeof fetchOrgApiKeys>
 
 export const fetchOrgApiKeys = (authUrl: string) => async (request: FetchOrgApiKeysRequest) => {
     const queryParams = new URLSearchParams()

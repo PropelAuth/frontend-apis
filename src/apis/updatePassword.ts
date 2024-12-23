@@ -3,7 +3,7 @@ import {
     ApiErrorResponse,
     EmailNotConfirmedResponse,
     ErrorCode,
-    GenericErrorResponse,
+    IncorrectPasswordResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../helpers/errors'
@@ -20,11 +20,6 @@ export type UpdatePasswordRequest = {
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface IncorrectPasswordResponse extends GenericErrorResponse {
-    error_code: ErrorCode.IncorrectPassword
-    user_facing_error: string
-}
-
 export interface UpdatePasswordBadRequestResponse extends ApiErrorResponse {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
@@ -50,7 +45,7 @@ export type UpdatePasswordErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-type UpdatePasswordVisitor = Visitor & {
+export type UpdatePasswordVisitor = Visitor & {
     success: () => void
     incorrectPassword?: (error: IncorrectPasswordResponse) => void
     badRequest?: (error: UpdatePasswordBadRequestResponse) => void
@@ -59,6 +54,8 @@ type UpdatePasswordVisitor = Visitor & {
 /////////////////
 ///////////////// The actual Request
 /////////////////
+export type UpdatePasswordFn = ReturnType<typeof updatePassword>
+
 export const updatePassword = (authUrl: string) => async (request: UpdatePasswordRequest) => {
     return makeRequest<UpdatePasswordVisitor, UpdatePasswordErrorResponse>({
         authUrl,
