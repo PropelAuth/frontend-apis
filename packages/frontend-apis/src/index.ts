@@ -186,8 +186,7 @@ export type {
     SignupBadRequestResponse,
     SignupFn,
 } from './apis/signup'
-export { AuthFrontendApisProvider } from './AuthFrontendApisProvider'
-export { useAuthApis } from './client'
+export { createFrontendApisClient } from './client'
 export type { ApiOptions, PropelAuthApi } from './client'
 export { ErrorCode } from './helpers/errors'
 export type {
