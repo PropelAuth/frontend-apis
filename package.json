@@ -1,59 +1,11 @@
 {
-    "name": "@propelauth/frontend-apis",
-    "version": "0.0.9",
-    "description": "",
-    "exports": {
-        ".": {
-            "browser": "./dist/index.mjs",
-            "import": "./dist/index.mjs",
-            "require": "./dist/index.js",
-            "default": "./dist/index.mjs",
-            "types": "./dist/index.d.ts"
-        }
-    },
-    "typesVersions": {
-        "*": {
-            "*": [
-                "dist/index.d.ts"
-            ]
-        }
-    },
-    "files": [
-        "dist"
-    ],
-    "scripts": {
-        "build": "tsup",
-        "dev": "tsup --watch",
-        "test": "jest",
-        "prepare": "husky",
-        "prepublishOnly": "npm run build"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    },
-    "lint-staged": {
-        "**/*.ts": [
-            "eslint --fix",
-            "prettier --write"
-        ]
-    },
-    "author": "PropelAuth",
-    "devDependencies": {
-        "@eslint/js": "^9.10.0",
-        "@types/eslint__js": "^8.42.3",
-        "eslint": "^9.10.0",
-        "husky": "^9.1.6",
-        "prettier": "^3.3.3",
-        "tsup": "^8.0.2",
-        "typescript": "^5.6.2",
-        "typescript-eslint": "^8.6.0"
-    },
-    "dependencies": {
-        "@types/react": "^18.2.60",
-        "react": "^18.2.0",
-        "tsup": "^8.0.2",
-        "typescript": "^5.3.3"
-    }
+  "name": "root",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "lerna": "^7.4.2"
+  }
 }
