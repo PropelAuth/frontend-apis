@@ -3,7 +3,6 @@ import {
     ApiErrorResponse,
     EmailNotConfirmedResponse,
     ErrorCode,
-    IncorrectMfaCodeErrorResponse,
     MfaAccountLockedErrorResponse,
     MfaSessionTimeoutErrorResponse,
     UnauthorizedResponse,
@@ -45,7 +44,6 @@ export type MfaLoginErrorResponse =
     | MfaSessionTimeoutErrorResponse
     | MfaAccountLockedErrorResponse
     | UserAccountDisabledErrorResponse
-    | IncorrectMfaCodeErrorResponse
 
 /////////////////
 ///////////////// Visitor
@@ -53,7 +51,6 @@ export type MfaLoginErrorResponse =
 export type MfaLoginVisitor = Visitor & {
     success: (data: MfaLoginSuccessResponse) => void
     badRequest?: (error: MfaLoginBadRequestResponse) => void
-    invalidCode?: (error: IncorrectMfaCodeErrorResponse) => void
     sessionTimeout?: (error: MfaSessionTimeoutErrorResponse) => void
     accountLocked?: (error: MfaAccountLockedErrorResponse) => void
     accountDisabled?: (error: UserAccountDisabledErrorResponse) => void
@@ -87,8 +84,6 @@ export const verifyMfaForLogin = (authUrl: string) => async (request: VerifyMfaF
                     return getVisitorOrUndefined(visitor.accountLocked, error)
                 case ErrorCode.UserAccountDisabled:
                     return getVisitorOrUndefined(visitor.accountDisabled, error)
-                case ErrorCode.IncorrectMfaCode:
-                    return getVisitorOrUndefined(visitor.invalidCode, error)
                 case ErrorCode.EmailNotConfirmed:
                     return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
                 case ErrorCode.UnexpectedError:
