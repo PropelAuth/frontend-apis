@@ -1,3 +1,5 @@
 export { useAuthFrontendApis } from './client'
 export type { UseMfaReturnType } from './hooks/useMfa'
 export { useMfa, MfaStatus } from './hooks/useMfa'
+export type { UsePaginationWithSearchProps } from './hooks/usePaginationWithSearch'
+export { usePaginationWithSearch } from './hooks/usePaginationWithSearch'
