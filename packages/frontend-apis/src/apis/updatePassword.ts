@@ -8,6 +8,7 @@ import {
     UnexpectedErrorResponse,
 } from '../helpers/errors'
 import { Visitor, makeRequest } from '../helpers/request'
+import { UserAccountLockedResponse } from './updateEmail'
 
 /////////////////
 ///////////////// Request
@@ -41,6 +42,7 @@ export type UpdatePasswordErrorResponse =
     | UnauthorizedResponse
     | UnexpectedErrorResponse
     | EmailNotConfirmedResponse
+    | UserAccountLockedResponse
 
 /////////////////
 ///////////////// Visitor
@@ -49,6 +51,7 @@ export type UpdatePasswordVisitor = Visitor & {
     success: () => void
     incorrectPassword?: (error: IncorrectPasswordResponse) => void
     badRequest?: (error: UpdatePasswordBadRequestResponse) => void
+    userAccountLocked?: (error: UserAccountLockedResponse) => void
 }
 
 /////////////////
@@ -74,6 +77,8 @@ export const updatePassword = (authUrl: string) => async (request: UpdatePasswor
                     return getVisitorOrUndefined(visitor.badRequest, error)
                 case ErrorCode.Unauthorized:
                     return getVisitorOrUndefined(visitor.unauthorized, error)
+                case ErrorCode.UserAccountLocked:
+                    return getVisitorOrUndefined(visitor.userAccountLocked, error)
                 case ErrorCode.EmailNotConfirmed:
                     return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
                 case ErrorCode.UnexpectedError:
