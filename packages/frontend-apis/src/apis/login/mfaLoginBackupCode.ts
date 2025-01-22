@@ -42,7 +42,7 @@ export type MfaLoginBackupCodeErrorResponse =
 export type MfaLoginBackupCodeVisitor = Visitor & {
     success: (data: MfaLoginBackupCodeSuccessResponse) => void
     invalidCode?: (error: IncorrectMfaCodeErrorResponse) => void
-    sessionTimeout?: (error: MfaSessionTimeoutErrorResponse) => void
+    mfaCookieTimeout?: (error: MfaSessionTimeoutErrorResponse) => void
     accountLocked?: (error: MfaAccountLockedErrorResponse) => void
     accountDisabled?: (error: UserAccountDisabledErrorResponse) => void
 }
@@ -68,7 +68,7 @@ export const verifyMfaBackupCodeForLogin = (authUrl: string) => async (request: 
                 case ErrorCode.Unauthorized:
                     return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.InvalidMfaCookie:
-                    return getVisitorOrUndefined(visitor.sessionTimeout, error)
+                    return getVisitorOrUndefined(visitor.mfaCookieTimeout, error)
                 case ErrorCode.UserAccountMfaLocked:
                     return getVisitorOrUndefined(visitor.accountLocked, error)
                 case ErrorCode.UserAccountDisabled:

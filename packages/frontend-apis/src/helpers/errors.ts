@@ -47,6 +47,12 @@ export interface ApiErrorResponse {
     field_errors?: { [field: string]: string }
 }
 
+export interface ApiErrorForSpecificFields extends ApiErrorResponse {
+    user_facing_error: never
+    user_facing_errors: { [field: string]: string }
+    field_errors: { [field: string]: string }
+}
+
 export interface GenericErrorResponse extends ApiErrorResponse {
     user_facing_errors: undefined
     field_errors: undefined
