@@ -1,6 +1,5 @@
 import { getVisitorOrUndefined, unmatchedCase } from '../helpers/error_utils'
 import {
-    ApiErrorResponse,
     EmailNotConfirmedResponse,
     ErrorCode,
     ForbiddenErrorResponse,
@@ -8,6 +7,7 @@ import {
     OrgNotFoundErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
+    ApiErrorForSpecificFields,
 } from '../helpers/errors'
 import { Visitor, makeRequest } from '../helpers/request'
 
@@ -34,7 +34,7 @@ type InternalUpdateOrgSettingsRequest = {
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface UpdateOrgSettingsBadRequestResponse extends ApiErrorResponse {
+export interface UpdateOrgSettingsBadRequestResponse extends ApiErrorForSpecificFields {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
         name: string

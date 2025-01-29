@@ -1,6 +1,5 @@
 import { getVisitorOrUndefined, unmatchedCase } from '../helpers/error_utils'
 import {
-    ApiErrorResponse,
     EmailNotConfirmedResponse,
     ErrorCode,
     ForbiddenErrorResponse,
@@ -9,6 +8,7 @@ import {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
     UserNotFoundErrorResponse,
+    ApiErrorForSpecificFields,
 } from '../helpers/errors'
 import { Visitor, makeRequest } from '../helpers/request'
 
@@ -23,7 +23,7 @@ export type RemoveUserFromOrgRequest = {
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface MustBeAtLeastOneOwnerErrorResponse extends ApiErrorResponse {
+export interface MustBeAtLeastOneOwnerErrorResponse extends ApiErrorForSpecificFields {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
         org_id: string

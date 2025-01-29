@@ -1,6 +1,6 @@
 import { getVisitorOrUndefined, unmatchedCase } from '../helpers/error_utils'
 import {
-    ApiErrorResponse,
+    ApiErrorForSpecificFields,
     EmailNotConfirmedResponse,
     ErrorCode,
     UnauthorizedResponse,
@@ -21,7 +21,7 @@ export type UpdateUserFacingMetadataRequest = {
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface UpdateMetadataBadRequestResponse extends ApiErrorResponse {
+export interface UpdateMetadataBadRequestResponse extends ApiErrorForSpecificFields {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
         username?: string
