@@ -1,6 +1,6 @@
 import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
 import {
-    ApiErrorResponse,
+    ApiErrorForSpecificFields,
     ErrorCode,
     GenericErrorResponse,
     UnexpectedErrorResponse,
@@ -21,7 +21,7 @@ export type EmailPasswordLoginRequest = {
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface EmailPasswordLoginRequestBadRequestResponse extends ApiErrorResponse {
+export interface EmailPasswordLoginRequestBadRequestResponse extends ApiErrorForSpecificFields {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
         email: string

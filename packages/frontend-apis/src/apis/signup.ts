@@ -1,5 +1,5 @@
 import { getVisitorOrUndefined, unmatchedCase } from '../helpers/error_utils'
-import { ApiErrorResponse, ErrorCode, UnexpectedErrorResponse } from '../helpers/errors'
+import { ApiErrorForSpecificFields, ApiErrorResponse, ErrorCode, UnexpectedErrorResponse } from '../helpers/errors'
 import { Visitor, makeRequest } from '../helpers/request'
 import { LoginState } from './login/types'
 
@@ -21,7 +21,7 @@ export type SignupSuccessResponse = {
     user_id: string
 }
 
-export interface SignupBadRequestResponse extends ApiErrorResponse {
+export interface SignupBadRequestResponse extends ApiErrorForSpecificFields {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
         email?: string

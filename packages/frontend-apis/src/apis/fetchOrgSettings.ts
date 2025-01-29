@@ -7,7 +7,6 @@ import {
     OrgNotFoundErrorResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
-    UserNotFoundErrorResponse,
 } from '../helpers/errors'
 import { Visitor, makeRequest } from '../helpers/request'
 
@@ -39,7 +38,6 @@ export type FetchOrgSettingsSuccessResponse = {
 export type FetchOrgSettingsErrorResponse =
     | OrgsNotEnabledErrorResponse
     | OrgNotFoundErrorResponse
-    | UserNotFoundErrorResponse
     | UnauthorizedResponse
     | UnexpectedErrorResponse
     | EmailNotConfirmedResponse
@@ -51,7 +49,6 @@ export type FetchOrgSettingsVisitor = Visitor & {
     success: (data: FetchOrgSettingsSuccessResponse) => void
     orgsNotEnabled?: (error: OrgsNotEnabledErrorResponse) => void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
-    userNotFoundInOrg?: (error: UserNotFoundErrorResponse) => void
     forbidden?: (error: ForbiddenErrorResponse) => void
 }
 
@@ -76,8 +73,6 @@ export const fetchOrgSettings = (authUrl: string) => async (orgId: string) => {
                     return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
                 case ErrorCode.OrgNotFound:
                     return getVisitorOrUndefined(visitor.orgNotFound, error)
-                case ErrorCode.UserNotFound:
-                    return getVisitorOrUndefined(visitor.userNotFoundInOrg, error)
                 case ErrorCode.Unauthorized:
                     return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.EmailNotConfirmed:

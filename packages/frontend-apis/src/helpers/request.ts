@@ -1,4 +1,4 @@
-import { ApiErrorResponse, EmailNotConfirmedResponse, UnauthorizedResponse } from './errors'
+import { ApiErrorResponse, EmailNotConfirmedResponse, UnauthorizedResponse, ErrorCode } from './errors'
 
 const BASE_PATH = '/api/fe/v3'
 
@@ -65,50 +65,70 @@ export const makeRequest = async <V extends Visitor, E extends ApiErrorResponse,
         responseToErrorHandler,
     } = args
     const url = `${authUrl}${BASE_PATH}${path}${queryParams ? `?${queryParams.toString()}` : ''}`
-    const response = await fetch(url, {
-        method: method,
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': '-.-',
-        },
-        body: body ? JSON.stringify(body) : undefined,
-    })
 
-    if (response.ok) {
-        if (parseResponseAsJson) {
-            const jsonResponse = (await response.json()) as S
-            return {
-                ok: true,
-                data: jsonResponse,
-                handle: (visitor: V) => {
-                    const handler = responseToSuccessHandler(jsonResponse, visitor)
-                    return handler()
-                },
+    try {
+        const response = await fetch(url, {
+            method: method,
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': '-.-',
+            },
+            body: body ? JSON.stringify(body) : undefined,
+        })
+
+        if (response.ok) {
+            if (parseResponseAsJson) {
+                const jsonResponse = (await response.json()) as S
+                return {
+                    ok: true,
+                    data: jsonResponse,
+                    handle: (visitor: V) => {
+                        const handler = responseToSuccessHandler(jsonResponse, visitor)
+                        return handler()
+                    },
+                }
+            } else {
+                return {
+                    ok: true,
+                    data: undefined as S,
+                    handle: (visitor: V) => {
+                        const handler = responseToSuccessHandler(visitor)
+                        return handler()
+                    },
+                }
             }
         } else {
+            const error = (await response.json()) as E
             return {
-                ok: true,
-                data: undefined as S,
+                ok: false,
+                error,
                 handle: (visitor: V) => {
-                    const handler = responseToSuccessHandler(visitor)
-                    return handler()
+                    const handler = responseToErrorHandler(error, visitor)
+                    if (handler) {
+                        return handler()
+                    } else if (visitor.unexpectedOrUnhandled) {
+                        return visitor.unexpectedOrUnhandled(error)
+                    } else {
+                        console.error(`No error handler for: ${error.error_code}`)
+                    }
                 },
             }
         }
-    } else {
-        const error = (await response.json()) as E
+    } catch {
+        const unexpectedError = {
+            error_code: ErrorCode.UnexpectedError,
+            user_facing_error: 'An unexpected error has occurred',
+        } as E
+
         return {
             ok: false,
-            error,
+            error: unexpectedError,
             handle: (visitor: V) => {
-                const handler = responseToErrorHandler(error, visitor)
-                if (handler) {
-                    return handler()
-                } else if (visitor.unexpectedOrUnhandled) {
-                    return visitor.unexpectedOrUnhandled(error)
+                if (visitor.unexpectedOrUnhandled) {
+                    return visitor.unexpectedOrUnhandled(unexpectedError)
                 } else {
-                    console.error(`No error handler for: ${error.error_code}`)
+                    console.error(`No error handler for: ${unexpectedError.error_code}`)
                 }
             },
         }
