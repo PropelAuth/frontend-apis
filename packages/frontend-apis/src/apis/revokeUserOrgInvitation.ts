@@ -1,6 +1,6 @@
 import { getVisitorOrUndefined, unmatchedCase } from '../helpers/error_utils'
 import {
-    ApiErrorResponse,
+    ApiErrorForSpecificFields,
     EmailNotConfirmedResponse,
     ErrorCode,
     ForbiddenErrorResponse,
@@ -22,7 +22,7 @@ export type RevokeUserOrgInvitationRequest = {
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface RevokeUserOrgInvitationFieldValidationErrorResponse extends ApiErrorResponse {
+export interface RevokeUserOrgInvitationFieldValidationErrorResponse extends ApiErrorForSpecificFields {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
         role?: string

@@ -1,6 +1,6 @@
 import { getVisitorOrUndefined, unmatchedCase } from '../helpers/error_utils'
 import {
-    ApiErrorResponse,
+    ApiErrorForSpecificFields,
     EmailNotConfirmedResponse,
     ErrorCode,
     GenericErrorResponse,
@@ -28,7 +28,7 @@ export type InternalCreateOrgRequest = {
 /////////////////
 ///////////////// Errors specific to this request
 /////////////////
-export interface CreateOrgBadRequestResponse extends ApiErrorResponse {
+export interface CreateOrgBadRequestResponse extends ApiErrorForSpecificFields {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
         name: string

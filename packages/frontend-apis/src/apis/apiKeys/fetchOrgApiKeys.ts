@@ -1,5 +1,6 @@
 import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
 import {
+    ApiErrorForSpecificFields,
     ApiErrorResponse,
     EmailNotConfirmedResponse,
     ErrorCode,
@@ -38,7 +39,7 @@ export type FetchOrgApiKeysSuccessResponse = {
     has_more_results: boolean
 }
 
-export interface FetchOrgApiKeysBadRequestResponse extends ApiErrorResponse {
+export interface FetchOrgApiKeysBadRequestResponse extends ApiErrorForSpecificFields {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
         page_size?: string
