@@ -1,11 +1,9 @@
 import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
 import {
-    EmailNotConfirmedResponse,
     ErrorCode,
     IncorrectMfaCodeErrorResponse,
     MfaAccountLockedErrorResponse,
     MfaSessionTimeoutErrorResponse,
-    UnauthorizedResponse,
     UnexpectedErrorResponse,
     UserAccountDisabledErrorResponse,
 } from '../../helpers/errors'
@@ -28,9 +26,7 @@ export type MfaLoginBackupCodeSuccessResponse = {
 }
 
 export type MfaLoginBackupCodeErrorResponse =
-    | UnauthorizedResponse
     | UnexpectedErrorResponse
-    | EmailNotConfirmedResponse
     | MfaSessionTimeoutErrorResponse
     | MfaAccountLockedErrorResponse
     | UserAccountDisabledErrorResponse
@@ -65,8 +61,6 @@ export const verifyMfaBackupCodeForLogin = (authUrl: string) => async (request: 
         responseToErrorHandler: (error, visitor) => {
             const { error_code: errorCode } = error
             switch (errorCode) {
-                case ErrorCode.Unauthorized:
-                    return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.InvalidMfaCookie:
                     return getVisitorOrUndefined(visitor.mfaCookieTimeout, error)
                 case ErrorCode.UserAccountMfaLocked:
@@ -75,8 +69,6 @@ export const verifyMfaBackupCodeForLogin = (authUrl: string) => async (request: 
                     return getVisitorOrUndefined(visitor.accountDisabled, error)
                 case ErrorCode.IncorrectMfaCode:
                     return getVisitorOrUndefined(visitor.invalidCode, error)
-                case ErrorCode.EmailNotConfirmed:
-                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
                 case ErrorCode.UnexpectedError:
                     return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
                 default:

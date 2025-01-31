@@ -9,7 +9,7 @@ import {
     UnexpectedErrorResponse,
     UserNotFoundErrorResponse,
 } from '../helpers/errors'
-import { Visitor, makeRequest } from '../helpers/request'
+import { LoggedInVisitor, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Request
@@ -51,7 +51,7 @@ export type UpdateUserRoleInOrgErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-export type UpdateUserRoleInOrgVisitor = Visitor & {
+export type UpdateUserRoleInOrgVisitor = LoggedInVisitor & {
     success: () => void
     badRequest?: (error: UpdateUserRoleInOrgFieldValidationErrorResponse) => void
     noUpdateRolePermission?: (error: ForbiddenErrorResponse) => void

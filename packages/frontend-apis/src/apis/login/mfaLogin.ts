@@ -1,11 +1,9 @@
 import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
 import {
     ApiErrorForSpecificFields,
-    EmailNotConfirmedResponse,
     ErrorCode,
     MfaAccountLockedErrorResponse,
     MfaSessionTimeoutErrorResponse,
-    UnauthorizedResponse,
     UnexpectedErrorResponse,
     UserAccountDisabledErrorResponse,
 } from '../../helpers/errors'
@@ -38,9 +36,7 @@ export type MfaLoginSuccessResponse = {
 
 export type MfaLoginErrorResponse =
     | MfaLoginBadRequestResponse
-    | UnauthorizedResponse
     | UnexpectedErrorResponse
-    | EmailNotConfirmedResponse
     | MfaSessionTimeoutErrorResponse
     | MfaAccountLockedErrorResponse
     | UserAccountDisabledErrorResponse
@@ -76,16 +72,12 @@ export const verifyMfaForLogin = (authUrl: string) => async (request: VerifyMfaF
             switch (errorCode) {
                 case ErrorCode.InvalidRequestFields:
                     return getVisitorOrUndefined(visitor.badRequest, error)
-                case ErrorCode.Unauthorized:
-                    return getVisitorOrUndefined(visitor.unauthorized, error)
                 case ErrorCode.InvalidMfaCookie:
                     return getVisitorOrUndefined(visitor.mfaCookieTimeout, error)
                 case ErrorCode.UserAccountMfaLocked:
                     return getVisitorOrUndefined(visitor.accountLocked, error)
                 case ErrorCode.UserAccountDisabled:
                     return getVisitorOrUndefined(visitor.accountDisabled, error)
-                case ErrorCode.EmailNotConfirmed:
-                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
                 case ErrorCode.UnexpectedError:
                     return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
                 default:

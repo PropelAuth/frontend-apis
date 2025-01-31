@@ -26,9 +26,12 @@ export type RequestArgs<S, E extends ApiErrorResponse, V extends Visitor> =
     | RequestArgsWithArgs<S, E, V>
     | RequestArgsWithNoArgs<E, V>
 
-export type Visitor = {
+export type LoggedInVisitor = {
     unauthorized?: (error: UnauthorizedResponse) => void
     emailNotConfirmed?: (error: EmailNotConfirmedResponse) => void
+} & Visitor
+
+export type Visitor = {
     unexpectedOrUnhandled?: (error: ApiErrorResponse) => void
 }
 

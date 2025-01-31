@@ -8,7 +8,7 @@ import {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../helpers/errors'
-import { Visitor, makeRequest } from '../helpers/request'
+import { LoggedInVisitor, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Request
@@ -69,7 +69,7 @@ export type UpdateEmailErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-export type UpdateEmailVisitor = Visitor & {
+export type UpdateEmailVisitor = LoggedInVisitor & {
     success: () => void
     badRequest?: (error: UpdateEmailBadRequestResponse) => void
     cannotChangeEmailDueToOrgMembership?: (error: OrgRestrictionErrorResponse) => void

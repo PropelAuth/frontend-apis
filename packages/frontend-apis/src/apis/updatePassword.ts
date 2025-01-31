@@ -7,7 +7,7 @@ import {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../helpers/errors'
-import { Visitor, makeRequest } from '../helpers/request'
+import { LoggedInVisitor, makeRequest } from '../helpers/request'
 import { UserAccountLockedResponse } from './updateEmail'
 
 /////////////////
@@ -47,7 +47,7 @@ export type UpdatePasswordErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-export type UpdatePasswordVisitor = Visitor & {
+export type UpdatePasswordVisitor = LoggedInVisitor & {
     success: () => void
     incorrectPassword?: (error: IncorrectPasswordResponse) => void
     badRequest?: (error: UpdatePasswordBadRequestResponse) => void

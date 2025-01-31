@@ -6,7 +6,7 @@ import {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../../helpers/errors'
-import { Visitor, makeRequest } from '../../helpers/request'
+import { LoggedInVisitor, makeRequest } from '../../helpers/request'
 
 /////////////////
 ///////////////// Success Response
@@ -31,7 +31,7 @@ export type FetchJoinableOrgsErrorResponse =
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-export type FetchJoinableOrgsVisitor = Visitor & {
+export type FetchJoinableOrgsVisitor = LoggedInVisitor & {
     success: (data: FetchJoinableOrgsSuccessResponse) => void
     orgsNotEnabled?: (error: OrgsNotEnabledErrorResponse) => void
 }

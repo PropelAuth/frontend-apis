@@ -8,7 +8,7 @@ import {
     UnexpectedErrorResponse,
     UserMaxOrgsLimitExceededErrorResponse,
 } from '../helpers/errors'
-import { Visitor, makeRequest } from '../helpers/request'
+import { LoggedInVisitor, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Request
@@ -66,7 +66,7 @@ export type CreateOrgErrorResponse =
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-export type CreateOrgVisitor = Visitor & {
+export type CreateOrgVisitor = LoggedInVisitor & {
     success: (data: CreateOrgSuccessResponse) => void
     badRequest?: (error: CreateOrgBadRequestResponse) => void
     cannotCreateOrgs?: (error: CreateOrgDisabledResponse) => void

@@ -1,6 +1,6 @@
 import { getVisitorOrUndefined, unmatchedCase } from '../helpers/error_utils'
 import { ErrorCode, GenericErrorResponse, UnauthorizedResponse, UnexpectedErrorResponse } from '../helpers/errors'
-import { Visitor, makeRequest } from '../helpers/request'
+import { makeRequest, Visitor } from '../helpers/request'
 
 /////////////////
 ///////////////// Errors specific to this request
@@ -20,6 +20,7 @@ export type DeleteAccountErrorResponse = DeleteAccountDisabledResponse | Unautho
 /////////////////
 export type DeleteAccountVisitor = Visitor & {
     success: () => void
+    unauthorized?: (error: UnauthorizedResponse) => void
     actionDisabled?: (error: DeleteAccountDisabledResponse) => void
 }
 

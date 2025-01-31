@@ -9,7 +9,7 @@ import {
     UnexpectedErrorResponse,
     ApiErrorForSpecificFields,
 } from '../helpers/errors'
-import { Visitor, makeRequest } from '../helpers/request'
+import { LoggedInVisitor, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Request
@@ -59,7 +59,7 @@ export type UpdateOrgSettingsErrorResponse =
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-export type UpdateOrgSettingsVisitor = Visitor & {
+export type UpdateOrgSettingsVisitor = LoggedInVisitor & {
     success: () => void
     badRequest?: (error: UpdateOrgSettingsBadRequestResponse) => void
     orgsNotEnabled?: (error: OrgsNotEnabledErrorResponse) => void

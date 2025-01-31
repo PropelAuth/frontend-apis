@@ -6,7 +6,7 @@ import {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../helpers/errors'
-import { Visitor, makeRequest } from '../helpers/request'
+import { LoggedInVisitor, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Request
@@ -47,7 +47,7 @@ export type UpdateUserFacingMetadataErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-export type UpdateUserFacingMetadataVisitor = Visitor & {
+export type UpdateUserFacingMetadataVisitor = LoggedInVisitor & {
     success: () => void
     badRequest?: (error: UpdateMetadataBadRequestResponse) => void
 }

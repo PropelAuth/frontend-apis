@@ -9,7 +9,7 @@ import {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../helpers/errors'
-import { Visitor, makeRequest } from '../helpers/request'
+import { LoggedInVisitor, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Request
@@ -47,7 +47,7 @@ export type RevokeUserOrgInvitationErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-export type RevokeUserOrgInvitationVisitor = Visitor & {
+export type RevokeUserOrgInvitationVisitor = LoggedInVisitor & {
     success: () => void
     badRequest?: (error: RevokeUserOrgInvitationFieldValidationErrorResponse) => void
     noRevokeInvitePermission?: (error: ForbiddenErrorResponse) => void

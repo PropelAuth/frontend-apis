@@ -7,7 +7,7 @@ import {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../../helpers/errors'
-import { Visitor, makeRequest } from '../../helpers/request'
+import { LoggedInVisitor, makeRequest } from '../../helpers/request'
 
 /////////////////
 ///////////////// Request Params
@@ -50,7 +50,7 @@ export type FetchOrgMembersErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-export type FetchOrgMembersVisitor = Visitor & {
+export type FetchOrgMembersVisitor = LoggedInVisitor & {
     success: (data: FetchOrgMembersSuccessResponse) => FetchOrgMembersSuccessResponse | void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
     orgsNotEnabled?: (error: OrgsNotEnabledErrorResponse) => void

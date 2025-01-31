@@ -9,7 +9,7 @@ import {
     UnexpectedErrorResponse,
     UserMaxOrgsLimitExceededErrorResponse,
 } from '../helpers/errors'
-import { Visitor, makeRequest } from '../helpers/request'
+import { LoggedInVisitor, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Success and Error Responses
@@ -31,7 +31,7 @@ export type JoinOrgErrorResponse =
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-export type JoinOrgVisitor = Visitor & {
+export type JoinOrgVisitor = LoggedInVisitor & {
     success: (data: JoinOrgSuccessResponse) => void
     userAlreadyInTooManyOrgs?: (error: UserMaxOrgsLimitExceededErrorResponse) => void
     orgMaxUsersLimitExceeded?: (error: OrgMaxUsersLimitExceededErrorResponse) => void

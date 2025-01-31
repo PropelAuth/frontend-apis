@@ -7,7 +7,7 @@ import {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../../helpers/errors'
-import { makeRequest, Visitor } from '../../helpers/request'
+import { makeRequest, LoggedInVisitor } from '../../helpers/request'
 
 /////////////////
 ///////////////// Error Responses
@@ -22,7 +22,7 @@ export type DeleteApiKeyErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-export type DeleteApiKeyVisitor = Visitor & {
+export type DeleteApiKeyVisitor = LoggedInVisitor & {
     success: () => void
     noApiKeyPermission?: (error: ForbiddenErrorResponse) => void
     apiKeyNotFound?: (error: NotFoundErrorResponse) => void
