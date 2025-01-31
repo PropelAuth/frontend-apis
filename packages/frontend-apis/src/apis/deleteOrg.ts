@@ -7,7 +7,7 @@ import {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../helpers/errors'
-import { Visitor, makeRequest } from '../helpers/request'
+import { LoggedInVisitor, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Errors specific to this request
@@ -30,7 +30,7 @@ export type DeleteOrgErrorResponse =
 /////////////////
 ///////////////// Error Visitor
 /////////////////
-export type DeleteOrgVisitor = Visitor & {
+export type DeleteOrgVisitor = LoggedInVisitor & {
     success: () => void
     actionDisabled?: (error: DeleteOrgDisabledResponse) => void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void

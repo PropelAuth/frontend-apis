@@ -10,7 +10,7 @@ import {
     UserNotFoundErrorResponse,
     ApiErrorForSpecificFields,
 } from '../helpers/errors'
-import { Visitor, makeRequest } from '../helpers/request'
+import { LoggedInVisitor, makeRequest } from '../helpers/request'
 
 /////////////////
 ///////////////// Request
@@ -49,7 +49,7 @@ export type RemoveUserFromOrgErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-export type RemoveUserFromOrgVisitor = Visitor & {
+export type RemoveUserFromOrgVisitor = LoggedInVisitor & {
     success: () => void
     mustBeAtLeastOneOwner?: (error: MustBeAtLeastOneOwnerErrorResponse) => void
     noRemovePermission?: (error: ForbiddenErrorResponse) => void

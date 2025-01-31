@@ -7,7 +7,7 @@ import {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../../helpers/errors'
-import { makeRequest, Visitor } from '../../helpers/request'
+import { makeRequest, LoggedInVisitor } from '../../helpers/request'
 
 /////////////////
 export type MfaEnableRequest = {
@@ -45,7 +45,7 @@ export type MfaEnableErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-export type MfaEnableVisitor = Visitor & {
+export type MfaEnableVisitor = LoggedInVisitor & {
     success: () => void
     badRequest?: (error: MfaEnableBadRequestResponse) => void
     alreadyEnabled?: (error: MfaAlreadyEnabledResponse) => void

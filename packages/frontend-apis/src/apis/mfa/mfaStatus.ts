@@ -5,7 +5,7 @@ import {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../../helpers/errors'
-import { Visitor, makeRequest } from '../../helpers/request'
+import { LoggedInVisitor, makeRequest } from '../../helpers/request'
 
 /////////////////
 ///////////////// Success Responses
@@ -33,7 +33,7 @@ export type MfaStatusErrorResponse = UnauthorizedResponse | UnexpectedErrorRespo
 /////////////////
 ///////////////// Visitor
 /////////////////
-export type MfaStatusVisitor = Visitor & {
+export type MfaStatusVisitor = LoggedInVisitor & {
     success: (response: MfaStatusResponse) => MfaStatusResponse | void
     unauthorized?: (error: UnauthorizedResponse) => void
     emailNotConfirmed?: (error: EmailNotConfirmedResponse) => void

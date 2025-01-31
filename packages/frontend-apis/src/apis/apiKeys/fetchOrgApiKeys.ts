@@ -9,7 +9,7 @@ import {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../../helpers/errors'
-import { Visitor, makeRequest } from '../../helpers/request'
+import { LoggedInVisitor, makeRequest } from '../../helpers/request'
 
 /////////////////
 ///////////////// Request
@@ -67,7 +67,7 @@ export type FetchOrgApiKeysErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-export type FetchOrgApiKeysVisitor = Visitor & {
+export type FetchOrgApiKeysVisitor = LoggedInVisitor & {
     success: (data: FetchOrgApiKeysSuccessResponse) => FetchOrgApiKeysSuccessResponse | void
     badRequest?: (error: FetchOrgApiKeysBadRequestResponse) => void
     orgApiKeysDisabled?: (error: OrgApiKeysDisabledErrorResponse) => void

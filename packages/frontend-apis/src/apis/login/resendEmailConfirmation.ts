@@ -27,6 +27,7 @@ export type SendEmailConfirmationErrorResponse =
 /////////////////
 export type SendEmailConfirmationVisitor = Visitor & {
     success: () => void
+    unauthorized?: (error: UnauthorizedResponse) => void
     rateLimited?: (error: RateLimitedErrorResponse) => void
     emailAlreadyConfirmed?: (error: EmailAlreadyConfirmedErrorResponse) => void
 }

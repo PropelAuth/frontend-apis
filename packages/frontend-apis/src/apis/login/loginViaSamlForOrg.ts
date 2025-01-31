@@ -1,6 +1,6 @@
 import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
 import { ErrorCode, OrgNotFoundErrorResponse, UnexpectedErrorResponse } from '../../helpers/errors'
-import { Visitor, makeRequest } from '../../helpers/request'
+import { makeRequest, Visitor } from '../../helpers/request'
 
 /////////////////
 ///////////////// Request

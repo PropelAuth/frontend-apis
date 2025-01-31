@@ -7,7 +7,7 @@ import {
     UnauthorizedResponse,
     UnexpectedErrorResponse,
 } from '../../helpers/errors'
-import { makeRequest, Visitor } from '../../helpers/request'
+import { makeRequest, LoggedInVisitor } from '../../helpers/request'
 import { ApiKeyExpirationOption } from './types'
 
 /////////////////
@@ -28,7 +28,7 @@ export type CreatePersonalApiKeyErrorResponse =
 /////////////////
 ///////////////// Visitor
 /////////////////
-export type CreatePersonalApiKeyVisitor = Visitor & {
+export type CreatePersonalApiKeyVisitor = LoggedInVisitor & {
     success: (data: CreatePersonalApiKeySuccessResponse) => void
     invalidExpirationOption?: (error: InvalidExpirationOptionResponse) => void
     noPersonalApiKeyPermission?: (error: ForbiddenErrorResponse) => void
