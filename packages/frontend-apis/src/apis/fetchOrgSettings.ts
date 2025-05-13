@@ -57,9 +57,10 @@ export type FetchOrgSettingsVisitor = LoggedInVisitor & {
 /////////////////
 export type FetchOrgSettingsFn = ReturnType<typeof fetchOrgSettings>
 
-export const fetchOrgSettings = (authUrl: string) => async (orgId: string) => {
+export const fetchOrgSettings = (authUrl: string, excludeBasePath?: boolean) => async (orgId: string) => {
     return makeRequest<FetchOrgSettingsVisitor, FetchOrgSettingsErrorResponse, FetchOrgSettingsSuccessResponse>({
         authUrl,
+        excludeBasePath,
         path: `/org_settings?org_id=${orgId}`,
         method: 'GET',
         parseResponseAsJson: true,

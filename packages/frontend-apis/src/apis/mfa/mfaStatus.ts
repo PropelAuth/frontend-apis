@@ -44,9 +44,10 @@ export type MfaStatusVisitor = LoggedInVisitor & {
 /////////////////
 export type FetchMfaStatusWithNewSecretFn = ReturnType<typeof fetchMfaStatusWithNewSecret>
 
-export const fetchMfaStatusWithNewSecret = (authUrl: string) => async () => {
+export const fetchMfaStatusWithNewSecret = (authUrl: string, excludeBasePath?: boolean) => async () => {
     return await makeRequest<MfaStatusVisitor, MfaStatusErrorResponse, MfaStatusResponse>({
         authUrl,
+        excludeBasePath,
         path: '/security_status',
         method: 'POST',
         parseResponseAsJson: true,

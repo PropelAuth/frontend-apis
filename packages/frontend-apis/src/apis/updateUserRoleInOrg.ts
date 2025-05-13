@@ -63,39 +63,41 @@ export type UpdateUserRoleInOrgVisitor = LoggedInVisitor & {
 /////////////////
 export type UpdateUserRoleInOrgFn = ReturnType<typeof updateUserRoleInOrg>
 
-export const updateUserRoleInOrg = (authUrl: string) => async (request: UpdateUserRoleInOrgRequest) => {
-    return makeRequest<UpdateUserRoleInOrgVisitor, UpdateUserRoleInOrgErrorResponse>({
-        authUrl,
-        path: '/change_role',
-        method: 'POST',
-        body: {
-            ...request,
-            additional_roles: request.additional_roles ?? [],
-        },
-        responseToSuccessHandler: (visitor) => {
-            return () => visitor.success()
-        },
-        responseToErrorHandler: (error, visitor) => {
-            const { error_code: errorCode } = error
-            switch (errorCode) {
-                case ErrorCode.InvalidRequestFields:
-                    return getVisitorOrUndefined(visitor.badRequest, error)
-                case ErrorCode.Forbidden:
-                    return getVisitorOrUndefined(visitor.noUpdateRolePermission, error)
-                case ErrorCode.UserNotFound:
-                    return getVisitorOrUndefined(visitor.userNotFoundInOrg, error)
-                case ErrorCode.ActionDisabled:
-                    return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
-                case ErrorCode.Unauthorized:
-                    return getVisitorOrUndefined(visitor.unauthorized, error)
-                case ErrorCode.EmailNotConfirmed:
-                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
-                case ErrorCode.UnexpectedError:
-                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
-                default:
-                    unmatchedCase(errorCode)
-                    return undefined
-            }
-        },
-    })
-}
+export const updateUserRoleInOrg =
+    (authUrl: string, excludeBasePath?: boolean) => async (request: UpdateUserRoleInOrgRequest) => {
+        return makeRequest<UpdateUserRoleInOrgVisitor, UpdateUserRoleInOrgErrorResponse>({
+            authUrl,
+            excludeBasePath,
+            path: '/change_role',
+            method: 'POST',
+            body: {
+                ...request,
+                additional_roles: request.additional_roles ?? [],
+            },
+            responseToSuccessHandler: (visitor) => {
+                return () => visitor.success()
+            },
+            responseToErrorHandler: (error, visitor) => {
+                const { error_code: errorCode } = error
+                switch (errorCode) {
+                    case ErrorCode.InvalidRequestFields:
+                        return getVisitorOrUndefined(visitor.badRequest, error)
+                    case ErrorCode.Forbidden:
+                        return getVisitorOrUndefined(visitor.noUpdateRolePermission, error)
+                    case ErrorCode.UserNotFound:
+                        return getVisitorOrUndefined(visitor.userNotFoundInOrg, error)
+                    case ErrorCode.ActionDisabled:
+                        return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
+                    case ErrorCode.Unauthorized:
+                        return getVisitorOrUndefined(visitor.unauthorized, error)
+                    case ErrorCode.EmailNotConfirmed:
+                        return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
+                    case ErrorCode.UnexpectedError:
+                        return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                    default:
+                        unmatchedCase(errorCode)
+                        return undefined
+                }
+            },
+        })
+    }

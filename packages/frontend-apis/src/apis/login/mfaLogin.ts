@@ -57,9 +57,10 @@ export type MfaLoginVisitor = Visitor & {
 /////////////////
 export type VerifyMfaForLoginFn = ReturnType<typeof verifyMfaForLogin>
 
-export const verifyMfaForLogin = (authUrl: string) => async (request: VerifyMfaForLogin) => {
+export const verifyMfaForLogin = (authUrl: string, excludeBasePath?: boolean) => async (request: VerifyMfaForLogin) => {
     return makeRequest<MfaLoginVisitor, MfaLoginErrorResponse, MfaLoginSuccessResponse>({
         authUrl,
+        excludeBasePath,
         path: '/verify',
         method: 'POST',
         body: request,

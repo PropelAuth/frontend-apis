@@ -59,34 +59,36 @@ export type UpdatePasswordVisitor = LoggedInVisitor & {
 /////////////////
 export type UpdatePasswordFn = ReturnType<typeof updatePassword>
 
-export const updatePassword = (authUrl: string) => async (request: UpdatePasswordRequest) => {
-    return makeRequest<UpdatePasswordVisitor, UpdatePasswordErrorResponse>({
-        authUrl,
-        path: '/update_password',
-        method: 'POST',
-        body: request,
-        responseToSuccessHandler: (visitor) => {
-            return () => visitor.success()
-        },
-        responseToErrorHandler: (error, visitor) => {
-            const { error_code: errorCode } = error
-            switch (errorCode) {
-                case ErrorCode.IncorrectPassword:
-                    return getVisitorOrUndefined(visitor.incorrectPassword, error)
-                case ErrorCode.InvalidRequestFields:
-                    return getVisitorOrUndefined(visitor.badRequest, error)
-                case ErrorCode.Unauthorized:
-                    return getVisitorOrUndefined(visitor.unauthorized, error)
-                case ErrorCode.UserAccountLocked:
-                    return getVisitorOrUndefined(visitor.userAccountLocked, error)
-                case ErrorCode.EmailNotConfirmed:
-                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
-                case ErrorCode.UnexpectedError:
-                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
-                default:
-                    unmatchedCase(errorCode)
-                    return undefined
-            }
-        },
-    })
-}
+export const updatePassword =
+    (authUrl: string, excludeBasePath?: boolean) => async (request: UpdatePasswordRequest) => {
+        return makeRequest<UpdatePasswordVisitor, UpdatePasswordErrorResponse>({
+            authUrl,
+            excludeBasePath,
+            path: '/update_password',
+            method: 'POST',
+            body: request,
+            responseToSuccessHandler: (visitor) => {
+                return () => visitor.success()
+            },
+            responseToErrorHandler: (error, visitor) => {
+                const { error_code: errorCode } = error
+                switch (errorCode) {
+                    case ErrorCode.IncorrectPassword:
+                        return getVisitorOrUndefined(visitor.incorrectPassword, error)
+                    case ErrorCode.InvalidRequestFields:
+                        return getVisitorOrUndefined(visitor.badRequest, error)
+                    case ErrorCode.Unauthorized:
+                        return getVisitorOrUndefined(visitor.unauthorized, error)
+                    case ErrorCode.UserAccountLocked:
+                        return getVisitorOrUndefined(visitor.userAccountLocked, error)
+                    case ErrorCode.EmailNotConfirmed:
+                        return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
+                    case ErrorCode.UnexpectedError:
+                        return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                    default:
+                        unmatchedCase(errorCode)
+                        return undefined
+                }
+            },
+        })
+    }

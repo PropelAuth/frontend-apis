@@ -57,30 +57,32 @@ export type UpdateUserFacingMetadataVisitor = LoggedInVisitor & {
 /////////////////
 export type UpdateUserMetadataFn = ReturnType<typeof updateUserMetadata>
 
-export const updateUserMetadata = (authUrl: string) => async (request: UpdateUserFacingMetadataRequest) => {
-    return makeRequest<UpdateUserFacingMetadataVisitor, UpdateUserFacingMetadataErrorResponse>({
-        authUrl,
-        path: '/update_metadata',
-        method: 'POST',
-        body: request,
-        responseToSuccessHandler: (visitor) => {
-            return () => visitor.success()
-        },
-        responseToErrorHandler: (error, visitor) => {
-            const { error_code: errorCode } = error
-            switch (errorCode) {
-                case ErrorCode.InvalidRequestFields:
-                    return getVisitorOrUndefined(visitor.badRequest, error)
-                case ErrorCode.Unauthorized:
-                    return getVisitorOrUndefined(visitor.unauthorized, error)
-                case ErrorCode.EmailNotConfirmed:
-                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
-                case ErrorCode.UnexpectedError:
-                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
-                default:
-                    unmatchedCase(errorCode)
-                    return undefined
-            }
-        },
-    })
-}
+export const updateUserMetadata =
+    (authUrl: string, excludeBasePath?: boolean) => async (request: UpdateUserFacingMetadataRequest) => {
+        return makeRequest<UpdateUserFacingMetadataVisitor, UpdateUserFacingMetadataErrorResponse>({
+            authUrl,
+            excludeBasePath,
+            path: '/update_metadata',
+            method: 'POST',
+            body: request,
+            responseToSuccessHandler: (visitor) => {
+                return () => visitor.success()
+            },
+            responseToErrorHandler: (error, visitor) => {
+                const { error_code: errorCode } = error
+                switch (errorCode) {
+                    case ErrorCode.InvalidRequestFields:
+                        return getVisitorOrUndefined(visitor.badRequest, error)
+                    case ErrorCode.Unauthorized:
+                        return getVisitorOrUndefined(visitor.unauthorized, error)
+                    case ErrorCode.EmailNotConfirmed:
+                        return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
+                    case ErrorCode.UnexpectedError:
+                        return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                    default:
+                        unmatchedCase(errorCode)
+                        return undefined
+                }
+            },
+        })
+    }

@@ -44,9 +44,10 @@ export type JoinOrgVisitor = LoggedInVisitor & {
 /////////////////
 export type JoinOrgFn = ReturnType<typeof joinOrg>
 
-export const joinOrg = (authUrl: string) => async (orgId: string) => {
+export const joinOrg = (authUrl: string, excludeBasePath?: boolean) => async (orgId: string) => {
     return makeRequest<JoinOrgVisitor, JoinOrgErrorResponse, JoinOrgSuccessResponse>({
         authUrl,
+        excludeBasePath,
         path: `/join_org/${orgId}`,
         parseResponseAsJson: true,
         method: 'POST',

@@ -61,43 +61,45 @@ export type FetchOrgMembersVisitor = LoggedInVisitor & {
 /////////////////
 export type FetchOrgMembersFn = ReturnType<typeof fetchOrgMembers>
 
-export const fetchOrgMembers = (authUrl: string) => async (orgId: string, params?: FetchOrgMembersRequestParams) => {
-    const queryParams = new URLSearchParams()
-    if (params?.page_size) {
-        queryParams.append('page_size', params.page_size.toString())
+export const fetchOrgMembers =
+    (authUrl: string, excludeBasePath?: boolean) => async (orgId: string, params?: FetchOrgMembersRequestParams) => {
+        const queryParams = new URLSearchParams()
+        if (params?.page_size) {
+            queryParams.append('page_size', params.page_size.toString())
+        }
+        if (params?.page_number) {
+            queryParams.append('page_number', params.page_number.toString())
+        }
+        if (params?.email_search) {
+            queryParams.append('email_search', params.email_search)
+        }
+        return makeRequest<FetchOrgMembersVisitor, FetchOrgMembersErrorResponse, FetchOrgMembersSuccessResponse>({
+            authUrl,
+            excludeBasePath,
+            path: `/org_membership/${orgId}/members`,
+            method: 'GET',
+            parseResponseAsJson: true,
+            queryParams,
+            responseToSuccessHandler: (response, visitor) => {
+                return () => visitor.success(response)
+            },
+            responseToErrorHandler: (error, visitor) => {
+                const { error_code: errorCode } = error
+                switch (errorCode) {
+                    case ErrorCode.OrgNotFound:
+                        return getVisitorOrUndefined(visitor.orgNotFound, error)
+                    case ErrorCode.ActionDisabled:
+                        return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
+                    case ErrorCode.Unauthorized:
+                        return getVisitorOrUndefined(visitor.unauthorized, error)
+                    case ErrorCode.EmailNotConfirmed:
+                        return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
+                    case ErrorCode.UnexpectedError:
+                        return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                    default:
+                        unmatchedCase(errorCode)
+                        return undefined
+                }
+            },
+        })
     }
-    if (params?.page_number) {
-        queryParams.append('page_number', params.page_number.toString())
-    }
-    if (params?.email_search) {
-        queryParams.append('email_search', params.email_search)
-    }
-    return makeRequest<FetchOrgMembersVisitor, FetchOrgMembersErrorResponse, FetchOrgMembersSuccessResponse>({
-        authUrl,
-        path: `/org_membership/${orgId}/members`,
-        method: 'GET',
-        parseResponseAsJson: true,
-        queryParams,
-        responseToSuccessHandler: (response, visitor) => {
-            return () => visitor.success(response)
-        },
-        responseToErrorHandler: (error, visitor) => {
-            const { error_code: errorCode } = error
-            switch (errorCode) {
-                case ErrorCode.OrgNotFound:
-                    return getVisitorOrUndefined(visitor.orgNotFound, error)
-                case ErrorCode.ActionDisabled:
-                    return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
-                case ErrorCode.Unauthorized:
-                    return getVisitorOrUndefined(visitor.unauthorized, error)
-                case ErrorCode.EmailNotConfirmed:
-                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
-                case ErrorCode.UnexpectedError:
-                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
-                default:
-                    unmatchedCase(errorCode)
-                    return undefined
-            }
-        },
-    })
-}

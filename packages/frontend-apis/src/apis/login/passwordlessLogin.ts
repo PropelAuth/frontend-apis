@@ -75,36 +75,38 @@ export type PasswordlessLoginVisitor = Visitor & {
 /////////////////
 export type PasswordlessLoginFn = ReturnType<typeof passwordlessLogin>
 
-export const passwordlessLogin = (authUrl: string) => async (request: PasswordlessLoginRequest) => {
-    return makeRequest<PasswordlessLoginVisitor, PasswordlessLoginErrorResponse>({
-        authUrl,
-        path: '/login_passwordless',
-        method: 'POST',
-        body: request,
-        responseToSuccessHandler: (visitor) => {
-            return () => visitor.success()
-        },
-        responseToErrorHandler: (error, visitor) => {
-            const { error_code: errorCode } = error
-            switch (errorCode) {
-                case ErrorCode.InvalidRequestFields:
-                    return getVisitorOrUndefined(visitor.badRequest, error)
-                case ErrorCode.NotFound:
-                    return getVisitorOrUndefined(visitor.passwordlessLoginDisabled, error)
-                case ErrorCode.BadRequest:
-                    return getVisitorOrUndefined(visitor.cannotSignupWithPersonalEmail, error)
-                case ErrorCode.UnexpectedError:
-                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
-                case ErrorCode.DomainNotAllowed:
-                    return getVisitorOrUndefined(visitor.domainNotAllowed, error)
-                case ErrorCode.UserAccountDisabled:
-                    return getVisitorOrUndefined(visitor.userAccountDisabled, error)
-                case ErrorCode.UserAccountLocked:
-                    return getVisitorOrUndefined(visitor.userAccountLocked, error)
-                default:
-                    unmatchedCase(errorCode)
-                    return undefined
-            }
-        },
-    })
-}
+export const passwordlessLogin =
+    (authUrl: string, excludeBasePath?: boolean) => async (request: PasswordlessLoginRequest) => {
+        return makeRequest<PasswordlessLoginVisitor, PasswordlessLoginErrorResponse>({
+            authUrl,
+            excludeBasePath,
+            path: '/login_passwordless',
+            method: 'POST',
+            body: request,
+            responseToSuccessHandler: (visitor) => {
+                return () => visitor.success()
+            },
+            responseToErrorHandler: (error, visitor) => {
+                const { error_code: errorCode } = error
+                switch (errorCode) {
+                    case ErrorCode.InvalidRequestFields:
+                        return getVisitorOrUndefined(visitor.badRequest, error)
+                    case ErrorCode.NotFound:
+                        return getVisitorOrUndefined(visitor.passwordlessLoginDisabled, error)
+                    case ErrorCode.BadRequest:
+                        return getVisitorOrUndefined(visitor.cannotSignupWithPersonalEmail, error)
+                    case ErrorCode.UnexpectedError:
+                        return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                    case ErrorCode.DomainNotAllowed:
+                        return getVisitorOrUndefined(visitor.domainNotAllowed, error)
+                    case ErrorCode.UserAccountDisabled:
+                        return getVisitorOrUndefined(visitor.userAccountDisabled, error)
+                    case ErrorCode.UserAccountLocked:
+                        return getVisitorOrUndefined(visitor.userAccountLocked, error)
+                    default:
+                        unmatchedCase(errorCode)
+                        return undefined
+                }
+            },
+        })
+    }

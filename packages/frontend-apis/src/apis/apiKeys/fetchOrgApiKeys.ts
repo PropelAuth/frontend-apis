@@ -80,50 +80,52 @@ export type FetchOrgApiKeysVisitor = LoggedInVisitor & {
 /////////////////
 export type FetchOrgApiKeysFn = ReturnType<typeof fetchOrgApiKeys>
 
-export const fetchOrgApiKeys = (authUrl: string) => async (request: FetchOrgApiKeysRequest) => {
-    const queryParams = new URLSearchParams()
-    const { page_number, page_size, api_key_search } = request
-    queryParams.append('org_id', request.org_id)
-    if (page_number) {
-        queryParams.append('page_number', page_number.toString())
-    }
-    if (page_size) {
-        queryParams.append('page_size', page_size.toString())
-    }
-    if (api_key_search) {
-        queryParams.append('api_key_search', api_key_search)
-    }
+export const fetchOrgApiKeys =
+    (authUrl: string, excludeBasePath?: boolean) => async (request: FetchOrgApiKeysRequest) => {
+        const queryParams = new URLSearchParams()
+        const { page_number, page_size, api_key_search } = request
+        queryParams.append('org_id', request.org_id)
+        if (page_number) {
+            queryParams.append('page_number', page_number.toString())
+        }
+        if (page_size) {
+            queryParams.append('page_size', page_size.toString())
+        }
+        if (api_key_search) {
+            queryParams.append('api_key_search', api_key_search)
+        }
 
-    return makeRequest<FetchOrgApiKeysVisitor, FetchOrgApiKeysErrorResponse, FetchOrgApiKeysSuccessResponse>({
-        authUrl,
-        path: '/org_api_keys',
-        method: 'GET',
-        parseResponseAsJson: true,
-        queryParams,
-        responseToSuccessHandler: (response, visitor) => {
-            return () => visitor.success(response)
-        },
-        responseToErrorHandler: (error, visitor) => {
-            const { error_code: errorCode } = error
-            switch (errorCode) {
-                case ErrorCode.Unauthorized:
-                    return getVisitorOrUndefined(visitor.unauthorized, error)
-                case ErrorCode.EmailNotConfirmed:
-                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
-                case ErrorCode.UnexpectedError:
-                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
-                case ErrorCode.Forbidden:
-                    return getVisitorOrUndefined(visitor.cannotAccessOrgApiKeys, error)
-                case ErrorCode.InvalidRequestFields:
-                    return getVisitorOrUndefined(visitor.badRequest, error)
-                case ErrorCode.OrgNotFound:
-                    return getVisitorOrUndefined(visitor.orgNotFound, error)
-                case ErrorCode.ActionDisabled:
-                    return getVisitorOrUndefined(visitor.orgApiKeysDisabled, error)
-                default:
-                    unmatchedCase(errorCode)
-                    return undefined
-            }
-        },
-    })
-}
+        return makeRequest<FetchOrgApiKeysVisitor, FetchOrgApiKeysErrorResponse, FetchOrgApiKeysSuccessResponse>({
+            authUrl,
+            excludeBasePath,
+            path: '/org_api_keys',
+            method: 'GET',
+            parseResponseAsJson: true,
+            queryParams,
+            responseToSuccessHandler: (response, visitor) => {
+                return () => visitor.success(response)
+            },
+            responseToErrorHandler: (error, visitor) => {
+                const { error_code: errorCode } = error
+                switch (errorCode) {
+                    case ErrorCode.Unauthorized:
+                        return getVisitorOrUndefined(visitor.unauthorized, error)
+                    case ErrorCode.EmailNotConfirmed:
+                        return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
+                    case ErrorCode.UnexpectedError:
+                        return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                    case ErrorCode.Forbidden:
+                        return getVisitorOrUndefined(visitor.cannotAccessOrgApiKeys, error)
+                    case ErrorCode.InvalidRequestFields:
+                        return getVisitorOrUndefined(visitor.badRequest, error)
+                    case ErrorCode.OrgNotFound:
+                        return getVisitorOrUndefined(visitor.orgNotFound, error)
+                    case ErrorCode.ActionDisabled:
+                        return getVisitorOrUndefined(visitor.orgApiKeysDisabled, error)
+                    default:
+                        unmatchedCase(errorCode)
+                        return undefined
+                }
+            },
+        })
+    }

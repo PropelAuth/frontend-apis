@@ -79,7 +79,7 @@ export type CreateOrgVisitor = LoggedInVisitor & {
 /////////////////
 export type CreateOrgFn = ReturnType<typeof createOrg>
 
-export const createOrg = (authUrl: string) => async (request: CreateOrgRequest) => {
+export const createOrg = (authUrl: string, excludeBasePath?: boolean) => async (request: CreateOrgRequest) => {
     const internalRequest: InternalCreateOrgRequest = {
         name: request.name,
         autojoin_by_domain: request.allow_users_to_join_by_domain ?? false,
@@ -88,6 +88,7 @@ export const createOrg = (authUrl: string) => async (request: CreateOrgRequest) 
 
     return makeRequest<CreateOrgVisitor, CreateOrgErrorResponse, CreateOrgSuccessResponse>({
         authUrl,
+        excludeBasePath,
         path: '/create_org',
         parseResponseAsJson: true,
         method: 'POST',

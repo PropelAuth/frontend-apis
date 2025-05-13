@@ -41,9 +41,10 @@ export type FetchJoinableOrgsVisitor = LoggedInVisitor & {
 /////////////////
 export type FetchJoinableOrgsFn = ReturnType<typeof fetchJoinableOrgs>
 
-export const fetchJoinableOrgs = (authUrl: string) => async () => {
+export const fetchJoinableOrgs = (authUrl: string, excludeBasePath?: boolean) => async () => {
     return makeRequest<FetchJoinableOrgsVisitor, FetchJoinableOrgsErrorResponse, FetchJoinableOrgsSuccessResponse>({
         authUrl,
+        excludeBasePath,
         path: `/joinable_orgs`,
         method: 'GET',
         parseResponseAsJson: true,

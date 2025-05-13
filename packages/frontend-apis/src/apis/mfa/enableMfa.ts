@@ -56,9 +56,10 @@ export type MfaEnableVisitor = LoggedInVisitor & {
 /////////////////
 export type EnableMfaFn = ReturnType<typeof enableMfa>
 
-export const enableMfa = (authUrl: string) => async (request: MfaEnableRequest) => {
+export const enableMfa = (authUrl: string, excludeBasePath?: boolean) => async (request: MfaEnableRequest) => {
     return makeRequest<MfaEnableVisitor, MfaEnableErrorResponse>({
         authUrl,
+        excludeBasePath,
         path: '/mfa_enable',
         method: 'POST',
         body: request,

@@ -58,7 +58,8 @@ export type FetchPendingOrgInvitesVisitor = LoggedInVisitor & {
 export type FetchPendingOrgInvitesFn = ReturnType<typeof fetchPendingOrgInvites>
 
 export const fetchPendingOrgInvites =
-    (authUrl: string) => async (orgId: string, params?: FetchPendingOrgInvitesRequestParams) => {
+    (authUrl: string, excludeBasePath?: boolean) =>
+    async (orgId: string, params?: FetchPendingOrgInvitesRequestParams) => {
         const queryParams = new URLSearchParams()
         if (params?.page_size) {
             queryParams.append('page_size', params.page_size.toString())
@@ -75,6 +76,7 @@ export const fetchPendingOrgInvites =
             FetchPendingOrgInvitesSuccessResponse
         >({
             authUrl,
+            excludeBasePath,
             path: `/org_membership/${orgId}/pending_invites`,
             method: 'GET',
             queryParams,

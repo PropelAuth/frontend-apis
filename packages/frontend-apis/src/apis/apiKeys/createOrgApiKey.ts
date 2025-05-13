@@ -40,9 +40,11 @@ export type CreateOrgApiKeyVisitor = LoggedInVisitor & {
 export type CreateOrgApiKeyFn = ReturnType<typeof createOrgApiKey>
 
 export const createOrgApiKey =
-    (authUrl: string) => async (orgId: string, expirationOption?: ApiKeyExpirationOption) => {
+    (authUrl: string, excludeBasePath?: boolean) =>
+    async (orgId: string, expirationOption?: ApiKeyExpirationOption) => {
         return makeRequest<CreateOrgApiKeyVisitor, CreateOrgApiKeyErrorResponse, CreateOrgApiKeySuccessResponse>({
             authUrl,
+            excludeBasePath,
             path: '/api_keys',
             method: 'POST',
             parseResponseAsJson: true,

@@ -46,27 +46,29 @@ export type ForgotPasswordVisitor = Visitor & {
 /////////////////
 export type SendForgotPasswordEmailFn = ReturnType<typeof sendForgotPasswordEmail>
 
-export const sendForgotPasswordEmail = (authUrl: string) => async (request: ForgotPasswordRequest) => {
-    return makeRequest<ForgotPasswordVisitor, ForgotPasswordErrorResponse, ForgotPasswordSuccessResponse>({
-        authUrl,
-        path: '/forgot_password',
-        method: 'POST',
-        body: request,
-        parseResponseAsJson: true,
-        responseToSuccessHandler: (response, visitor) => {
-            return () => visitor.success(response)
-        },
-        responseToErrorHandler: (error, visitor) => {
-            const { error_code: errorCode } = error
-            switch (errorCode) {
-                case ErrorCode.InvalidRequestFields:
-                    return getVisitorOrUndefined(visitor.badRequest, error)
-                case ErrorCode.UnexpectedError:
-                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
-                default:
-                    unmatchedCase(errorCode)
-                    return undefined
-            }
-        },
-    })
-}
+export const sendForgotPasswordEmail =
+    (authUrl: string, excludeBasePath?: boolean) => async (request: ForgotPasswordRequest) => {
+        return makeRequest<ForgotPasswordVisitor, ForgotPasswordErrorResponse, ForgotPasswordSuccessResponse>({
+            authUrl,
+            excludeBasePath,
+            path: '/forgot_password',
+            method: 'POST',
+            body: request,
+            parseResponseAsJson: true,
+            responseToSuccessHandler: (response, visitor) => {
+                return () => visitor.success(response)
+            },
+            responseToErrorHandler: (error, visitor) => {
+                const { error_code: errorCode } = error
+                switch (errorCode) {
+                    case ErrorCode.InvalidRequestFields:
+                        return getVisitorOrUndefined(visitor.badRequest, error)
+                    case ErrorCode.UnexpectedError:
+                        return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                    default:
+                        unmatchedCase(errorCode)
+                        return undefined
+                }
+            },
+        })
+    }
