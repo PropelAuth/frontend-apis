@@ -34,6 +34,8 @@ import { updateUserMetadata } from './apis/updateUserMetadata'
 import { updateUserRoleInOrg } from './apis/updateUserRoleInOrg'
 import { SOCIAL_LOGIN_PATHS, SocialLoginProvider } from './socialLogins'
 
+const BASE_PATH = '/api/fe/v3'
+
 export type ApiOptions = {
     authUrl: string
     baseApiUrl: string
@@ -43,45 +45,48 @@ export type ApiOptions = {
 export type PropelAuthApi = ReturnType<typeof createFrontendApisClient>
 
 export const createFrontendApisClient = ({ authUrl, baseApiUrl, excludeBasePath }: ApiOptions) => {
+    // this is the only reason that we need the auth url on the frontend
     const loginWithSocialProvider = (provider: SocialLoginProvider) => {
         window.location.href = `${authUrl}/${SOCIAL_LOGIN_PATHS[provider]}`
     }
 
+    const formattedApiUrl = excludeBasePath ? baseApiUrl : baseApiUrl + BASE_PATH
+
     return {
-        enableMfa: enableMfa(baseApiUrl, excludeBasePath),
-        disableMfa: disableMfa(baseApiUrl, excludeBasePath),
-        fetchMfaStatusWithNewSecret: fetchMfaStatusWithNewSecret(baseApiUrl, excludeBasePath),
-        updatePassword: updatePassword(baseApiUrl, excludeBasePath),
-        deleteAccount: deleteAccount(baseApiUrl, excludeBasePath),
-        updateUserMetadata: updateUserMetadata(baseApiUrl, excludeBasePath),
-        updateEmail: updateEmail(baseApiUrl, excludeBasePath),
-        fetchOrgMembers: fetchOrgMembers(baseApiUrl, excludeBasePath),
-        fetchPendingOrgInvites: fetchPendingOrgInvites(baseApiUrl, excludeBasePath),
-        fetchExpiredOrgInvites: fetchExpiredOrgInvites(baseApiUrl, excludeBasePath),
-        inviteUserToOrg: inviteUserToOrg(baseApiUrl, excludeBasePath),
-        removeUserFromOrg: removeUserFromOrg(baseApiUrl, excludeBasePath),
-        updateUserRoleInOrg: updateUserRoleInOrg(baseApiUrl, excludeBasePath),
-        revokeUserOrgInvitation: revokeUserOrgInvitation(baseApiUrl, excludeBasePath),
-        updateOrgSettings: updateOrgSettings(baseApiUrl, excludeBasePath),
-        fetchOrgSettings: fetchOrgSettings(baseApiUrl, excludeBasePath),
-        deleteOrg: deleteOrg(baseApiUrl, excludeBasePath),
-        createOrg: createOrg(baseApiUrl, excludeBasePath),
-        fetchPersonalApiKeys: fetchPersonalApiKeys(baseApiUrl, excludeBasePath),
-        createPersonalApiKey: createPersonalApiKey(baseApiUrl, excludeBasePath),
-        fetchOrgApiKeys: fetchOrgApiKeys(baseApiUrl, excludeBasePath),
-        createOrgApiKey: createOrgApiKey(baseApiUrl, excludeBasePath),
-        deleteApiKey: deleteApiKey(baseApiUrl, excludeBasePath),
-        fetchLoginState: fetchLoginState(baseApiUrl, excludeBasePath),
-        emailPasswordLogin: emailPasswordLogin(baseApiUrl, excludeBasePath),
-        resendEmailConfirmation: resendEmailConfirmation(baseApiUrl, excludeBasePath),
-        verifyMfaForLogin: verifyMfaForLogin(baseApiUrl, excludeBasePath),
-        verifyMfaBackupCodeForLogin: verifyMfaBackupCodeForLogin(baseApiUrl, excludeBasePath),
-        sendForgotPasswordEmail: sendForgotPasswordEmail(baseApiUrl, excludeBasePath),
-        fetchJoinableOrgs: fetchJoinableOrgs(baseApiUrl, excludeBasePath),
-        joinOrg: joinOrg(baseApiUrl, excludeBasePath),
-        passwordlessLogin: passwordlessLogin(baseApiUrl, excludeBasePath),
-        loginViaSamlForOrg: loginViaSamlForOrg(baseApiUrl, excludeBasePath),
-        signup: signup(baseApiUrl, excludeBasePath),
+        enableMfa: enableMfa(formattedApiUrl),
+        disableMfa: disableMfa(formattedApiUrl),
+        fetchMfaStatusWithNewSecret: fetchMfaStatusWithNewSecret(formattedApiUrl),
+        updatePassword: updatePassword(formattedApiUrl),
+        deleteAccount: deleteAccount(formattedApiUrl),
+        updateUserMetadata: updateUserMetadata(formattedApiUrl),
+        updateEmail: updateEmail(formattedApiUrl),
+        fetchOrgMembers: fetchOrgMembers(formattedApiUrl),
+        fetchPendingOrgInvites: fetchPendingOrgInvites(formattedApiUrl),
+        fetchExpiredOrgInvites: fetchExpiredOrgInvites(formattedApiUrl),
+        inviteUserToOrg: inviteUserToOrg(formattedApiUrl),
+        removeUserFromOrg: removeUserFromOrg(formattedApiUrl),
+        updateUserRoleInOrg: updateUserRoleInOrg(formattedApiUrl),
+        revokeUserOrgInvitation: revokeUserOrgInvitation(formattedApiUrl),
+        updateOrgSettings: updateOrgSettings(formattedApiUrl),
+        fetchOrgSettings: fetchOrgSettings(formattedApiUrl),
+        deleteOrg: deleteOrg(formattedApiUrl),
+        createOrg: createOrg(formattedApiUrl),
+        fetchPersonalApiKeys: fetchPersonalApiKeys(formattedApiUrl),
+        createPersonalApiKey: createPersonalApiKey(formattedApiUrl),
+        fetchOrgApiKeys: fetchOrgApiKeys(formattedApiUrl),
+        createOrgApiKey: createOrgApiKey(formattedApiUrl),
+        deleteApiKey: deleteApiKey(formattedApiUrl),
+        fetchLoginState: fetchLoginState(formattedApiUrl),
+        emailPasswordLogin: emailPasswordLogin(formattedApiUrl),
+        resendEmailConfirmation: resendEmailConfirmation(formattedApiUrl),
+        verifyMfaForLogin: verifyMfaForLogin(formattedApiUrl),
+        verifyMfaBackupCodeForLogin: verifyMfaBackupCodeForLogin(formattedApiUrl),
+        sendForgotPasswordEmail: sendForgotPasswordEmail(formattedApiUrl),
+        fetchJoinableOrgs: fetchJoinableOrgs(formattedApiUrl),
+        joinOrg: joinOrg(formattedApiUrl),
+        passwordlessLogin: passwordlessLogin(formattedApiUrl),
+        loginViaSamlForOrg: loginViaSamlForOrg(formattedApiUrl),
+        signup: signup(formattedApiUrl),
         loginWithSocialProvider,
     }
 }
