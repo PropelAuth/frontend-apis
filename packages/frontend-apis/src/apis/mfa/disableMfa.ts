@@ -38,10 +38,9 @@ export type MfaDisableVisitor = LoggedInVisitor & {
 /////////////////
 export type DisableMfaFn = ReturnType<typeof disableMfa>
 
-export const disableMfa = (authUrl: string, excludeBasePath?: boolean) => async () => {
+export const disableMfa = (authUrl: string) => async () => {
     return makeRequest<MfaDisableVisitor, MfaDisableErrorResponse>({
         authUrl,
-        excludeBasePath,
         path: '/mfa_disable',
         method: 'POST',
         responseToSuccessHandler: (visitor) => {

@@ -72,45 +72,43 @@ export type UpdateOrgSettingsVisitor = LoggedInVisitor & {
 /////////////////
 export type UpdateOrgSettingsFn = ReturnType<typeof updateOrgSettings>
 
-export const updateOrgSettings =
-    (authUrl: string, excludeBasePath?: boolean) => async (request: UpdateOrgSettingsRequest) => {
-        const internalRequest: InternalUpdateOrgSettingsRequest = {
-            org_id: request.org_id,
-            name: request.name,
-            autojoin_by_domain: request.allow_users_to_join_by_domain,
-            restrict_to_domain: request.restrict_invites_by_domain,
-            require_2fa_by: request.require_2fa_by,
-        }
-        return makeRequest<UpdateOrgSettingsVisitor, UpdateOrgSettingsErrorResponse>({
-            authUrl,
-            excludeBasePath,
-            path: '/update_org_metadata',
-            method: 'POST',
-            body: internalRequest,
-            responseToSuccessHandler: (visitor) => {
-                return () => visitor.success()
-            },
-            responseToErrorHandler: (error, visitor) => {
-                const { error_code: errorCode } = error
-                switch (errorCode) {
-                    case ErrorCode.InvalidRequestFields:
-                        return getVisitorOrUndefined(visitor.badRequest, error)
-                    case ErrorCode.ActionDisabled:
-                        return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
-                    case ErrorCode.OrgNotFound:
-                        return getVisitorOrUndefined(visitor.orgNotFound, error)
-                    case ErrorCode.Forbidden:
-                        return getVisitorOrUndefined(visitor.forbidden, error)
-                    case ErrorCode.Unauthorized:
-                        return getVisitorOrUndefined(visitor.unauthorized, error)
-                    case ErrorCode.EmailNotConfirmed:
-                        return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
-                    case ErrorCode.UnexpectedError:
-                        return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
-                    default:
-                        unmatchedCase(errorCode)
-                        return undefined
-                }
-            },
-        })
+export const updateOrgSettings = (authUrl: string) => async (request: UpdateOrgSettingsRequest) => {
+    const internalRequest: InternalUpdateOrgSettingsRequest = {
+        org_id: request.org_id,
+        name: request.name,
+        autojoin_by_domain: request.allow_users_to_join_by_domain,
+        restrict_to_domain: request.restrict_invites_by_domain,
+        require_2fa_by: request.require_2fa_by,
     }
+    return makeRequest<UpdateOrgSettingsVisitor, UpdateOrgSettingsErrorResponse>({
+        authUrl,
+        path: '/update_org_metadata',
+        method: 'POST',
+        body: internalRequest,
+        responseToSuccessHandler: (visitor) => {
+            return () => visitor.success()
+        },
+        responseToErrorHandler: (error, visitor) => {
+            const { error_code: errorCode } = error
+            switch (errorCode) {
+                case ErrorCode.InvalidRequestFields:
+                    return getVisitorOrUndefined(visitor.badRequest, error)
+                case ErrorCode.ActionDisabled:
+                    return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
+                case ErrorCode.OrgNotFound:
+                    return getVisitorOrUndefined(visitor.orgNotFound, error)
+                case ErrorCode.Forbidden:
+                    return getVisitorOrUndefined(visitor.forbidden, error)
+                case ErrorCode.Unauthorized:
+                    return getVisitorOrUndefined(visitor.unauthorized, error)
+                case ErrorCode.EmailNotConfirmed:
+                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
+                case ErrorCode.UnexpectedError:
+                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                default:
+                    unmatchedCase(errorCode)
+                    return undefined
+            }
+        },
+    })
+}

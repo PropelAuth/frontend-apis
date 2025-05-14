@@ -71,41 +71,35 @@ export type EmailPasswordLoginVisitor = Visitor & {
 /////////////////
 export type EmailPasswordLoginFn = ReturnType<typeof emailPasswordLogin>
 
-export const emailPasswordLogin =
-    (authUrl: string, excludeBasePath?: boolean) => async (request: EmailPasswordLoginRequest) => {
-        return makeRequest<
-            EmailPasswordLoginVisitor,
-            EmailPasswordLoginErrorResponse,
-            EmailPasswordLoginSuccessResponse
-        >({
-            authUrl,
-            excludeBasePath,
-            path: '/login',
-            method: 'POST',
-            body: request,
-            parseResponseAsJson: true,
-            responseToSuccessHandler: (response, visitor) => {
-                return () => visitor.success(response)
-            },
-            responseToErrorHandler: (error, visitor) => {
-                const { error_code: errorCode } = error
-                switch (errorCode) {
-                    case ErrorCode.InvalidRequestFields:
-                        return getVisitorOrUndefined(visitor.badRequest, error)
-                    case ErrorCode.UnexpectedError:
-                        return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
-                    case ErrorCode.ActionDisabled:
-                        return getVisitorOrUndefined(visitor.passwordLoginDisabled, error)
-                    case ErrorCode.UserAccountDisabled:
-                        return getVisitorOrUndefined(visitor.userAccountDisabled, error)
-                    case ErrorCode.UserAccountLocked:
-                        return getVisitorOrUndefined(visitor.userAccountLocked, error)
-                    case ErrorCode.UserNotFound:
-                        return getVisitorOrUndefined(visitor.invalidCredentials, error)
-                    default:
-                        unmatchedCase(errorCode)
-                        return undefined
-                }
-            },
-        })
-    }
+export const emailPasswordLogin = (authUrl: string) => async (request: EmailPasswordLoginRequest) => {
+    return makeRequest<EmailPasswordLoginVisitor, EmailPasswordLoginErrorResponse, EmailPasswordLoginSuccessResponse>({
+        authUrl,
+        path: '/login',
+        method: 'POST',
+        body: request,
+        parseResponseAsJson: true,
+        responseToSuccessHandler: (response, visitor) => {
+            return () => visitor.success(response)
+        },
+        responseToErrorHandler: (error, visitor) => {
+            const { error_code: errorCode } = error
+            switch (errorCode) {
+                case ErrorCode.InvalidRequestFields:
+                    return getVisitorOrUndefined(visitor.badRequest, error)
+                case ErrorCode.UnexpectedError:
+                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                case ErrorCode.ActionDisabled:
+                    return getVisitorOrUndefined(visitor.passwordLoginDisabled, error)
+                case ErrorCode.UserAccountDisabled:
+                    return getVisitorOrUndefined(visitor.userAccountDisabled, error)
+                case ErrorCode.UserAccountLocked:
+                    return getVisitorOrUndefined(visitor.userAccountLocked, error)
+                case ErrorCode.UserNotFound:
+                    return getVisitorOrUndefined(visitor.invalidCredentials, error)
+                default:
+                    unmatchedCase(errorCode)
+                    return undefined
+            }
+        },
+    })
+}

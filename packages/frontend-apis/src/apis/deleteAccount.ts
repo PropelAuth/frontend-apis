@@ -29,10 +29,9 @@ export type DeleteAccountVisitor = Visitor & {
 /////////////////
 export type DeleteAccountFn = ReturnType<typeof deleteAccount>
 
-export const deleteAccount = (authUrl: string, excludeBasePath?: boolean) => async () => {
+export const deleteAccount = (authUrl: string) => async () => {
     return makeRequest<DeleteAccountVisitor, DeleteAccountErrorResponse>({
         authUrl,
-        excludeBasePath,
         path: '/delete_me',
         method: 'DELETE',
         responseToSuccessHandler: (visitor) => {

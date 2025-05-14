@@ -48,39 +48,33 @@ export type MfaLoginBackupCodeVisitor = Visitor & {
 /////////////////
 export type VerifyMfaBackupCodeForLoginFn = ReturnType<typeof verifyMfaBackupCodeForLogin>
 
-export const verifyMfaBackupCodeForLogin =
-    (authUrl: string, excludeBasePath?: boolean) => async (request: MfaLoginBackupCodeRequest) => {
-        return makeRequest<
-            MfaLoginBackupCodeVisitor,
-            MfaLoginBackupCodeErrorResponse,
-            MfaLoginBackupCodeSuccessResponse
-        >({
-            authUrl,
-            excludeBasePath,
-            path: '/verify_backup',
-            method: 'POST',
-            body: request,
-            parseResponseAsJson: true,
-            responseToSuccessHandler: (response, visitor) => {
-                return () => visitor.success(response)
-            },
-            responseToErrorHandler: (error, visitor) => {
-                const { error_code: errorCode } = error
-                switch (errorCode) {
-                    case ErrorCode.InvalidMfaCookie:
-                        return getVisitorOrUndefined(visitor.mfaCookieTimeout, error)
-                    case ErrorCode.UserAccountMfaLocked:
-                        return getVisitorOrUndefined(visitor.accountLocked, error)
-                    case ErrorCode.UserAccountDisabled:
-                        return getVisitorOrUndefined(visitor.accountDisabled, error)
-                    case ErrorCode.IncorrectMfaCode:
-                        return getVisitorOrUndefined(visitor.invalidCode, error)
-                    case ErrorCode.UnexpectedError:
-                        return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
-                    default:
-                        unmatchedCase(errorCode)
-                        return undefined
-                }
-            },
-        })
-    }
+export const verifyMfaBackupCodeForLogin = (authUrl: string) => async (request: MfaLoginBackupCodeRequest) => {
+    return makeRequest<MfaLoginBackupCodeVisitor, MfaLoginBackupCodeErrorResponse, MfaLoginBackupCodeSuccessResponse>({
+        authUrl,
+        path: '/verify_backup',
+        method: 'POST',
+        body: request,
+        parseResponseAsJson: true,
+        responseToSuccessHandler: (response, visitor) => {
+            return () => visitor.success(response)
+        },
+        responseToErrorHandler: (error, visitor) => {
+            const { error_code: errorCode } = error
+            switch (errorCode) {
+                case ErrorCode.InvalidMfaCookie:
+                    return getVisitorOrUndefined(visitor.mfaCookieTimeout, error)
+                case ErrorCode.UserAccountMfaLocked:
+                    return getVisitorOrUndefined(visitor.accountLocked, error)
+                case ErrorCode.UserAccountDisabled:
+                    return getVisitorOrUndefined(visitor.accountDisabled, error)
+                case ErrorCode.IncorrectMfaCode:
+                    return getVisitorOrUndefined(visitor.invalidCode, error)
+                case ErrorCode.UnexpectedError:
+                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                default:
+                    unmatchedCase(errorCode)
+                    return undefined
+            }
+        },
+    })
+}

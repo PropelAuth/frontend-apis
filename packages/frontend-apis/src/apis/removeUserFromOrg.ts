@@ -63,40 +63,38 @@ export type RemoveUserFromOrgVisitor = LoggedInVisitor & {
 /////////////////
 export type RemoveUserFromOrgFn = ReturnType<typeof removeUserFromOrg>
 
-export const removeUserFromOrg =
-    (authUrl: string, excludeBasePath?: boolean) => async (request: RemoveUserFromOrgRequest) => {
-        return makeRequest<RemoveUserFromOrgVisitor, RemoveUserFromOrgErrorResponse>({
-            authUrl,
-            excludeBasePath,
-            path: '/remove_user',
-            method: 'POST',
-            body: request,
-            responseToSuccessHandler: (visitor) => {
-                return () => visitor.success()
-            },
-            responseToErrorHandler: (error, visitor) => {
-                const { error_code: errorCode } = error
-                switch (errorCode) {
-                    case ErrorCode.InvalidRequestFields:
-                        return getVisitorOrUndefined(visitor.mustBeAtLeastOneOwner, error)
-                    case ErrorCode.Forbidden:
-                        return getVisitorOrUndefined(visitor.noRemovePermission, error)
-                    case ErrorCode.OrgNotFound:
-                        return getVisitorOrUndefined(visitor.orgNotFound, error)
-                    case ErrorCode.UserNotFound:
-                        return getVisitorOrUndefined(visitor.userNotFoundInOrg, error)
-                    case ErrorCode.ActionDisabled:
-                        return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
-                    case ErrorCode.Unauthorized:
-                        return getVisitorOrUndefined(visitor.unauthorized, error)
-                    case ErrorCode.EmailNotConfirmed:
-                        return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
-                    case ErrorCode.UnexpectedError:
-                        return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
-                    default:
-                        unmatchedCase(errorCode)
-                        return undefined
-                }
-            },
-        })
-    }
+export const removeUserFromOrg = (authUrl: string) => async (request: RemoveUserFromOrgRequest) => {
+    return makeRequest<RemoveUserFromOrgVisitor, RemoveUserFromOrgErrorResponse>({
+        authUrl,
+        path: '/remove_user',
+        method: 'POST',
+        body: request,
+        responseToSuccessHandler: (visitor) => {
+            return () => visitor.success()
+        },
+        responseToErrorHandler: (error, visitor) => {
+            const { error_code: errorCode } = error
+            switch (errorCode) {
+                case ErrorCode.InvalidRequestFields:
+                    return getVisitorOrUndefined(visitor.mustBeAtLeastOneOwner, error)
+                case ErrorCode.Forbidden:
+                    return getVisitorOrUndefined(visitor.noRemovePermission, error)
+                case ErrorCode.OrgNotFound:
+                    return getVisitorOrUndefined(visitor.orgNotFound, error)
+                case ErrorCode.UserNotFound:
+                    return getVisitorOrUndefined(visitor.userNotFoundInOrg, error)
+                case ErrorCode.ActionDisabled:
+                    return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
+                case ErrorCode.Unauthorized:
+                    return getVisitorOrUndefined(visitor.unauthorized, error)
+                case ErrorCode.EmailNotConfirmed:
+                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
+                case ErrorCode.UnexpectedError:
+                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                default:
+                    unmatchedCase(errorCode)
+                    return undefined
+            }
+        },
+    })
+}

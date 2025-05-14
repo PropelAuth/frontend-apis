@@ -75,45 +75,43 @@ export type InviteUserToOrgVisitor = LoggedInVisitor & {
 /////////////////
 export type InviteUserToOrgFn = ReturnType<typeof inviteUserToOrg>
 
-export const inviteUserToOrg =
-    (authUrl: string, excludeBasePath?: boolean) => async (request: InviteUserToOrgRequest) => {
-        return makeRequest<InviteUserToOrgVisitor, InviteUserToOrgErrorResponse>({
-            authUrl,
-            excludeBasePath,
-            path: '/invite_user',
-            method: 'POST',
-            body: {
-                ...request,
-                additional_roles: request.additional_roles ?? [],
-            },
-            responseToSuccessHandler: (visitor) => {
-                return () => visitor.success()
-            },
-            responseToErrorHandler: (error, visitor) => {
-                const { error_code: errorCode } = error
-                switch (errorCode) {
-                    case ErrorCode.InvalidRequestFields:
-                        return getVisitorOrUndefined(visitor.badRequest, error)
-                    case ErrorCode.Forbidden:
-                        return getVisitorOrUndefined(visitor.noInvitePermission, error)
-                    case ErrorCode.OrgNotFound:
-                        return getVisitorOrUndefined(visitor.orgNotFound, error)
-                    case ErrorCode.OrgMaxUsersLimitExceeded:
-                        return getVisitorOrUndefined(visitor.orgMaxUsersLimitExceeded, error)
-                    case ErrorCode.ActionAlreadyComplete:
-                        return getVisitorOrUndefined(visitor.userAlreadyInOrg, error)
-                    case ErrorCode.ActionDisabled:
-                        return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
-                    case ErrorCode.Unauthorized:
-                        return getVisitorOrUndefined(visitor.unauthorized, error)
-                    case ErrorCode.EmailNotConfirmed:
-                        return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
-                    case ErrorCode.UnexpectedError:
-                        return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
-                    default:
-                        unmatchedCase(errorCode)
-                        return undefined
-                }
-            },
-        })
-    }
+export const inviteUserToOrg = (authUrl: string) => async (request: InviteUserToOrgRequest) => {
+    return makeRequest<InviteUserToOrgVisitor, InviteUserToOrgErrorResponse>({
+        authUrl,
+        path: '/invite_user',
+        method: 'POST',
+        body: {
+            ...request,
+            additional_roles: request.additional_roles ?? [],
+        },
+        responseToSuccessHandler: (visitor) => {
+            return () => visitor.success()
+        },
+        responseToErrorHandler: (error, visitor) => {
+            const { error_code: errorCode } = error
+            switch (errorCode) {
+                case ErrorCode.InvalidRequestFields:
+                    return getVisitorOrUndefined(visitor.badRequest, error)
+                case ErrorCode.Forbidden:
+                    return getVisitorOrUndefined(visitor.noInvitePermission, error)
+                case ErrorCode.OrgNotFound:
+                    return getVisitorOrUndefined(visitor.orgNotFound, error)
+                case ErrorCode.OrgMaxUsersLimitExceeded:
+                    return getVisitorOrUndefined(visitor.orgMaxUsersLimitExceeded, error)
+                case ErrorCode.ActionAlreadyComplete:
+                    return getVisitorOrUndefined(visitor.userAlreadyInOrg, error)
+                case ErrorCode.ActionDisabled:
+                    return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
+                case ErrorCode.Unauthorized:
+                    return getVisitorOrUndefined(visitor.unauthorized, error)
+                case ErrorCode.EmailNotConfirmed:
+                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
+                case ErrorCode.UnexpectedError:
+                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                default:
+                    unmatchedCase(errorCode)
+                    return undefined
+            }
+        },
+    })
+}

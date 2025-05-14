@@ -24,10 +24,9 @@ export type FetchLoginStateVisitor = Visitor & {
 /////////////////
 export type FetchLoginStateFn = ReturnType<typeof fetchLoginState>
 
-export const fetchLoginState = (authUrl: string, excludeBasePath?: boolean) => async () => {
+export const fetchLoginState = (authUrl: string) => async () => {
     return makeRequest<FetchLoginStateVisitor, FetchLoginStateErrorResponse, FetchLoginStateSuccessResponse>({
         authUrl,
-        excludeBasePath,
         path: '/login_state',
         method: 'GET',
         parseResponseAsJson: true,

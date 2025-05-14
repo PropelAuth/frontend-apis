@@ -59,10 +59,9 @@ export type SignupVisitor = Visitor & {
 /////////////////
 export type SignupFn = ReturnType<typeof signup>
 
-export const signup = (authUrl: string, excludeBasePath?: boolean) => async (request: SignupRequest) => {
+export const signup = (authUrl: string) => async (request: SignupRequest) => {
     return makeRequest<SignupVisitor, SignupErrorResponse, SignupSuccessResponse>({
         authUrl,
-        excludeBasePath,
         path: `/signup`,
         parseResponseAsJson: true,
         method: 'POST',

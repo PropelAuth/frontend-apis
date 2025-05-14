@@ -59,38 +59,36 @@ export type RevokeUserOrgInvitationVisitor = LoggedInVisitor & {
 /////////////////
 export type RevokeUserOrgInvitationFn = ReturnType<typeof revokeUserOrgInvitation>
 
-export const revokeUserOrgInvitation =
-    (authUrl: string, excludeBasePath?: boolean) => async (request: RevokeUserOrgInvitationRequest) => {
-        return makeRequest<RevokeUserOrgInvitationVisitor, RevokeUserOrgInvitationErrorResponse>({
-            authUrl,
-            excludeBasePath,
-            path: '/revoke_user_invitation',
-            method: 'POST',
-            body: request,
-            responseToSuccessHandler: (visitor) => {
-                return () => visitor.success()
-            },
-            responseToErrorHandler: (error, visitor) => {
-                const { error_code: errorCode } = error
-                switch (errorCode) {
-                    case ErrorCode.InvalidRequestFields:
-                        return getVisitorOrUndefined(visitor.badRequest, error)
-                    case ErrorCode.Forbidden:
-                        return getVisitorOrUndefined(visitor.noRevokeInvitePermission, error)
-                    case ErrorCode.OrgNotFound:
-                        return getVisitorOrUndefined(visitor.orgNotFound, error)
-                    case ErrorCode.ActionDisabled:
-                        return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
-                    case ErrorCode.Unauthorized:
-                        return getVisitorOrUndefined(visitor.unauthorized, error)
-                    case ErrorCode.EmailNotConfirmed:
-                        return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
-                    case ErrorCode.UnexpectedError:
-                        return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
-                    default:
-                        unmatchedCase(errorCode)
-                        return undefined
-                }
-            },
-        })
-    }
+export const revokeUserOrgInvitation = (authUrl: string) => async (request: RevokeUserOrgInvitationRequest) => {
+    return makeRequest<RevokeUserOrgInvitationVisitor, RevokeUserOrgInvitationErrorResponse>({
+        authUrl,
+        path: '/revoke_user_invitation',
+        method: 'POST',
+        body: request,
+        responseToSuccessHandler: (visitor) => {
+            return () => visitor.success()
+        },
+        responseToErrorHandler: (error, visitor) => {
+            const { error_code: errorCode } = error
+            switch (errorCode) {
+                case ErrorCode.InvalidRequestFields:
+                    return getVisitorOrUndefined(visitor.badRequest, error)
+                case ErrorCode.Forbidden:
+                    return getVisitorOrUndefined(visitor.noRevokeInvitePermission, error)
+                case ErrorCode.OrgNotFound:
+                    return getVisitorOrUndefined(visitor.orgNotFound, error)
+                case ErrorCode.ActionDisabled:
+                    return getVisitorOrUndefined(visitor.orgsNotEnabled, error)
+                case ErrorCode.Unauthorized:
+                    return getVisitorOrUndefined(visitor.unauthorized, error)
+                case ErrorCode.EmailNotConfirmed:
+                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
+                case ErrorCode.UnexpectedError:
+                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                default:
+                    unmatchedCase(errorCode)
+                    return undefined
+            }
+        },
+    })
+}

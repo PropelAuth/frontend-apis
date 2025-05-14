@@ -85,10 +85,9 @@ export type UpdateEmailVisitor = LoggedInVisitor & {
 /////////////////
 export type UpdateEmailFn = ReturnType<typeof updateEmail>
 
-export const updateEmail = (authUrl: string, excludeBasePath?: boolean) => async (request: UpdateEmailRequest) => {
+export const updateEmail = (authUrl: string) => async (request: UpdateEmailRequest) => {
     return makeRequest<UpdateEmailVisitor, UpdateEmailErrorResponse>({
         authUrl,
-        excludeBasePath,
         path: '/update_email',
         method: 'POST',
         body: request,

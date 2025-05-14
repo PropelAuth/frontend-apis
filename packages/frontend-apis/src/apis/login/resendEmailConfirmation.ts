@@ -37,10 +37,9 @@ export type SendEmailConfirmationVisitor = Visitor & {
 /////////////////
 export type ResendEmailConfirmationFn = ReturnType<typeof resendEmailConfirmation>
 
-export const resendEmailConfirmation = (authUrl: string, excludeBasePath?: boolean) => async () => {
+export const resendEmailConfirmation = (authUrl: string) => async () => {
     return makeRequest<SendEmailConfirmationVisitor, SendEmailConfirmationErrorResponse>({
         authUrl,
-        excludeBasePath,
         path: '/resend_email_confirmation',
         method: 'POST',
         responseToSuccessHandler: (visitor) => {

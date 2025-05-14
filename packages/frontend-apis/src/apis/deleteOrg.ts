@@ -42,10 +42,9 @@ export type DeleteOrgVisitor = LoggedInVisitor & {
 /////////////////
 export type DeleteOrgFn = ReturnType<typeof deleteOrg>
 
-export const deleteOrg = (authUrl: string, excludeBasePath?: boolean) => async (orgId: string) => {
+export const deleteOrg = (authUrl: string) => async (orgId: string) => {
     return makeRequest<DeleteOrgVisitor, DeleteOrgErrorResponse>({
         authUrl,
-        excludeBasePath,
         path: '/delete_org',
         method: 'DELETE',
         body: { org_id: orgId },

@@ -33,10 +33,9 @@ export type DeleteApiKeyVisitor = LoggedInVisitor & {
 /////////////////
 export type DeleteApiKeyFn = ReturnType<typeof deleteApiKey>
 
-export const deleteApiKey = (authUrl: string, excludeBasePath?: boolean) => async (apiKeyId: string) => {
+export const deleteApiKey = (authUrl: string) => async (apiKeyId: string) => {
     return makeRequest<DeleteApiKeyVisitor, DeleteApiKeyErrorResponse>({
         authUrl,
-        excludeBasePath,
         path: `/api_keys/${apiKeyId}`,
         method: 'DELETE',
         responseToSuccessHandler: (visitor) => {

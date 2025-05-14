@@ -58,8 +58,7 @@ export type FetchExpiredOrgInvitesVisitor = LoggedInVisitor & {
 export type FetchExpiredOrgInvitesFn = ReturnType<typeof fetchExpiredOrgInvites>
 
 export const fetchExpiredOrgInvites =
-    (authUrl: string, excludeBasePath?: boolean) =>
-    async (orgId: string, params?: FetchExpiredOrgInvitesRequestParams) => {
+    (authUrl: string) => async (orgId: string, params?: FetchExpiredOrgInvitesRequestParams) => {
         const queryParams = new URLSearchParams()
         if (params?.page_size) {
             queryParams.append('page_size', params.page_size.toString())
@@ -76,7 +75,6 @@ export const fetchExpiredOrgInvites =
             FetchExpiredOrgInvitesSuccessResponse
         >({
             authUrl,
-            excludeBasePath,
             path: `/org_membership/${orgId}/expired_invites`,
             method: 'GET',
             queryParams,
