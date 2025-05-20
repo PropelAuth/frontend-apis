@@ -8,6 +8,7 @@ import {
     UnexpectedErrorResponse,
 } from '../../helpers/errors'
 import { LoggedInVisitor, makeRequest } from '../../helpers/request'
+import { ApiKeySortBy } from './types'
 
 /////////////////
 ///////////////// Request
@@ -16,6 +17,7 @@ export type FetchPersonalApiKeysRequest = {
     page_number?: number
     page_size?: number
     api_key_search?: string
+    sort_by?: ApiKeySortBy
 }
 
 /////////////////
@@ -75,7 +77,7 @@ export type FetchPersonalApiKeysFn = ReturnType<typeof fetchPersonalApiKeys>
 
 export const fetchPersonalApiKeys = (authUrl: string) => async (request: FetchPersonalApiKeysRequest) => {
     const queryParams = new URLSearchParams()
-    const { page_number, page_size, api_key_search } = request
+    const { page_number, page_size, api_key_search, sort_by } = request
     if (page_number) {
         queryParams.append('page_number', page_number.toString())
     }
@@ -84,6 +86,9 @@ export const fetchPersonalApiKeys = (authUrl: string) => async (request: FetchPe
     }
     if (api_key_search) {
         queryParams.append('api_key_search', api_key_search)
+    }
+    if (sort_by) {
+        queryParams.append('sort_by', sort_by)
     }
 
     return makeRequest<
