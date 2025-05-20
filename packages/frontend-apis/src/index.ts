@@ -14,7 +14,7 @@ export type {
     FetchOrgApiKeysFn,
     FetchOrgApiKeysRequest,
 } from './apis/apiKeys/fetchOrgApiKeys'
-export type { ApiKeyExpirationOption } from './apis/apiKeys/types'
+export type { ApiKeyExpirationOption, ApiKeySortBy } from './apis/apiKeys/types'
 export type { JoinOrgSuccessResponse, JoinOrgVisitor, JoinOrgErrorResponse, JoinOrgFn } from './apis/joinOrg'
 export type {
     MfaLoginBadRequestResponse,
