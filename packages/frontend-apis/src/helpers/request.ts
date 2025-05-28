@@ -1,7 +1,5 @@
 import { ApiErrorResponse, EmailNotConfirmedResponse, UnauthorizedResponse, ErrorCode } from './errors'
 
-const BASE_PATH = '/api/fe/v3'
-
 type GenericRequestArgs<E extends ApiErrorResponse, V extends Visitor> = {
     authUrl: string
     path: string
@@ -67,7 +65,7 @@ export const makeRequest = async <V extends Visitor, E extends ApiErrorResponse,
         responseToSuccessHandler,
         responseToErrorHandler,
     } = args
-    const url = `${authUrl}${BASE_PATH}${path}${queryParams ? `?${queryParams.toString()}` : ''}`
+    const url = `${authUrl}${path}${queryParams ? `?${queryParams.toString()}` : ''}`
 
     try {
         const response = await fetch(url, {
