@@ -57,6 +57,6 @@
     },
     "dependencies": {
         "@propelauth/frontend-apis": "^0.0.15",
-        "@propelauth/nextjs": "^0.3.13"
+        "@propelauth/nextjs": "^0.3.14"
     }
 }
