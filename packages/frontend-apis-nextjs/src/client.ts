@@ -11,5 +11,5 @@ export const useAuthFrontendApis: () => ReturnType<typeof createFrontendApisClie
             baseApiUrl: '/api/auth/fe',
             excludeBasePath: true,
         })
-    }, [])
+    }, [authUrl])
 }
