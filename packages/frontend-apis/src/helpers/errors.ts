@@ -26,6 +26,7 @@ export enum ErrorCode {
     UserAccountMfaLocked = 'account_mfa_locked',
     IncorrectMfaCode = 'incorrect_mfa_code',
     DomainNotAllowed = 'domain_not_allowed',
+    AmbiguousResults = 'ambiguous_results',
 }
 
 export interface ApiErrorResponse {
@@ -126,4 +127,8 @@ export interface MfaAccountLockedErrorResponse extends ApiErrorResponse {
 
 export interface IncorrectMfaCodeErrorResponse extends ApiErrorResponse {
     error_code: ErrorCode.IncorrectMfaCode
+}
+
+export interface AmbiguousResultsErrorResponse extends GenericErrorResponse {
+    error_code: ErrorCode.AmbiguousResults
 }
