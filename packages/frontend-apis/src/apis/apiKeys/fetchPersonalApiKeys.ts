@@ -26,6 +26,7 @@ export type PersonalApiKey = {
     created_at: number
     expires_at_seconds: number | null
     metadata: Record<string, unknown> | null
+    display_name?: string
 }
 
 export type FetchPersonalApiKeysSuccessResponse = {
