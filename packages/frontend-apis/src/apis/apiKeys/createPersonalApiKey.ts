@@ -6,9 +6,23 @@ import {
     InvalidExpirationOptionResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
+    ApiErrorForSpecificFields,
 } from '../../helpers/errors'
 import { makeRequest, LoggedInVisitor } from '../../helpers/request'
 import { ApiKeyExpirationOption } from './types'
+
+/////////////////
+///////////////// Errors specific to this request
+/////////////////
+export interface CreatePersonalApiKeyBadRequestResponse extends ApiErrorForSpecificFields {
+    error_code: ErrorCode.InvalidRequestFields
+    user_facing_errors: {
+        name: string
+    }
+    field_errors: {
+        name: string
+    }
+}
 
 /////////////////
 ///////////////// Success and Error Responses
@@ -19,6 +33,7 @@ export type CreatePersonalApiKeySuccessResponse = {
 }
 
 export type CreatePersonalApiKeyErrorResponse =
+    | CreatePersonalApiKeyBadRequestResponse
     | InvalidExpirationOptionResponse
     | UnauthorizedResponse
     | UnexpectedErrorResponse
@@ -30,6 +45,7 @@ export type CreatePersonalApiKeyErrorResponse =
 /////////////////
 export type CreatePersonalApiKeyVisitor = LoggedInVisitor & {
     success: (data: CreatePersonalApiKeySuccessResponse) => void
+    badRequest?: (error: CreatePersonalApiKeyBadRequestResponse) => void
     invalidExpirationOption?: (error: InvalidExpirationOptionResponse) => void
     noPersonalApiKeyPermission?: (error: ForbiddenErrorResponse) => void
 }
@@ -60,6 +76,8 @@ export const createPersonalApiKey =
             responseToErrorHandler: (error, visitor) => {
                 const { error_code: errorCode } = error
                 switch (errorCode) {
+                    case ErrorCode.InvalidRequestFields:
+                        return getVisitorOrUndefined(visitor.badRequest, error)
                     case ErrorCode.Forbidden:
                         return getVisitorOrUndefined(visitor.noPersonalApiKeyPermission, error)
                     case ErrorCode.BadRequest:

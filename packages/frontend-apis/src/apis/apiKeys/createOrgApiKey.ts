@@ -6,9 +6,23 @@ import {
     InvalidExpirationOptionResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
+    ApiErrorForSpecificFields,
 } from '../../helpers/errors'
 import { makeRequest, LoggedInVisitor } from '../../helpers/request'
 import { ApiKeyExpirationOption } from './types'
+
+/////////////////
+///////////////// Errors specific to this request
+/////////////////
+export interface CreateOrgApiKeyBadRequestResponse extends ApiErrorForSpecificFields {
+    error_code: ErrorCode.InvalidRequestFields
+    user_facing_errors: {
+        name: string
+    }
+    field_errors: {
+        name: string
+    }
+}
 
 /////////////////
 ///////////////// Success and Error Responses
@@ -19,6 +33,7 @@ export type CreateOrgApiKeySuccessResponse = {
 }
 
 export type CreateOrgApiKeyErrorResponse =
+    | CreateOrgApiKeyBadRequestResponse
     | InvalidExpirationOptionResponse
     | UnauthorizedResponse
     | UnexpectedErrorResponse
@@ -30,6 +45,7 @@ export type CreateOrgApiKeyErrorResponse =
 /////////////////
 export type CreateOrgApiKeyVisitor = LoggedInVisitor & {
     success: (data: CreateOrgApiKeySuccessResponse) => void
+    badRequest?: (error: CreateOrgApiKeyBadRequestResponse) => void
     invalidExpirationOption?: (error: InvalidExpirationOptionResponse) => void
     noOrgApiKeyPermission?: (error: ForbiddenErrorResponse) => void
 }
@@ -57,6 +73,8 @@ export const createOrgApiKey =
             responseToErrorHandler: (error, visitor) => {
                 const { error_code: errorCode } = error
                 switch (errorCode) {
+                    case ErrorCode.InvalidRequestFields:
+                        return getVisitorOrUndefined(visitor.badRequest, error)
                     case ErrorCode.Forbidden:
                         return getVisitorOrUndefined(visitor.noOrgApiKeyPermission, error)
                     case ErrorCode.BadRequest:
