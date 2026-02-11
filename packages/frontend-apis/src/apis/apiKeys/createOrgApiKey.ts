@@ -17,10 +17,10 @@ import { ApiKeyExpirationOption } from './types'
 export interface CreateOrgApiKeyBadRequestResponse extends ApiErrorForSpecificFields {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
-        name: string
+        display_name: string
     }
     field_errors: {
-        name: string
+        display_name: string
     }
 }
 
