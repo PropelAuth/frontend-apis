@@ -24,10 +24,10 @@ export type UpdateApiKeyRequest = {
 export interface UpdateApiKeyBadRequestResponse extends ApiErrorForSpecificFields {
     error_code: ErrorCode.InvalidRequestFields
     user_facing_errors: {
-        name: string
+        display_name: string
     }
     field_errors: {
-        name: string
+        display_name: string
     }
 }
 
