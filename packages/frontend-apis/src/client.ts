@@ -3,6 +3,7 @@ import { createPersonalApiKey } from './apis/apiKeys/createPersonalApiKey'
 import { deleteApiKey } from './apis/apiKeys/deleteApiKey'
 import { fetchOrgApiKeys } from './apis/apiKeys/fetchOrgApiKeys'
 import { fetchPersonalApiKeys } from './apis/apiKeys/fetchPersonalApiKeys'
+import { updateApiKey } from './apis/apiKeys/updateApiKey'
 import { createOrg } from './apis/createOrg'
 import { deleteAccount } from './apis/deleteAccount'
 import { deleteOrg } from './apis/deleteOrg'
@@ -70,6 +71,7 @@ export const createFrontendApisClient = ({ authUrl, baseApiUrl }: ApiOptions) =>
         fetchOrgApiKeys: fetchOrgApiKeys(baseApiUrl),
         createOrgApiKey: createOrgApiKey(baseApiUrl),
         deleteApiKey: deleteApiKey(baseApiUrl),
+        updateApiKey: updateApiKey(baseApiUrl),
         fetchLoginState: fetchLoginState(baseApiUrl),
         emailPasswordLogin: emailPasswordLogin(baseApiUrl),
         resendEmailConfirmation: resendEmailConfirmation(baseApiUrl),
