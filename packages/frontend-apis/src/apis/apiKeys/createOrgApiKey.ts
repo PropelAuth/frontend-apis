@@ -6,9 +6,23 @@ import {
     InvalidExpirationOptionResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
+    ApiErrorForSpecificFields,
 } from '../../helpers/errors'
 import { makeRequest, LoggedInVisitor } from '../../helpers/request'
 import { ApiKeyExpirationOption } from './types'
+
+/////////////////
+///////////////// Errors specific to this request
+/////////////////
+export interface CreateOrgApiKeyBadRequestResponse extends ApiErrorForSpecificFields {
+    error_code: ErrorCode.InvalidRequestFields
+    user_facing_errors: {
+        display_name: string
+    }
+    field_errors: {
+        display_name: string
+    }
+}
 
 /////////////////
 ///////////////// Success and Error Responses
@@ -19,6 +33,7 @@ export type CreateOrgApiKeySuccessResponse = {
 }
 
 export type CreateOrgApiKeyErrorResponse =
+    | CreateOrgApiKeyBadRequestResponse
     | InvalidExpirationOptionResponse
     | UnauthorizedResponse
     | UnexpectedErrorResponse
@@ -30,6 +45,7 @@ export type CreateOrgApiKeyErrorResponse =
 /////////////////
 export type CreateOrgApiKeyVisitor = LoggedInVisitor & {
     success: (data: CreateOrgApiKeySuccessResponse) => void
+    badRequest?: (error: CreateOrgApiKeyBadRequestResponse) => void
     invalidExpirationOption?: (error: InvalidExpirationOptionResponse) => void
     noOrgApiKeyPermission?: (error: ForbiddenErrorResponse) => void
 }
@@ -40,7 +56,7 @@ export type CreateOrgApiKeyVisitor = LoggedInVisitor & {
 export type CreateOrgApiKeyFn = ReturnType<typeof createOrgApiKey>
 
 export const createOrgApiKey =
-    (authUrl: string) => async (orgId: string, expirationOption?: ApiKeyExpirationOption) => {
+    (authUrl: string) => async (orgId: string, expirationOption?: ApiKeyExpirationOption, displayName?: string) => {
         return makeRequest<CreateOrgApiKeyVisitor, CreateOrgApiKeyErrorResponse, CreateOrgApiKeySuccessResponse>({
             authUrl,
             path: '/api_keys',
@@ -49,6 +65,7 @@ export const createOrgApiKey =
             body: {
                 org_id: orgId,
                 expiration_option: expirationOption,
+                display_name: displayName,
             },
             responseToSuccessHandler: (response, visitor) => {
                 return () => visitor.success(response)
@@ -56,6 +73,8 @@ export const createOrgApiKey =
             responseToErrorHandler: (error, visitor) => {
                 const { error_code: errorCode } = error
                 switch (errorCode) {
+                    case ErrorCode.InvalidRequestFields:
+                        return getVisitorOrUndefined(visitor.badRequest, error)
                     case ErrorCode.Forbidden:
                         return getVisitorOrUndefined(visitor.noOrgApiKeyPermission, error)
                     case ErrorCode.BadRequest:
