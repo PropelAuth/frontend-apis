@@ -11,6 +11,7 @@ export type SignupRequest = {
     last_name?: string
     properties?: { [key: string]: unknown }
     invite_token?: string
+    turnstile_token?: string
 }
 
 /////////////////
