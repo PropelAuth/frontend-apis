@@ -1,6 +1,10 @@
 {
     "name": "@propelauth/frontend-apis-react",
     "version": "0.0.17",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/PropelAuth/frontend-apis"
+    },
     "description": "",
     "exports": {
         ".": {
