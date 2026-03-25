@@ -1,17 +1,27 @@
 name: npm publish
+
 on:
     release:
         types: [created]
+
+permissions:
+    id-token: write
+    contents: read
+
 jobs:
-    build:
+    publish:
         runs-on: ubuntu-latest
+
         steps:
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v2
+            - uses: actions/checkout@v6
+
+            - uses: actions/setup-node@v6
               with:
-                  node-version: '16'
+                  node-version: '24'
                   registry-url: 'https://registry.npmjs.org'
-            - run: npm install
-            - run: npm publish
-              env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+            - run: npm ci
+
+            - run: lerna run build
+
+            - run: lerna publish from-package --yes
