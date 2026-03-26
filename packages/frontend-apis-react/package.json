@@ -1,6 +1,6 @@
 {
     "name": "@propelauth/frontend-apis-react",
-    "version": "0.0.17",
+    "version": "0.0.18",
     "repository": {
         "type": "git",
         "url": "https://github.com/PropelAuth/frontend-apis"
@@ -60,7 +60,7 @@
         "react-dom": "^17.0.0 || ^18.0.0 || ^19.0.0"
     },
     "dependencies": {
-        "@propelauth/frontend-apis": "^0.0.16",
+        "@propelauth/frontend-apis": "^0.0.18",
         "@propelauth/react": "^2.0.30"
     }
 }
