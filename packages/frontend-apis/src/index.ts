@@ -252,6 +252,13 @@ export type {
     CreateOrgApiKeyFn,
 } from './apis/apiKeys/createOrgApiKey'
 export type {
+    UpdateApiKeyErrorResponse,
+    UpdateApiKeyBadRequestResponse,
+    UpdateApiKeyRequest,
+    UpdateApiKeyVisitor,
+    UpdateApiKeyFn,
+} from './apis/apiKeys/updateApiKey'
+export type {
     PasswordlessLoginRequestBadRequestResponse,
     PasswordlessLoginVisitor,
     PasswordlessLoginErrorResponse,
