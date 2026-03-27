@@ -265,3 +265,15 @@ export type {
     LoginViaSamlForOrgRequest,
     LoginViaSamlForOrgFn,
 } from './apis/login/loginViaSamlForOrg'
+export { OrgAuditLogEventType } from './orgAuditLogEvents'
+export type { OrgAuditLogEvent } from './orgAuditLogEvents'
+export type {
+    OrgAuditLog,
+    FetchOrgAuditLogsSuccessResponse,
+    FetchOrgAuditLogsRequest,
+    FetchOrgAuditLogsErrorResponse,
+    FetchOrgAuditLogsVisitor,
+    FetchOrgAuditLogsBadRequestResponse,
+    FetchOrgAuditLogsFn,
+    OrgAuditLogsDisabledErrorResponse,
+} from './apis/fetchOrgAuditLogs'
