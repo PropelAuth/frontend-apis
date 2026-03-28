@@ -10,6 +10,7 @@ import {
     UnexpectedErrorResponse,
 } from '../../helpers/errors'
 import { LoggedInVisitor, makeRequest } from '../../helpers/request'
+import { ApiKeySortBy } from './types'
 
 /////////////////
 ///////////////// Request
@@ -19,6 +20,7 @@ export type FetchOrgApiKeysRequest = {
     page_number?: number
     page_size?: number
     api_key_search?: string
+    sort_by?: ApiKeySortBy
 }
 
 /////////////////
@@ -82,7 +84,7 @@ export type FetchOrgApiKeysFn = ReturnType<typeof fetchOrgApiKeys>
 
 export const fetchOrgApiKeys = (authUrl: string) => async (request: FetchOrgApiKeysRequest) => {
     const queryParams = new URLSearchParams()
-    const { page_number, page_size, api_key_search } = request
+    const { page_number, page_size, api_key_search, sort_by } = request
     queryParams.append('org_id', request.org_id)
     if (page_number) {
         queryParams.append('page_number', page_number.toString())
@@ -92,6 +94,9 @@ export const fetchOrgApiKeys = (authUrl: string) => async (request: FetchOrgApiK
     }
     if (api_key_search) {
         queryParams.append('api_key_search', api_key_search)
+    }
+    if (sort_by) {
+        queryParams.append('sort_by', sort_by)
     }
 
     return makeRequest<FetchOrgApiKeysVisitor, FetchOrgApiKeysErrorResponse, FetchOrgApiKeysSuccessResponse>({
