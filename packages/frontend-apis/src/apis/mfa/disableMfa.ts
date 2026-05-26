@@ -42,7 +42,8 @@ export const disableMfa = (authUrl: string) => async () => {
     return makeRequest<MfaDisableVisitor, MfaDisableErrorResponse>({
         authUrl,
         path: '/mfa_disable',
-        method: 'POST',
+      method: 'POST',
+      body: {},
         responseToSuccessHandler: (visitor) => {
             return async () => await visitor.success()
         },
