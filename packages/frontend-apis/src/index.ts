@@ -265,3 +265,21 @@ export type {
     LoginViaSamlForOrgRequest,
     LoginViaSamlForOrgFn,
 } from './apis/login/loginViaSamlForOrg'
+export type {
+  DeletAllButCurrentSessionVisitor,
+  DeleteAllButCurrentSessionErrorResponse,
+  DeleteAllButCurrentSessionFn,
+} from './apis/session/deleteAllButCurrentSession'
+export type {
+  DeleteSessionErrorResponse,
+  DeleteSessionFn,
+  DeleteSessionVisitor,
+} from './apis/session/deleteSession'
+export type {
+  FetchSessionsBadRequestResponse,
+  FetchSessionsDataSuccessResponse,
+  FetchSessionsErrorResponse,
+  FetchSessionsFn,
+  FetchSessionsRequest,
+  FetchSessionsVisitor
+} from './apis/session/fetchSessions'
