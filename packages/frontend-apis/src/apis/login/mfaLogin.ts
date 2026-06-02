@@ -12,6 +12,7 @@ import { LoginState } from './types'
 
 export type VerifyMfaForLogin = {
     code: string
+    remember_device?: boolean
 }
 
 /////////////////
