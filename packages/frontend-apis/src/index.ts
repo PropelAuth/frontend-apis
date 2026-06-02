@@ -281,5 +281,8 @@ export type {
   FetchSessionsErrorResponse,
   FetchSessionsFn,
   FetchSessionsRequest,
-  FetchSessionsVisitor
+  FetchSessionsVisitor,
+  SessionData,
+  UserAgentData,
+  SessionManagementDisabledErrorResponse
 } from './apis/session/fetchSessions'
