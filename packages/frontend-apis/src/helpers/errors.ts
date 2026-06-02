@@ -127,3 +127,7 @@ export interface MfaAccountLockedErrorResponse extends ApiErrorResponse {
 export interface IncorrectMfaCodeErrorResponse extends ApiErrorResponse {
     error_code: ErrorCode.IncorrectMfaCode
 }
+
+export interface SessionManagementDisabledErrorResponse extends ApiErrorResponse {
+    error_code: ErrorCode.ActionDisabled
+}
