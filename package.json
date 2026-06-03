@@ -1,10 +1,17 @@
 {
   "name": "root",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
+  "scripts": {
+    "build": "pnpm -r build",
+    "prepare": "husky"
+  },
   "devDependencies": {
-    "lerna": "^9.0.7"
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

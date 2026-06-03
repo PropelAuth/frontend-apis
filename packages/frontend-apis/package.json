@@ -29,13 +29,7 @@
         "build": "tsup",
         "dev": "tsup --watch",
         "test": "jest",
-        "prepare": "husky",
-        "prepublishOnly": "npm run build"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
+        "prepublishOnly": "pnpm run build"
     },
     "lint-staged": {
         "**/*.ts": [
@@ -48,7 +42,6 @@
         "@eslint/js": "^9.10.0",
         "@types/eslint__js": "^8.42.3",
         "eslint": "^9.10.0",
-        "husky": "^9.1.6",
         "prettier": "^3.3.3",
         "tsup": "^8.0.2",
         "typescript": "^5.6.2",
