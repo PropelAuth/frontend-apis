@@ -6,9 +6,23 @@ import {
     InvalidExpirationOptionResponse,
     UnauthorizedResponse,
     UnexpectedErrorResponse,
+    ApiErrorForSpecificFields,
 } from '../../helpers/errors'
 import { makeRequest, LoggedInVisitor } from '../../helpers/request'
 import { ApiKeyExpirationOption } from './types'
+
+/////////////////
+///////////////// Errors specific to this request
+/////////////////
+export interface CreatePersonalApiKeyBadRequestResponse extends ApiErrorForSpecificFields {
+    error_code: ErrorCode.InvalidRequestFields
+    user_facing_errors: {
+        display_name: string
+    }
+    field_errors: {
+        display_name: string
+    }
+}
 
 /////////////////
 ///////////////// Success and Error Responses
@@ -19,6 +33,7 @@ export type CreatePersonalApiKeySuccessResponse = {
 }
 
 export type CreatePersonalApiKeyErrorResponse =
+    | CreatePersonalApiKeyBadRequestResponse
     | InvalidExpirationOptionResponse
     | UnauthorizedResponse
     | UnexpectedErrorResponse
@@ -30,6 +45,7 @@ export type CreatePersonalApiKeyErrorResponse =
 /////////////////
 export type CreatePersonalApiKeyVisitor = LoggedInVisitor & {
     success: (data: CreatePersonalApiKeySuccessResponse) => void
+    badRequest?: (error: CreatePersonalApiKeyBadRequestResponse) => void
     invalidExpirationOption?: (error: InvalidExpirationOptionResponse) => void
     noPersonalApiKeyPermission?: (error: ForbiddenErrorResponse) => void
 }
@@ -39,39 +55,43 @@ export type CreatePersonalApiKeyVisitor = LoggedInVisitor & {
 /////////////////
 export type CreatePersonalApiKeyFn = ReturnType<typeof createPersonalApiKey>
 
-export const createPersonalApiKey = (authUrl: string) => async (expirationOption?: ApiKeyExpirationOption) => {
-    return makeRequest<
-        CreatePersonalApiKeyVisitor,
-        CreatePersonalApiKeyErrorResponse,
-        CreatePersonalApiKeySuccessResponse
-    >({
-        authUrl,
-        path: '/api_keys',
-        method: 'POST',
-        parseResponseAsJson: true,
-        body: {
-            expiration_option: expirationOption,
-        },
-        responseToSuccessHandler: (response, visitor) => {
-            return () => visitor.success(response)
-        },
-        responseToErrorHandler: (error, visitor) => {
-            const { error_code: errorCode } = error
-            switch (errorCode) {
-                case ErrorCode.Forbidden:
-                    return getVisitorOrUndefined(visitor.noPersonalApiKeyPermission, error)
-                case ErrorCode.BadRequest:
-                    return getVisitorOrUndefined(visitor.invalidExpirationOption, error)
-                case ErrorCode.Unauthorized:
-                    return getVisitorOrUndefined(visitor.unauthorized, error)
-                case ErrorCode.EmailNotConfirmed:
-                    return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
-                case ErrorCode.UnexpectedError:
-                    return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
-                default:
-                    unmatchedCase(errorCode)
-                    return undefined
-            }
-        },
-    })
-}
+export const createPersonalApiKey =
+    (authUrl: string) => async (expirationOption?: ApiKeyExpirationOption, displayName?: string) => {
+        return makeRequest<
+            CreatePersonalApiKeyVisitor,
+            CreatePersonalApiKeyErrorResponse,
+            CreatePersonalApiKeySuccessResponse
+        >({
+            authUrl,
+            path: '/api_keys',
+            method: 'POST',
+            parseResponseAsJson: true,
+            body: {
+                expiration_option: expirationOption,
+                display_name: displayName,
+            },
+            responseToSuccessHandler: (response, visitor) => {
+                return () => visitor.success(response)
+            },
+            responseToErrorHandler: (error, visitor) => {
+                const { error_code: errorCode } = error
+                switch (errorCode) {
+                    case ErrorCode.InvalidRequestFields:
+                        return getVisitorOrUndefined(visitor.badRequest, error)
+                    case ErrorCode.Forbidden:
+                        return getVisitorOrUndefined(visitor.noPersonalApiKeyPermission, error)
+                    case ErrorCode.BadRequest:
+                        return getVisitorOrUndefined(visitor.invalidExpirationOption, error)
+                    case ErrorCode.Unauthorized:
+                        return getVisitorOrUndefined(visitor.unauthorized, error)
+                    case ErrorCode.EmailNotConfirmed:
+                        return getVisitorOrUndefined(visitor.emailNotConfirmed, error)
+                    case ErrorCode.UnexpectedError:
+                        return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
+                    default:
+                        unmatchedCase(errorCode)
+                        return undefined
+                }
+            },
+        })
+    }

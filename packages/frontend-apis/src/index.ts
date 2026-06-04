@@ -1,6 +1,7 @@
 export type {
     CreatePersonalApiKeySuccessResponse,
     CreatePersonalApiKeyVisitor,
+    CreatePersonalApiKeyBadRequestResponse,
     CreatePersonalApiKeyErrorResponse,
     CreatePersonalApiKeyFn,
 } from './apis/apiKeys/createPersonalApiKey'
@@ -248,6 +249,7 @@ export type {
 export type {
     CreateOrgApiKeyErrorResponse,
     CreateOrgApiKeySuccessResponse,
+    CreateOrgApiKeyBadRequestResponse,
     CreateOrgApiKeyVisitor,
     CreateOrgApiKeyFn,
 } from './apis/apiKeys/createOrgApiKey'
