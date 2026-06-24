@@ -34,6 +34,7 @@ import { updatePassword } from './apis/updatePassword'
 import { updateUserMetadata } from './apis/updateUserMetadata'
 import { updateUserRoleInOrg } from './apis/updateUserRoleInOrg'
 import { SOCIAL_LOGIN_PATHS, SocialLoginProvider } from './socialLogins'
+import { fetchOrgAuditLogs } from './apis/fetchOrgAuditLogs'
 
 export type ApiOptions = {
     authUrl: string
@@ -84,5 +85,6 @@ export const createFrontendApisClient = ({ authUrl, baseApiUrl }: ApiOptions) =>
         loginViaSamlForOrg: loginViaSamlForOrg(baseApiUrl),
         signup: signup(baseApiUrl),
         loginWithSocialProvider,
+        fetchOrgAuditLogs: fetchOrgAuditLogs(baseApiUrl),
     }
 }
