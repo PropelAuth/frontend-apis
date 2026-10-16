@@ -27,6 +27,10 @@ export enum ErrorCode {
     IncorrectMfaCode = 'incorrect_mfa_code',
     DomainNotAllowed = 'domain_not_allowed',
     AmbiguousResults = 'ambiguous_results',
+    ResourceNotFound = 'resource_not_found',
+    TooManyGrants = 'too_many_grants',
+    ScopesRequired = 'scopes_required',
+    SsoLoginRequired = 'sso_login_required',
 }
 
 export interface ApiErrorResponse {
@@ -131,4 +135,12 @@ export interface IncorrectMfaCodeErrorResponse extends ApiErrorResponse {
 
 export interface AmbiguousResultsErrorResponse extends GenericErrorResponse {
     error_code: ErrorCode.AmbiguousResults
+}
+
+export interface BadRequestErrorResponse extends GenericErrorResponse {
+    error_code: ErrorCode.BadRequest
+}
+
+export interface ResourceNotFoundErrorResponse extends GenericErrorResponse {
+    error_code: ErrorCode.ResourceNotFound
 }

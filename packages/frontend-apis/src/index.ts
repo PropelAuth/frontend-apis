@@ -210,6 +210,8 @@ export type {
     IncorrectMfaCodeErrorResponse,
     MfaAccountLockedErrorResponse,
     MfaSessionTimeoutErrorResponse,
+    BadRequestErrorResponse,
+    ResourceNotFoundErrorResponse,
 } from './helpers/errors'
 export { SocialLoginProvider } from './socialLogins'
 export type {
@@ -274,3 +276,23 @@ export type {
     LoginViaSamlForOrgRequest,
     LoginViaSamlForOrgFn,
 } from './apis/login/loginViaSamlForOrg'
+export type { McpNotEnabledErrorResponse, GrantRequestNotFoundErrorResponse } from './apis/mcp/types'
+export type {
+    FetchMcpConsentRequestRequest,
+    FetchMcpConsentRequestSuccessResponse,
+    FetchMcpConsentRequestErrorResponse,
+    FetchMcpConsentRequestVisitor,
+    FetchMcpConsentRequestFn,
+    McpScope,
+    McpOrgScopesOption,
+} from './apis/mcp/fetchMcpConsentRequest'
+export type {
+    SubmitMcpConsentRequest,
+    SubmitMcpConsentSuccessResponse,
+    SubmitMcpConsentErrorResponse,
+    SubmitMcpConsentVisitor,
+    SubmitMcpConsentFn,
+    TooManyGrantsErrorResponse,
+    ScopesRequiredErrorResponse,
+    SsoLoginRequiredErrorResponse,
+} from './apis/mcp/submitMcpConsent'

@@ -18,6 +18,8 @@ import { verifyMfaBackupCodeForLogin } from './apis/login/mfaLoginBackupCode'
 import { passwordlessLogin } from './apis/login/passwordlessLogin'
 import { resendEmailConfirmation } from './apis/login/resendEmailConfirmation'
 import { loginViaSamlForOrg } from './apis/login/loginViaSamlForOrg'
+import { fetchMcpConsentRequest } from './apis/mcp/fetchMcpConsentRequest'
+import { submitMcpConsent } from './apis/mcp/submitMcpConsent'
 import { disableMfa } from './apis/mfa/disableMfa'
 import { enableMfa } from './apis/mfa/enableMfa'
 import { fetchMfaStatusWithNewSecret } from './apis/mfa/mfaStatus'
@@ -83,6 +85,8 @@ export const createFrontendApisClient = ({ authUrl, baseApiUrl }: ApiOptions) =>
         passwordlessLogin: passwordlessLogin(baseApiUrl),
         loginViaSamlForOrg: loginViaSamlForOrg(baseApiUrl),
         signup: signup(baseApiUrl),
+        fetchMcpConsentRequest: fetchMcpConsentRequest(baseApiUrl),
+        submitMcpConsent: submitMcpConsent(baseApiUrl),
         loginWithSocialProvider,
     }
 }
