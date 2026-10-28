@@ -34,6 +34,9 @@ import { updatePassword } from './apis/updatePassword'
 import { updateUserMetadata } from './apis/updateUserMetadata'
 import { updateUserRoleInOrg } from './apis/updateUserRoleInOrg'
 import { SOCIAL_LOGIN_PATHS, SocialLoginProvider } from './socialLogins'
+import { deleteAllButCurrentSession } from './apis/session/deleteAllButCurrentSession'
+import { deleteSession } from './apis/session/deleteSession'
+import { fetchSessions } from './apis/session/fetchSessions'
 
 export type ApiOptions = {
     authUrl: string
@@ -84,5 +87,8 @@ export const createFrontendApisClient = ({ authUrl, baseApiUrl }: ApiOptions) =>
         loginViaSamlForOrg: loginViaSamlForOrg(baseApiUrl),
         signup: signup(baseApiUrl),
         loginWithSocialProvider,
+        deleteAllButCurrentSession: deleteAllButCurrentSession(baseApiUrl),
+        deleteSession: deleteSession(baseApiUrl),
+        fetchSessions: fetchSessions(baseApiUrl) 
     }
 }

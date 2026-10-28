@@ -129,6 +129,10 @@ export interface IncorrectMfaCodeErrorResponse extends ApiErrorResponse {
     error_code: ErrorCode.IncorrectMfaCode
 }
 
+export interface SessionManagementDisabledErrorResponse extends ApiErrorResponse {
+    error_code: ErrorCode.ActionDisabled
+}
+
 export interface AmbiguousResultsErrorResponse extends GenericErrorResponse {
     error_code: ErrorCode.AmbiguousResults
 }
