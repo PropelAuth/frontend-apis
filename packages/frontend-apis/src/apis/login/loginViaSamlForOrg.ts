@@ -1,5 +1,10 @@
 import { getVisitorOrUndefined, unmatchedCase } from '../../helpers/error_utils'
-import { ErrorCode, OrgNotFoundErrorResponse, UnexpectedErrorResponse } from '../../helpers/errors'
+import {
+    AmbiguousResultsErrorResponse,
+    ErrorCode,
+    OrgNotFoundErrorResponse,
+    UnexpectedErrorResponse,
+} from '../../helpers/errors'
 import { makeRequest, Visitor } from '../../helpers/request'
 
 /////////////////
@@ -23,7 +28,10 @@ export type LoginViaSamlForOrgSuccessfulResponse = {
     login_url: string
 }
 
-export type LoginViaSamlForOrgErrorResponse = UnexpectedErrorResponse | OrgNotFoundErrorResponse
+export type LoginViaSamlForOrgErrorResponse =
+    | UnexpectedErrorResponse
+    | OrgNotFoundErrorResponse
+    | AmbiguousResultsErrorResponse
 
 /////////////////
 ///////////////// Visitor
@@ -31,6 +39,7 @@ export type LoginViaSamlForOrgErrorResponse = UnexpectedErrorResponse | OrgNotFo
 export type LoginViaSamlForOrgVisitor = Visitor & {
     success: (data: LoginViaSamlForOrgSuccessfulResponse) => void
     orgNotFound?: (error: OrgNotFoundErrorResponse) => void
+    ambiguousResults?: (error: AmbiguousResultsErrorResponse) => void
 }
 
 /////////////////
@@ -70,6 +79,8 @@ export const loginViaSamlForOrg = (authUrl: string) => async (request: LoginViaS
                     return getVisitorOrUndefined(visitor.unexpectedOrUnhandled, error)
                 case ErrorCode.OrgNotFound:
                     return getVisitorOrUndefined(visitor.orgNotFound, error)
+                case ErrorCode.AmbiguousResults:
+                    return getVisitorOrUndefined(visitor.ambiguousResults, error)
                 default:
                     unmatchedCase(errorCode)
                     return undefined

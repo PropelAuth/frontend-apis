@@ -1,6 +1,7 @@
 export type {
     CreatePersonalApiKeySuccessResponse,
     CreatePersonalApiKeyVisitor,
+    CreatePersonalApiKeyBadRequestResponse,
     CreatePersonalApiKeyErrorResponse,
     CreatePersonalApiKeyFn,
 } from './apis/apiKeys/createPersonalApiKey'
@@ -14,7 +15,7 @@ export type {
     FetchOrgApiKeysFn,
     FetchOrgApiKeysRequest,
 } from './apis/apiKeys/fetchOrgApiKeys'
-export type { ApiKeyExpirationOption } from './apis/apiKeys/types'
+export type { ApiKeyExpirationOption, ApiKeySortBy } from './apis/apiKeys/types'
 export type { JoinOrgSuccessResponse, JoinOrgVisitor, JoinOrgErrorResponse, JoinOrgFn } from './apis/joinOrg'
 export type {
     MfaLoginBadRequestResponse,
@@ -248,9 +249,17 @@ export type {
 export type {
     CreateOrgApiKeyErrorResponse,
     CreateOrgApiKeySuccessResponse,
+    CreateOrgApiKeyBadRequestResponse,
     CreateOrgApiKeyVisitor,
     CreateOrgApiKeyFn,
 } from './apis/apiKeys/createOrgApiKey'
+export type {
+    UpdateApiKeyErrorResponse,
+    UpdateApiKeyBadRequestResponse,
+    UpdateApiKeyRequest,
+    UpdateApiKeyVisitor,
+    UpdateApiKeyFn,
+} from './apis/apiKeys/updateApiKey'
 export type {
     PasswordlessLoginRequestBadRequestResponse,
     PasswordlessLoginVisitor,
